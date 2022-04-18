@@ -9,15 +9,8 @@ import { Rule } from '../types/index'
  * @param {Object|Array} slot 
  * @returns 
  */
-const render = (tag: string, props: VNodeProps, slot: Slot) => {
-    const tagNode: any = resolveDynamicComponent(tag)
+const render = (tag: string, props: VNodeProps, slot: Slot) => h(resolveDynamicComponent(tag) as any, props, slot,)
 
-    return h(
-        tagNode,
-        props,
-        slot,
-    )
-}
 
 /**
  * 处理rule children
@@ -53,14 +46,8 @@ const renderChildren = (children: Array<Rule>) => {
  * @param {Object} rule 
  * @returns 
  */
-const renderItem = (rule: Rule) => {
-    return render(
-        rule.type,
-        {
-            ...rule.props
-        },
-        renderChildren(rule.children))
-}
+const renderItem = (rule: Rule) => render(rule.type, { ...rule.props }, renderChildren(rule.children))
+
 
 
 /**
@@ -68,6 +55,4 @@ const renderItem = (rule: Rule) => {
  * @param {Array} ruleBase
  * @returns 
  */
-export const renderRule = (ruleBase: Rule) => {
-    return renderItem(ruleBase)
-}
+export const renderRule = (ruleBase: Rule) => renderItem(ruleBase)

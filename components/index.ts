@@ -34,8 +34,8 @@ export default defineComponent({
     emits: ['update:api', 'update:modelValue', 'submit'],
     setup(props, { emit }) {
         const { rule, option, modelValue, isForm } = toRefs(props),
-            model = reactive(modelValue.value ? modelValue.value : {}),
-            nRule = ref();
+            model = reactive<object>(modelValue.value ? modelValue.value : {}),
+            nRule = ref<Rule>();
 
         /**
          * 规范化规则的模板
@@ -116,7 +116,7 @@ export default defineComponent({
                         // 赋值处理
                         model[item.field] = model[item.field] || item.value;
                         rtItem.props[modelKey] = model[item.field];
-                        rtItem.props[onUpdateModelKey] = (value) => {
+                        rtItem.props[onUpdateModelKey] = (value: any) => {
                             apiFn.setFieldChange(item.field, value);
                         }
 

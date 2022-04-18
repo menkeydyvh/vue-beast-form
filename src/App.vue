@@ -13,7 +13,6 @@
 import { defineComponent, ref } from 'vue'
 import JsonLayout from '../components'
 
-
 export default defineComponent({
   components: { JsonLayout },
   setup() {
@@ -103,6 +102,7 @@ export default defineComponent({
 
 
     const onSubmit = (data: object) => {
+      console.log('jApi:', jApi.value)
       console.log('onSubmit', data)
     }
 
