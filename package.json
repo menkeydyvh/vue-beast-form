@@ -1,10 +1,20 @@
 {
-  "name": "v3ts",
+  "name": "json-layout",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "通过json解析生成页面布局和表单布局",
+  "main": "index.ts",
+  "keywords": [
+    "vue3",
+    "json",
+    "layout",
+    "ui",
+    "framework"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "tsc": "tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
