@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "通过json解析生成页面布局和表单布局",
-  "main": "index.ts",
+  "main": "index.js",
   "keywords": [
     "vue3",
     "json",
@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc index.ts  --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,0 +1,10 @@
+demo
+dist
+node_modules
+.gitignore
+index.html
+*-lock.json
+tsconfig.json
+tsconfig.node.json
+vite.config.js
+.env.local
