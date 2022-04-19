@@ -6,12 +6,6 @@ import { RuleType, PropsOptionType } from '../types/index'
 
 const name: string = 'JsonLayout';
 
-interface TypeModelType {
-    modelKey: string;
-    onUpdateModelKey: string;
-    propsKeys: Array<string>;
-};
-
 export default defineComponent({
     name,
     props: {
@@ -55,12 +49,12 @@ export default defineComponent({
          * 获取对应得 model 的value和事件
          * @param {*} type 
          */
-        const getTypeModel = (type: string): TypeModelType | null => {
+        const getTypeModel = (type: string) => {
             const rdcTag: any = resolveDynamicComponent(type);
             if (isObject(rdcTag)) {
-                const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
-                    onUpdateModelKey = `onUpdate:${modelKey}`,
-                    propsKeys = Object.keys(rdcTag.props || {});
+                const modelKey: string = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
+                    onUpdateModelKey: string = `onUpdate:${modelKey}`,
+                    propsKeys: string[] = rdcTag.props ? Object.keys(rdcTag.props || {}) : [];
 
                 return {
                     modelKey,
@@ -133,7 +127,7 @@ export default defineComponent({
                             if (isObject(item.title)) {
                                 resultChildren.push({
                                     ...item.title as RuleType,
-                                    slot: 'label'
+                                    slot: defaultName.formItemSlotTitle
                                 })
                             }
                             resultChildren.push(rtItem)

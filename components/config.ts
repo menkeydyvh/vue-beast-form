@@ -1,11 +1,12 @@
 /**
  * form 组件名称
  */
-export const defaultName:any = {
+export const defaultName: any = {
     form: 'a-form',
     formItem: 'a-form-item',
     formItemPropName: 'name',
     formItemPropLabel: 'label',
+    formItemSlotTitle: 'label',
 }
 
 /**
