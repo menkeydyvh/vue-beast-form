@@ -1,22 +1,22 @@
-import { defineComponent, ref, reactive, toRefs, toRaw, resolveDynamicComponent, watch, onMounted, VNodeTypes } from 'vue'
+import { defineComponent, ref, reactive, toRefs, toRaw, resolveDynamicComponent, watch, onMounted, PropType } from 'vue'
 import { formComponentConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule } from './utils'
 import { renderRule } from './render'
-import { RuleType } from '../types/index'
+import { RuleType, ApiFnType } from '../types/index'
 
 const name: string = 'JsonLayout';
 
-interface TypeModel {
-    modelKey: string,
-    onUpdateModelKey: string,
-    propsKeys: Array<string>
+interface TypeModelType {
+    modelKey: string;
+    onUpdateModelKey: string;
+    propsKeys: Array<string>;
 };
 
 export default defineComponent({
     name,
     props: {
         rule: {
-            type: Array<RuleType>,
+            type: Array as PropType<Array<RuleType>>,
             required: true
         },
         modelValue: {
@@ -25,7 +25,7 @@ export default defineComponent({
         option: {
             type: Object
         },
-        api: { type: Object },
+        api: { type: Object as PropType<ApiFnType> },
         isForm: {
             type: Boolean,
             default: true
@@ -64,7 +64,7 @@ export default defineComponent({
          * 获取对应得 model 的value和事件
          * @param {*} type 
          */
-        const getTypeModel = (type: string): TypeModel | null => {
+        const getTypeModel = (type: string): TypeModelType | null => {
             const rdcTag: any = resolveDynamicComponent(type);
             if (isObject(rdcTag)) {
                 const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
@@ -199,7 +199,7 @@ export default defineComponent({
         /**
          * api
          */
-        const apiFn = {
+        const apiFn: ApiFnType = {
             // 获取规则
             getRule(field: string, rules?: Array<RuleType> | RuleType): RuleType | null {
                 rules = rules || nRule.value;
