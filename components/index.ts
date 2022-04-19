@@ -2,7 +2,7 @@ import { defineComponent, ref, reactive, toRefs, toRaw, resolveDynamicComponent,
 import { formComponentConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
 import { renderRule } from './render'
-import { RuleType, PropsOptionType } from '../types/index'
+import { RuleType, PropsOptionType } from './types/index'
 
 const name: string = 'JsonLayout';
 

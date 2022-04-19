@@ -1,5 +1,5 @@
 import { h, resolveDynamicComponent, VNodeProps, Slot } from 'vue'
-import { RuleType } from '../types/index'
+import { RuleType } from './types/index'
 
 /**
  * 
@@ -47,7 +47,7 @@ const renderChildren = (children: Array<RuleType>) => {
  * @param {Object} rule 
  * @returns 
  */
-const renderItem = (rule: RuleType) => render(rule.type, { ...rule.props }, renderChildren(rule.children))
+const renderItem = (rule: RuleType) => render(rule.type, { ...rule.props }, renderChildren(rule.children as Array<RuleType>))
 
 
 

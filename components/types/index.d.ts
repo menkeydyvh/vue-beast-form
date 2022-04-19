@@ -12,7 +12,7 @@ export type RuleType = {
     validate?: Array<RuleValidateType>;
     showFormItem?: Boolean;
     // 布局相关
-    children?: RuleChildrenType;
+    children?: Array<RuleType | string>;
     slot?: string;
 }
 
@@ -22,8 +22,6 @@ export interface RuleValidateType {
     message?: string;
     trigger?: string;
 }
-
-export const RuleChildrenType: Array<RuleType | string>
 
 export type PropsOptionType = {
     form: any

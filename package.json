@@ -2,7 +2,7 @@
   "name": "json-layout",
   "version": "0.1.0",
   "description": "通过json解析生成页面布局和表单布局",
-  "main": "index.js",
+  "main": "lib/index.js",
   "keywords": [
     "vue3",
     "json",
