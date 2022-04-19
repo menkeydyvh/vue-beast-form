@@ -9,7 +9,8 @@ import { RuleType } from '../types/index'
  * @param {Object|Array} slot 
  * @returns 
  */
-const render = (tag: string, props: VNodeProps, slot: Slot) => h(resolveDynamicComponent(tag) as any, props, slot,)
+const render = (tag: string, props: VNodeProps, slot: Slot) => h(resolveDynamicComponent(tag) as any, props, slot)
+
 
 
 /**
@@ -47,6 +48,7 @@ const renderChildren = (children: Array<RuleType>) => {
  * @returns 
  */
 const renderItem = (rule: RuleType) => render(rule.type, { ...rule.props }, renderChildren(rule.children))
+
 
 
 

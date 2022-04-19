@@ -12,14 +12,22 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import JsonLayout from '../components'
+import { RuleType } from '../types'
 
 export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
       value = ref({ goods_name: '123' }),
-      rule = ref(
-        [
+      rule = ref<Array<RuleType>>([]),
+      option = ref({
+        form: {
+          // wrapperCol: { span: 14 },
+          layout: 'vertical'
+        }
+      });
+
+    rule.value =  [
           {
             type: "a-input",
             title: "商品名称1",
@@ -82,23 +90,14 @@ export default defineComponent({
                   },
                   {
                     type: 'a-button',
-                    props: {
-                    },
+                    props: {},
                     children: ['重置']
-                  },
+                  }
                 ]
-              },
-
-            ],
+              }
+            ]
           }
         ]
-      ),
-      option = ref({
-        form: {
-          // wrapperCol: { span: 14 },
-          layout: 'vertical'
-        }
-      });
 
 
     const onSubmit = (data: object) => {

@@ -8,6 +8,7 @@
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": [
@@ -22,9 +23,6 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue"
-  ],
-  "exclude": [
-    "node_modules"
   ],
   "references": [
     {
