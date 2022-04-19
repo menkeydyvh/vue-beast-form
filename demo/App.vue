@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import JsonLayout from '../index'
+import JsonLayout from '../components/index'
 // import { RuleType } from '../types'
 
 export default defineComponent({

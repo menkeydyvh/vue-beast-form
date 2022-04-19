@@ -1,4 +1,4 @@
-import { RuleType } from './types/index'
+import { RuleType } from '../types/index'
 
 export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field'): RuleType | null => {
     let length = 0;

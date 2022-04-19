@@ -1,5 +1,5 @@
 import { h, resolveDynamicComponent, VNodeProps, Slot } from 'vue'
-import { RuleType } from './types/index'
+import { RuleType } from '../types/index'
 
 /**
  * 
