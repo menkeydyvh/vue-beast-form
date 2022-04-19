@@ -1,17 +1,36 @@
+// https://juejin.cn/post/6844904093568221191 
 {
   "compilerOptions": {
+    //  outDir 编译后的文件存到到哪个目录下
     "outDir": "lib",
-    "target": "esnext",
-    "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
+    // 指定 ECMAScript 目标版本: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'
+    "target": "es6",
+    // 严格模式
+    "strict": false,
+    // 通过为导入内容创建命名空间，实现CommonJS和ES模块之间的互操作性
     "esModuleInterop": true,
+    // 用于检查是否有在函数体中没有使用的参数
+    "noUnusedParameters": true,
+    // 默认false,是否检测定义了但是没使用的变量
+    "noUnusedLocals": true,
+    /* 不允许变量或函数参数具有隐式any类型,例如
+       function(name) {
+           return name;
+       } */
+    "noImplicitAny": true,
+    // 允许编译JS
+    "allowJs": true,
+    // "useDefineForClassFields": true,
+    // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
+    // "module": "esnext",
+    // 用来指定编译时是否生成.map文件
+    // "sourceMap": true,
+    // "resolveJsonModule": true,
+    // isolatedModules的值为true或false，指定是否将每个文件作为单独的模块，默认为true，它不可以和declaration同时设定
+    // "isolatedModules": true,
+    // 用于选择模块解析策略，有'node'和'classic'两种类型
+    "moduleResolution": "node",
+    "skipLibCheck": true,
     "lib": [
       "esnext",
       "dom"

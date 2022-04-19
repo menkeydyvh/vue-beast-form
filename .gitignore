@@ -22,3 +22,5 @@ dist
 dist-ssr
 *.local
 *-lock.json
+
+*.js
