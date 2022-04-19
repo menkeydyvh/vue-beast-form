@@ -1,8 +1,8 @@
-import { defineComponent, ref, reactive, toRefs, toRaw, resolveDynamicComponent, watch, onMounted } from 'vue'
+import { defineComponent, ref, reactive, toRefs, toRaw, resolveDynamicComponent, watch, onMounted, VNodeTypes } from 'vue'
 import { formComponentConfig, defaultName } from './config'
-import { isObject, getArrayRule } from './utils'
+import { isObject, getArrayRule, updateRule } from './utils'
 import { renderRule } from './render'
-import { Rule } from '../types/index'
+import { RuleType } from '../types/index'
 
 const name: string = 'JsonLayout';
 
@@ -16,7 +16,7 @@ export default defineComponent({
     name,
     props: {
         rule: {
-            type: Array<Rule>,
+            type: Array<RuleType>,
             required: true
         },
         modelValue: {
@@ -34,31 +34,26 @@ export default defineComponent({
     emits: ['update:api', 'update:modelValue', 'submit'],
     setup(props, { emit }) {
         const { rule, option, modelValue, isForm } = toRefs(props),
-            model = reactive<object>(modelValue.value ? modelValue.value : {}),
-            nRule = ref<Rule>();
+            model = reactive<any>(modelValue.value ? modelValue.value : {}),
+            nRule = ref<RuleType>({
+                type: '',
+                props: null,
+                children: [],
+                field: '',
+                title: '',
+                value: undefined,
+                modelValueKey: '',
+                validate: [],
+                slot: ''
+            });
 
         /**
          * 规范化规则的模板
          * @param {Rule} config 
          * @returns 
          */
-        const ruleTemplate = (config: Rule): Rule => {
-            const nodeRule: Rule = {
-                // 必须
-                type: undefined,
-                // 表单输入组件时是必须，其他时候填写方便查找调整规则
-                field: undefined,
-                // 组件相关
-                props: undefined,
-                value: undefined,
-                modelValueKey: undefined,
-                // form-item
-                validate: undefined,
-                title: undefined,
-                // 布局相关
-                showFormItem: isForm.value,
-                children: undefined,
-                slot: undefined,
+        const ruleTemplate = (config: RuleType): RuleType => {
+            const nodeRule: RuleType = {
                 ...config,
             };
 
@@ -69,7 +64,7 @@ export default defineComponent({
          * 获取对应得 model 的value和事件
          * @param {*} type 
          */
-        const getTypeModel = (type: string): TypeModel => {
+        const getTypeModel = (type: string): TypeModel | null => {
             const rdcTag: any = resolveDynamicComponent(type);
             if (isObject(rdcTag)) {
                 const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
@@ -91,16 +86,15 @@ export default defineComponent({
          * @param {*} children 
          * @returns 
          */
-        const fillRuleChildren = (children: Array<Rule>): Array<Rule> => {
+        const fillRuleChildren = (children: Array<RuleType>): Array<RuleType> => {
             return children.map(item => {
 
                 if (!isObject(item)) {
                     return item;
                 }
 
-                let result: Rule;
-                const rtItem: Rule = ruleTemplate(item),
-                    gtmTag: TypeModel = getTypeModel(rtItem.type);
+                const rtItem: RuleType = ruleTemplate(item),
+                    gtmTag = getTypeModel(rtItem.type);
 
                 if (rtItem.children) {
                     rtItem.children = fillRuleChildren(rtItem.children)
@@ -121,6 +115,8 @@ export default defineComponent({
                         }
 
                         if (rtItem.showFormItem) {
+                            let result: RuleType;
+
                             // 显示form-item
                             const formItemProps: any = {};
                             formItemProps[defaultName.formItemPropName] = item.field
@@ -136,31 +132,51 @@ export default defineComponent({
                             if (typeof item.title === 'string') {
                                 formItemProps[defaultName.formItemPropLabel] = item.title
                             }
-                            result = ruleTemplate({
+
+                            const formItemRule: RuleType = {
                                 type: defaultName.formItem,
                                 props: formItemProps,
-                                children: []
-                            })
+                                field: '',
+                                children: [],
+                                title: '',
+                                value: undefined,
+                                modelValueKey: '',
+                                validate: [],
+                                slot: ''
+                            }
+                            result = ruleTemplate(formItemRule)
                             if (isObject(item.title)) {
                                 result.children.push({
-                                    ...item.title as Rule,
+                                    ...item.title as RuleType,
                                     slot: 'label'
                                 })
                             }
                             result.children.push(rtItem)
+                            return result
                         }
 
                     }
                 }
-                return result ? result : rtItem;
+                return rtItem;
             });
         }
 
         /**
          * 补足规则方便渲染处理
          */
-        const fillRule = (): Rule => {
-            let baseRule: Rule;
+        const fillRule = () => {
+            const baseRule: RuleType = ruleTemplate({
+                type: '',
+                props: null,
+                children: [],
+                field: '',
+                title: '',
+                value: undefined,
+                modelValueKey: '',
+                validate: [],
+                slot: ''
+            });
+
             if (isForm.value) {
                 const formProps = option.value ? toRaw(option.value.form) : {};
                 formProps.model = model;
@@ -168,21 +184,16 @@ export default defineComponent({
                     emit('submit', model)
                 };
 
-                baseRule = ruleTemplate({
-                    type: defaultName.form,
-                    props: formProps,
-                    children: []
-                })
+                baseRule.title = defaultName.form
+                baseRule.props = formProps
+
             } else {
-                baseRule = ruleTemplate({
-                    type: "div",
-                    children: []
-                })
+                baseRule.title = 'div';
             }
 
-            baseRule.children = fillRuleChildren(toRaw(rule.value));
+            baseRule.children = fillRuleChildren(toRaw<Array<RuleType>>(rule.value));
 
-            return baseRule;
+            nRule.value = baseRule;
         }
 
         /**
@@ -190,9 +201,9 @@ export default defineComponent({
          */
         const apiFn = {
             // 获取规则
-            getRule(field: string, rules?: Array<Rule> | Rule): Rule {
+            getRule(field: string, rules?: Array<RuleType> | RuleType): RuleType | null {
                 rules = rules || nRule.value;
-                let result: Rule;
+                let result = null;
                 if (Array.isArray(rules)) {
                     result = getArrayRule(rules, field)
                 } else if (rules && rules.children) {
@@ -201,24 +212,19 @@ export default defineComponent({
                 return result;
             },
             // 更新规则
-            updateRule(field: string, rule: Rule): void {
+            updateRule(field: string, rule: RuleType): void {
                 if (rule && isObject(rule)) {
-                    const getRule: Rule = apiFn.getRule(field)
-                    if (getRule) {
-                        for (let key in rule) {
-                            getRule[key] = rule[key]
-                        }
-                    }
+                    const getRule = apiFn.getRule(field);
+                    updateRule(getRule, rule)
                 }
             },
             // 设置数据
             setFieldChange(field: string, value: any): void {
                 model[field] = value;
-                const getRule: Rule = apiFn.getRule(field)
+                const getRule = apiFn.getRule(field)
                 if (getRule) {
                     getRule.value = value;
                     getRule.props[getRule.modelValueKey] = value;
-
                 }
             }
         }
@@ -240,7 +246,7 @@ export default defineComponent({
             emit('update:api', apiFn)
         })
 
-        nRule.value = fillRule();
+        fillRule();
 
         return () => renderRule(nRule.value)
     },

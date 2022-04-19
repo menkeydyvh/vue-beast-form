@@ -1,7 +1,7 @@
 /**
  * form 组件名称
  */
-export const defaultName = {
+export const defaultName:any = {
     form: 'a-form',
     formItem: 'a-form-item',
     formItemPropName: 'name',
@@ -11,7 +11,7 @@ export const defaultName = {
 /**
  * 表单组件定义 v-model 的 :key
  */
-export const formComponentConfig = {
+export const formComponentConfig: any = {
     // 这个是给自定义组件用的
     default: 'modelValue',
     // ant 框架组件

@@ -1,9 +1,10 @@
-import { Rule } from '../types/index'
+import { RuleType } from '../types/index'
 
-export const getArrayRule = (rules: Array<Rule>, value: any, key: string = 'field'): Rule => {
-    let result: Rule, length: number = 0;
+export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field'): RuleType | null => {
+    let length: number = 0;
     if (Array.isArray(rules)) {
         length = rules.length
+        let result = null;
         for (let i: number = 0; i < length; i++) {
             if (rules[i][key] === value) {
                 result = rules[i]
@@ -16,8 +17,19 @@ export const getArrayRule = (rules: Array<Rule>, value: any, key: string = 'fiel
                 }
             }
         }
+        return result;
     }
-    return result;
+    return null;
+}
+
+export const updateRule = (oData: any, nData: any) => {
+    if (oData && nData) {
+        for (let key in nData) {
+            if (Object.keys(oData).includes(key)) {
+                oData[key] = nData[key]
+            }
+        }
+    }
 }
 
 export const isObject = (data: any): boolean => {

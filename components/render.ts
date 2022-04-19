@@ -1,5 +1,5 @@
 import { h, resolveDynamicComponent, VNodeProps, Slot } from 'vue'
-import { Rule } from '../types/index'
+import { RuleType } from '../types/index'
 
 /**
  * 
@@ -17,12 +17,12 @@ const render = (tag: string, props: VNodeProps, slot: Slot) => h(resolveDynamicC
  * @param {Array} children 
  * @returns 
  */
-const renderChildren = (children: Array<Rule>) => {
+const renderChildren = (children: Array<RuleType>) => {
     let slots: any;
     if (children) {
         if (Array.isArray(children)) {
             slots = {};
-            const slotAry: object = {};
+            const slotAry: any = {};
             children.forEach(child => {
                 let slotsKey: string = 'default', isObj: boolean = typeof child === 'object';
                 if (isObj) {
@@ -46,7 +46,7 @@ const renderChildren = (children: Array<Rule>) => {
  * @param {Object} rule 
  * @returns 
  */
-const renderItem = (rule: Rule) => render(rule.type, { ...rule.props }, renderChildren(rule.children))
+const renderItem = (rule: RuleType) => render(rule.type, { ...rule.props }, renderChildren(rule.children))
 
 
 
@@ -55,4 +55,4 @@ const renderItem = (rule: Rule) => render(rule.type, { ...rule.props }, renderCh
  * @param {Array} ruleBase
  * @returns 
  */
-export const renderRule = (ruleBase: Rule) => renderItem(ruleBase)
+export const renderRule = (ruleBase: RuleType) => renderItem(ruleBase)
