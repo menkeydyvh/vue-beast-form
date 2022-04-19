@@ -9,9 +9,9 @@
 </template>
 
 
-<script >
+<script lang="ts">
 import { defineComponent, ref } from 'vue'
-import JsonLayout from '../components/index'
+import JsonLayout from '../index'
 // import { RuleType } from '../types'
 
 export default defineComponent({
