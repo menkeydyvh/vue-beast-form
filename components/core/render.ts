@@ -1,4 +1,5 @@
-import { h, resolveDynamicComponent, VNodeProps, Slot } from 'vue'
+import { h, resolveDynamicComponent } from 'vue'
+import type { Slot, Component } from 'vue'
 import { RuleType } from '../types/index'
 
 /**
@@ -9,7 +10,13 @@ import { RuleType } from '../types/index'
  * @param {Object|Array} slot 
  * @returns 
  */
-const render = (tag: string, props: VNodeProps, slot: Slot) => h(resolveDynamicComponent(tag) as any, props, slot)
+const render = (tag: string, props: any, slot: Slot) => {
+    if (props.options) {
+        //处理 Invalid prop: type check failed for prop "options". Expected Array, got Object  
+        props.options = Array.from(props.options);
+    }
+    return h(resolveDynamicComponent(tag) as Component, props, slot)
+}
 
 
 
@@ -18,8 +25,8 @@ const render = (tag: string, props: VNodeProps, slot: Slot) => h(resolveDynamicC
  * @param {Array} children 
  * @returns 
  */
-const renderChildren = (children: Array<RuleType>) => {
-    let slots: any;
+const renderChildren = (children: Array<RuleType>): any => {
+    let slots: any = null;
     if (children) {
         if (Array.isArray(children)) {
             slots = {};
@@ -47,7 +54,9 @@ const renderChildren = (children: Array<RuleType>) => {
  * @param {Object} rule 
  * @returns 
  */
-const renderItem = (rule: RuleType) => render(rule.type, { ...rule.props }, renderChildren(rule.children as Array<RuleType>))
+const renderItem = (rule: RuleType) => {
+    return render(rule.type, { ...rule.props }, renderChildren(rule.children as Array<RuleType>))
+}
 
 
 
@@ -58,3 +67,4 @@ const renderItem = (rule: RuleType) => render(rule.type, { ...rule.props }, rend
  * @returns 
  */
 export const renderRule = (ruleBase: RuleType) => renderItem(ruleBase)
+

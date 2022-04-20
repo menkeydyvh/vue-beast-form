@@ -8,6 +8,12 @@
       <a-radio-button :value="true">解析成表单</a-radio-button>
       <a-radio-button :value="false">解析成布局</a-radio-button>
     </a-radio-group>
+    <div>
+      <!-- <a-auto-complete :value="'iphone 7'" :options="[
+        { text: '7', value: 'iphone 7' },
+        { text: '71', value: 'iphone 71' },
+      ]" style="width: 200px" placeholder="input here" /> -->
+    </div>
     <JsonLayout v-model:api="jApi" v-model="value" :isForm="isForm" :rule="rule" :option="option" @submit="onSubmit" />
   </a-card>
 </template>
@@ -16,7 +22,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import JsonLayout from '@components'
-// import { RuleType } from '../types'
+import { RuleType } from '@components/types'
 
 export default defineComponent({
   components: { JsonLayout },
@@ -24,7 +30,7 @@ export default defineComponent({
     const jApi = ref(),
       isForm = ref(true),
       value = ref({ goods_name: '123' }),
-      rule = ref([]),
+      rule = ref<Array<RuleType>>([]),
       option = ref({
         form: {
           wrapperCol: { span: 14 },
@@ -40,80 +46,77 @@ export default defineComponent({
     }
 
     rule.value = [
-      // {
-      //   type: "a-input",
-      //   title: "商品名称1",
-      //   field: "goods_name",
-      //   value: "iphone 7",
-      //   props: {
-      //     type: "text",
-      //   },
-      //   validate: [
-      //     { required: true, message: '请输入goods_name', trigger: 'blur' },
-      //   ],
-      // },
-      // {
-      //   type: "a-input",
-      //   title: "商品名称2",
-      //   field: "name",
-      //   value: "iphone 7",
-      //   props: {
-      //     type: "text",
-      //   },
-      //   children: [{ type: 'span', slot: 'prefix', children: ['prefix'] }],
-      //   validate: [
-      //     { required: true, message: '请输入name', trigger: 'blur' },
-      //   ],
-      // },
-      // {
-      //   type: "div",
-      //   children: [
-      //     {
-      //       type: 'span',
-      //       children: ['span']
-      //     },
-      //     {
-      //       type: "a-input",
-      //       field: "name1",
-      //       showFormItem: false,
-      //       props: {
-      //         type: "password",
-      //       },
-      //     },
-      //     "商品名称3"
-      //   ],
-      // },
-      // {
-      //   type: "a-form-item",
-      //   children: [
-      //     {
-      //       type: "a-space",
-      //       children: [
-      //         {
-      //           type: 'a-button',
-      //           props: {
-      //             type: 'primary',
-      //             htmlType: 'sbumit'
-      //           },
-      //           children: ['提交']
-      //         },
-      //         {
-      //           type: 'a-button',
-      //           props: {
-      //             onClick: onReset
-      //           },
-      //           children: ['重置']
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // }
       {
-        type: 'a-button',
+        type: "a-input",
+        title: "goods_name",
+        field: "goods_name",
+        value: "iphone 7",
         props: {
-          onClick: onReset
+          type: "text",
         },
-        children: ['重置']
+        validate: [
+          { required: true, message: '请输入goods_name', trigger: 'blur' },
+        ],
+      },
+      {
+        type: "a-select",
+        title: "name",
+        field: "name",
+        value: "7",
+        props: {
+          options: [
+            { value: '7', label: "iphone 7", disabled: true, },
+            { value: '71', label: "iphone 71", disabled: false, },
+            { value: '72', label: "iphone 72", key: 1 },
+            { value: '73', label: "iphone 73", title: 'xxx' },
+          ],
+        },
+        validate: [
+          { required: true, message: '请输入name', trigger: 'blur' },
+        ],
+      },
+      {
+        type: "div",
+        children: [
+          {
+            type: 'span',
+            children: ['span']
+          },
+          {
+            type: "a-input",
+            field: "name1",
+            showFormItem: false,
+            props: {
+              type: "password",
+            },
+          },
+          "商品名称3"
+        ],
+      },
+      {
+        type: "a-form-item",
+        children: [
+          {
+            type: "a-space",
+            children: [
+              {
+                type: 'a-button',
+                props: {
+                  type: 'primary',
+                  htmlType: 'sbumit'
+                },
+                children: ['提交']
+              },
+              {
+                type: 'a-button',
+                props: {
+                  onClick: onReset
+                },
+                children: ['重置']
+              }
+            ]
+          }
+        ]
       }
     ]
 

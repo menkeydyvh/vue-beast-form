@@ -1,10 +1,16 @@
 import { RuleType } from '../types/index'
 
+/**
+ * 根据key对应的值获取对象
+ * @param rules 
+ * @param value 
+ * @param key 
+ * @returns 
+ */
 export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field'): RuleType | null => {
-    let length = 0;
+    let length = 0, result = null;
     if (Array.isArray(rules)) {
         length = rules.length
-        let result = null;
         for (let i = 0; i < length; i++) {
             if (rules[i][key] === value) {
                 result = rules[i]
@@ -17,11 +23,16 @@ export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field
                 }
             }
         }
-        return result;
     }
-    return null;
+    return result;
 }
 
+/**
+ * 
+ * 更新规则
+ * @param oData 
+ * @param nData 
+ */
 export const updateRule = (oData: any, nData: any) => {
     if (oData && nData) {
         for (let key in nData) {
@@ -63,10 +74,20 @@ const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
     return cloneObj
 }
 
+/**
+ * 深拷贝
+ * @param data 
+ * @returns 
+ */
 export const deepCopy = (data: any): any => {
     return realizeCloneDeep(data);
 }
 
+/**
+ * 判断是{} object
+ * @param data 
+ * @returns 
+ */
 export const isObject = (data: any): boolean => {
     return Object.prototype.toString.call(data) === '[object Object]'
 }

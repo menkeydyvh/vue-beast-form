@@ -1,4 +1,4 @@
-import { defineComponent, ref, reactive, toRefs, toRaw, resolveDynamicComponent, watch, onMounted, PropType } from 'vue'
+import { defineComponent, ref, reactive, toRefs, toRaw, markRaw, resolveDynamicComponent, watch, onMounted, PropType } from 'vue'
 import { formComponentConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
 import { renderRule } from './render'
@@ -33,7 +33,7 @@ export default defineComponent({
                 type: 'div'
             }),
             // 设立resolveDynamicComponent缓存避免重复解析读取
-            cacheResolveDynamicComponent = reactive<any>({});
+            cacheResolveDynamicComponent = markRaw<any>({});
 
         /**
          * 规范化规则的模板
@@ -41,7 +41,6 @@ export default defineComponent({
          * @returns 
          */
         const ruleTemplate = (config: RuleType): RuleType => {
-            debugger;
             return {
                 showFormItem: isForm.value === true,
                 ...config,
@@ -108,6 +107,8 @@ export default defineComponent({
                         }
 
                         if (rtItem.showFormItem) {
+                            delete rtItem.showFormItem;
+
                             const result = ruleTemplate({
                                 type: defaultName.formItem,
                                 props: null
@@ -143,6 +144,7 @@ export default defineComponent({
 
                     }
                 }
+                delete rtItem.showFormItem;
                 return rtItem;
             });
         }
@@ -172,7 +174,6 @@ export default defineComponent({
 
             nRule.value = baseRule;
 
-            console.log(baseRule)
         }
 
         /**
