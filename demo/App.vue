@@ -1,116 +1,84 @@
 
 <template>
-  <a-card class="content-card" :bordered="false" title="动态布局或表单JSON解析">
-    <div>
-      {{ value }}
-    </div>
-    <JsonLayout v-model:api="jApi" :rule="rule" :option="option" @submit="onSubmit" />
-  </a-card>
+  <a-layout style="min-height: 100vh">
+    <a-layout-sider>
+      <a-menu :openKeys="['0']" @click="onMenuItemClick" mode="inline" theme="dark">
+        <div style="height: 36px;line-height: 36px;color: #ffffff;text-align: center;font-size: 20px;">
+          各种示例
+        </div>
+        <a-sub-menu :key="`${itemIndex}`" v-for="(item, itemIndex) in menu" :title="item.title">
+          <a-menu-item v-for="(child, childIndex) in item.children" :key="`${itemIndex}-${childIndex}`">{{
+            child.title
+          }}
+          </a-menu-item>
+        </a-sub-menu>
+
+      </a-menu>
+    </a-layout-sider>
+    <a-layout>
+      <a-layout-header style="background: #fff;">
+        <span style="font-size: 16px;font-weight: bold;">{{ selectData ? selectData.title : '' }}</span>
+      </a-layout-header>
+      <a-layout-content style="margin:16px">
+        <component :is="selectData ? selectData.component : null"></component>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import JsonLayout from '../components/index'
-// import { RuleType } from '../types'
+import { defineComponent, ref, markRaw } from 'vue'
+
+interface MenuItem {
+  title: string;
+  component?: any;
+  children?: MenuItem[];
+}
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: {},
   setup() {
-    const jApi = ref(),
-      value = ref({ goods_name: '123' }),
-      rule = ref([]),
-      option = ref({
-        form: {
-          // wrapperCol: { span: 14 },
-          layout: 'vertical'
-        }
-      });
-
-    rule.value = [
+    const menu = ref<MenuItem[]>([
       {
-        type: "a-input",
-        title: "商品名称1",
-        field: "goods_name",
-        value: "iphone 7",
-        props: {
-          type: "text",
-        },
-        validate: [
-          { required: true, message: '请输入goods_name', trigger: 'blur' },
-        ],
-      },
-      {
-        type: "a-input",
-        title: {
-          type: 'span',
-          children: ["商品名称2"]
-        },
-        field: "name",
-        value: "iphone 7",
-        props: {
-          type: "text",
-        },
-        children: [{ type: 'span', slot: 'prefix', children: ['prefix'] }],
-        validate: [
-          { required: true, message: '请输入name', trigger: 'blur' },
-        ],
-      },
-      {
-        type: "div",
+        title: 'ant-design-vue',
         children: [
           {
-            type: 'span',
-            children: ['span']
+            title: '简易表单',
+            component: './ant/easyForm.vue'
           },
           {
-            type: "a-input",
-            field: "name1",
-            showFormItem: false,
-            props: {
-              type: "password",
-            },
-          },
-          "商品名称3"
-        ],
-      },
-      {
-        type: "a-form-item",
-        children: [
-          {
-            type: "a-space",
-            children: [
-              {
-                type: 'a-button',
-                props: {
-                  type: 'primary',
-                  htmlType: 'sbumit'
-                },
-                children: ['提交']
-              },
-              {
-                type: 'a-button',
-                props: {},
-                children: ['重置']
-              }
-            ]
+            title: 'FormItem-Label',
+            component: './ant/formItemLabel.vue'
           }
         ]
+      },
+    ]), selectData = ref<MenuItem>();
+
+    const onMenuItemClick = async (itemData: any) => {
+      let data: MenuItem = null;
+      itemData.key.split('-').forEach((item: number) => {
+        if (data) {
+          data = data.children[item];
+        } else {
+          data = menu.value[item];
+        }
+      })
+      if (data) {
+        const nData = { ...data },
+          result: any = await getComponent(data.component);
+        nData.component = markRaw(result.default);
+        selectData.value = nData;
       }
-    ]
-
-
-    const onSubmit = (data) => {
-      console.log('jApi:', jApi.value)
-      console.log('onSubmit', data)
+    }, getComponent = async (component: string) => {
+      return await import(component)
     }
 
+
     return {
-      jApi,
-      value,
-      rule,
-      option,
-      onSubmit,
+      onMenuItemClick,
+      menu,
+      selectData
     }
   }
 
