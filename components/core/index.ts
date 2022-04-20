@@ -31,7 +31,9 @@ export default defineComponent({
             model = reactive<any>(modelValue.value ? modelValue.value : {}),
             nRule = ref<RuleType>({
                 type: 'div'
-            });
+            }),
+            // 设立resolveDynamicComponent缓存避免重复解析读取
+            cacheResolveDynamicComponent = reactive<any>({});
 
         /**
          * 规范化规则的模板
@@ -39,6 +41,7 @@ export default defineComponent({
          * @returns 
          */
         const ruleTemplate = (config: RuleType): RuleType => {
+            debugger;
             return {
                 showFormItem: isForm.value === true,
                 ...config,
@@ -50,7 +53,10 @@ export default defineComponent({
          * @param {*} type 
          */
         const getTypeModel = (type: string) => {
-            const rdcTag: any = resolveDynamicComponent(type);
+            if (!cacheResolveDynamicComponent[type]) {
+                cacheResolveDynamicComponent[type] = resolveDynamicComponent(type)
+            }
+            const rdcTag = cacheResolveDynamicComponent[type];
             if (isObject(rdcTag)) {
                 const modelKey: string = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
                     onUpdateModelKey: string = `onUpdate:${modelKey}`,
@@ -165,6 +171,8 @@ export default defineComponent({
             baseRule.children = fillRuleChildren(rules);
 
             nRule.value = baseRule;
+
+            console.log(baseRule)
         }
 
         /**
@@ -206,11 +214,15 @@ export default defineComponent({
             deep: true
         })
 
-        watch(modelValue, () => {
-            // console.log('modelValue:', modelValue.value)
-        }, {
-            deep: true
+        watch(isForm, () => {
+            fillRule()
         })
+
+        // watch(modelValue, () => {
+        //     // console.log('modelValue:', modelValue.value)
+        // }, {
+        //     deep: true
+        // })
 
 
         onMounted(() => {

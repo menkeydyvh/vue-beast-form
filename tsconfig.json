@@ -1,10 +1,11 @@
 // https://juejin.cn/post/6844904093568221191 
 {
   "compilerOptions": {
+    "jsx": "preserve",
     //  outDir 编译后的文件存到到哪个目录下
     "outDir": "lib",
     // 指定 ECMAScript 目标版本: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'
-    "target": "es6",
+    "target": "esnext",
     // 严格模式
     "strict": false,
     // 通过为导入内容创建命名空间，实现CommonJS和ES模块之间的互操作性
@@ -22,7 +23,7 @@
     "allowJs": true,
     // "useDefineForClassFields": true,
     // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
-    // "module": "esnext",
+    "module": "esnext",
     // 用来指定编译时是否生成.map文件
     // "sourceMap": true,
     // "resolveJsonModule": true,
@@ -34,14 +35,23 @@
     "lib": [
       "esnext",
       "dom"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@components": [
+        "components"
+      ],
+      "@components/*": [
+        "components/*"
+      ]
+    }
   },
   "include": [
     "components/*.ts",
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
+    "demo/**/*.ts",
+    "demo/**/*.d.ts",
+    "demo/**/*.tsx",
+    "demo/**/*.vue"
   ],
   "exclude": [
     "node_modules",

@@ -30,8 +30,41 @@ export const updateRule = (oData: any, nData: any) => {
     }
 }
 
+/**
+ * ES6 深拷贝 终极版
+ * @param obj 
+ * @param hash 
+ * @returns 
+ */
+const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
+    if (!(typeof obj === "object" && obj != null)) {
+        return obj
+    }
+
+    if (hash.has(obj)) { // 避免成环
+        return hash.get(obj)
+    }
+
+    const type = [Date, RegExp, Set, Map, WeakMap, WeakSet]
+    if (type.includes(obj.constructor)) {
+        return new obj.constructor(obj)
+    }
+
+    const allDesc = Object.getOwnPropertyDescriptors(obj) // 遍历传入参数所有键的特性
+    const cloneObj = Object.create(Object.getPrototypeOf(obj), allDesc) // 继承原型
+    hash.set(obj, cloneObj)
+
+    for (let key of Reflect.ownKeys(obj)) {
+        // Reflect.ownKeys(obj)可以拷贝不可枚举属性和Symbol类型
+        // 注意：writable 为 false 的属性会赋值失败，因此 writable 为 false 的属性是浅拷贝
+        cloneObj[key] = (typeof obj[key] === "object" && obj[key] != null) ? realizeCloneDeep(obj[key], hash) : obj[key]
+    }
+
+    return cloneObj
+}
+
 export const deepCopy = (data: any): any => {
-    return JSON.parse(JSON.stringify(data))
+    return realizeCloneDeep(data);
 }
 
 export const isObject = (data: any): boolean => {
