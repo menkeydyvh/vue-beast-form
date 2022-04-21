@@ -11,14 +11,8 @@ import { RuleType } from '../types/index'
  * @returns 
  */
 const render = (tag: string, props: any, slot: Slot) => {
-    if (props.options) {
-        //处理 Invalid prop: type check failed for prop "options". Expected Array, got Object  
-        props.options = Array.from(props.options);
-    }
     return h(resolveDynamicComponent(tag) as Component, props, slot)
 }
-
-
 
 /**
  * 处理rule children

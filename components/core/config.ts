@@ -1,7 +1,12 @@
+interface AddConfigType {
+    vModelKey: string;
+    names: string[];
+}
+
 /**
  * form 组件名称
  */
-export const defaultName: any = {
+const defaultName: any = {
     form: 'a-form',
     formItem: 'a-form-item',
     formItemPropName: 'name',
@@ -9,32 +14,86 @@ export const defaultName: any = {
     formItemSlotTitle: 'label',
 }
 
+
 /**
  * 表单组件定义 v-model 的 :key
  */
-export const formComponentConfig: any = {
+const formComponentConfig: any = {
     // 这个是给自定义组件用的
     default: 'modelValue',
-    // ant 框架组件
-    AAutoComplete: 'value',
-    ACascader: 'value',
-    ACheckbox: 'checked',
-    ACheckboxGroup: 'value',
-    ADatePicker: 'value',
-    ARangePicker: 'value',
-    AInput: 'value',
-    ATextarea: 'value',
-    AInputPassword: 'value',
-    AInputNumber: 'value',
-    AMentions: 'value',
-    AChecked: 'checked',
-    ARadioGroup: 'value',
-    ARate: 'value',
-    ASelect: 'value',
-    ASlider: 'value',
-    ASwitch: 'checked',
-    ATimePicker: 'value',
-    ATimeRangePicker: 'value',
-    ATransfer: 'targetKeys',
-    ATreeSelect: 'value',
 }
+
+
+/**
+ * 表单组件定义 v-model 的 :key 对应的事件名称
+ */
+const formComponentValueChangeConfig: any = {
+    // 这个是给自定义组件用的
+    default: 'onUpdate:modelValue',
+}
+
+// 针对ant相关的数据录入组件配置v-model
+const ant: AddConfigType[] = [
+    {
+        vModelKey: "value",
+        names: [
+            "AAutoComplete",
+            "ACascader",
+            "ACheckboxGroup",
+            "ADatePicker",
+            "ARangePicker",
+            "AInput",
+            "ATextarea",
+            "AInputPassword",
+            "AInputNumber",
+            "AMentions",
+            "ARadioGroup",
+            "ARate",
+            "ASelect",
+            "ASlider",
+            "ATimePicker",
+            "ATimeRangePicker",
+            "ATreeSelect",
+        ],
+    },
+    {
+        vModelKey: "checked",
+        names: [
+            "ACheckbox",
+            "AChecked",
+            "ARadio",
+            "ASwitch",
+        ]
+    }
+]
+
+/**
+ * 按vue3的规范可以直接处理
+ * @param config 
+ */
+const addFormComponentConfig = (config: AddConfigType[]) => {
+    config.forEach(item => {
+        item.names.forEach(k => {
+            formComponentConfig[k] = item.vModelKey
+            formComponentValueChangeConfig[k] = k === 'AInputNumber' ? 'onChange' : `onUpdate:${item.vModelKey}`
+        })
+    })
+}
+
+
+addFormComponentConfig(ant);
+
+// 这个组件没有按照规范处理
+if (formComponentValueChangeConfig.AInputNumber) {
+    formComponentValueChangeConfig.AInputNumber = 'onChange'
+}
+
+
+export {
+    defaultName,
+    formComponentConfig,
+    formComponentValueChangeConfig,
+    addFormComponentConfig,
+}
+
+

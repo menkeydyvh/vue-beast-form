@@ -8,7 +8,7 @@ export type RuleType = {
     field?: string;
     title?: string | RuleType;
     value?: any;
-    modelValueKey?: string;
+    vModelKey?: string;
     validate?: Array<RuleValidateType>;
     showFormItem?: Boolean;
     // 布局相关

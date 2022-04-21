@@ -48,7 +48,7 @@ export const updateRule = (oData: any, nData: any) => {
  * @returns 
  */
 const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
-    if (!(typeof obj === "object" && obj != null)) {
+    if (!isObject(obj)) {
         return obj
     }
 
@@ -56,7 +56,7 @@ const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
         return hash.get(obj)
     }
 
-    const type = [Date, RegExp, Set, Map, WeakMap, WeakSet]
+    const type = [Date, RegExp, Set, Map, WeakMap, WeakSet, Array]
     if (type.includes(obj.constructor)) {
         return new obj.constructor(obj)
     }
@@ -68,7 +68,7 @@ const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
     for (let key of Reflect.ownKeys(obj)) {
         // Reflect.ownKeys(obj)可以拷贝不可枚举属性和Symbol类型
         // 注意：writable 为 false 的属性会赋值失败，因此 writable 为 false 的属性是浅拷贝
-        cloneObj[key] = (typeof obj[key] === "object" && obj[key] != null) ? realizeCloneDeep(obj[key], hash) : obj[key]
+        cloneObj[key] = isObject(obj[key]) ? realizeCloneDeep(obj[key], hash) : obj[key]
     }
 
     return cloneObj

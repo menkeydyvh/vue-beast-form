@@ -1,23 +1,23 @@
 
 <template>
   <a-card class="content-card" :bordered="false" title="JSON解析表单或解析成布局">
-    <div>
-      {{ value }}
-    </div>
-    <a-radio-group v-model:value="isForm" button-style="solid">
-      <a-radio-button :value="true">解析成表单</a-radio-button>
-      <a-radio-button :value="false">解析成布局</a-radio-button>
-    </a-radio-group>
-    <div>
-      <!-- <a-auto-complete :value="'iphone 7'" :options="[
-        { text: '7', value: 'iphone 7' },
-        { text: '71', value: 'iphone 71' },
-      ]" style="width: 200px" placeholder="input here" /> -->
-    </div>
-    <JsonLayout v-model:api="jApi" v-model="value" :isForm="isForm" :rule="rule" :option="option" @submit="onSubmit" />
+    <a-row>
+      <a-col flex="auto">
+        <div>
+          <a-radio-group v-model:value="isForm" button-style="solid">
+            <a-radio-button :value="true">解析成表单</a-radio-button>
+            <a-radio-button :value="false">解析成布局</a-radio-button>
+          </a-radio-group>
+        </div>
+        <json-layout v-model:api="jApi" v-model="value" :isForm="isForm" :rule="rule" :option="option"
+          @submit="onSubmit" />
+      </a-col>
+      <a-col flex="300px">
+        <pre v-text="JSON.stringify(value, null, 4)" />
+      </a-col>
+    </a-row>
   </a-card>
 </template>
-
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
@@ -29,7 +29,7 @@ export default defineComponent({
   setup() {
     const jApi = ref(),
       isForm = ref(true),
-      value = ref({ goods_name: '123' }),
+      value = ref({ input: '123' }),
       rule = ref<Array<RuleType>>([]),
       option = ref({
         form: {
@@ -43,54 +43,166 @@ export default defineComponent({
       console.log('onSubmit', data)
     }, onReset = () => {
       console.log('onReset')
+      value.value = {
+        input: 'onReset'
+      }
     }
 
     rule.value = [
       {
         type: "a-input",
-        title: "goods_name",
-        field: "goods_name",
+        title: "input",
+        field: "input",
         value: "iphone 7",
         props: {
           type: "text",
         },
         validate: [
-          { required: true, message: '请输入goods_name', trigger: 'blur' },
+          { required: true, message: '必须填写', trigger: 'blur' },
         ],
       },
       {
         type: "a-select",
-        title: "name",
-        field: "name",
+        title: "select",
+        field: "select",
         value: "7",
         props: {
           options: [
             { value: '7', label: "iphone 7", disabled: true, },
             { value: '71', label: "iphone 71", disabled: false, },
-            { value: '72', label: "iphone 72", key: 1 },
-            { value: '73', label: "iphone 73", title: 'xxx' },
+            { value: '72', label: "iphone 72" },
+            { value: '73', label: "iphone 73" },
           ],
         },
         validate: [
-          { required: true, message: '请输入name', trigger: 'blur' },
+          { required: true, message: '必须填写', trigger: 'blur' },
         ],
+      },
+      {
+        type: "a-auto-complete",
+        title: "auto-complete",
+        field: "autoComplete",
+        value: "7",
+        props: {
+          options: [
+            { value: '7', label: "iphone 7", disabled: true, },
+            { value: '71', label: "iphone 71", disabled: false, },
+            { value: '72', label: "iphone 72" },
+            { value: '73', label: "iphone 73" },
+          ],
+        },
+      },
+      {
+        type: "a-cascader",
+        title: "cascader",
+        field: "cascader",
+        value: ["7"],
+        props: {
+          options: [
+            { value: '7', label: "iphone 7", disabled: true },
+            {
+              value: '71', label: "iphone 71", children: [
+                { value: '72-1', label: "iphone 72-1" },
+                { value: '72-2', label: "iphone 72-2" },
+              ]
+            },
+            { value: '72', label: "iphone 72" },
+            { value: '73', label: "iphone 73" },
+          ],
+        },
+      },
+      {
+        type: "a-checkbox",
+        title: "checkbox",
+        field: "checkbox",
+        children: ['checkbox'],
+        props: {},
+      },
+      {
+        type: "a-checkbox-group",
+        title: "checkbox-group",
+        field: "checkboxGroup",
+        props: {
+          options: [
+            { value: '7', label: "iphone 7", disabled: true, },
+            { value: '71', label: "iphone 71", disabled: false, },
+            { value: '72', label: "iphone 72" },
+            { value: '73', label: "iphone 73" },
+          ]
+        },
+      },
+      {
+        type: "a-date-picker",
+        title: "date-picker",
+        field: "datePicker",
+      },
+      {
+        type: "a-range-picker",
+        title: "range-picker",
+        field: "rangePicker",
+      },
+      {
+        type: "a-time-picker",
+        title: "time-picker",
+        field: "timePicker",
+      },
+      {
+        type: "a-input-number",
+        title: "input-number",
+        field: "inputNumber",
+        props: {
+          formatter: (value: string) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ','),
+          parser: (value: string) => value.replace(/\$\s?|(,*)/g, '')
+        }
+      },
+      {
+        type: "a-mentions",
+        title: "mentions",
+        field: "mentions",
+        props: {
+          options: [
+            { value: '7', label: "iphone 7", disabled: true, },
+            { value: '71', label: "iphone 71", disabled: false, },
+            { value: '72', label: "iphone 72" },
+            { value: '73', label: "iphone 73" },
+          ]
+        },
+      },
+      {
+        type: "a-radio",
+        title: "radio",
+        field: "radio",
+        children: ['Radio'],
+      },
+      {
+        type: "a-radio-group",
+        title: "radio-group",
+        field: "radioGroup",
+        props: {
+          options: [
+            { value: '7', label: "iphone 7", disabled: true, },
+            { value: '71', label: "iphone 71", disabled: false, },
+            { value: '72', label: "iphone 72" },
+            { value: '73', label: "iphone 73" },
+          ]
+        }
       },
       {
         type: "div",
         children: [
           {
             type: 'span',
-            children: ['span']
+            children: ['showFormItem=false']
           },
           {
             type: "a-input",
-            field: "name1",
+            field: "inputPassword",
             showFormItem: false,
             props: {
               type: "password",
             },
           },
-          "商品名称3"
+          "input下方"
         ],
       },
       {
