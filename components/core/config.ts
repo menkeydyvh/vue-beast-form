@@ -1,6 +1,10 @@
 interface AddConfigType {
+    // v-model:key
     vModelKey: string;
+    // v-model:key 对应的组件name
     names: string[];
+    // 存在不按上面规范但key是一样的情况
+    other?: any
 }
 
 /**
@@ -64,6 +68,12 @@ const ant: AddConfigType[] = [
             "ARadio",
             "ASwitch",
         ]
+    },
+    {
+        vModelKey: "targetKeys",
+        names: [
+            "ATransfer",
+        ]
     }
 ]
 
@@ -75,7 +85,7 @@ const addFormComponentConfig = (config: AddConfigType[]) => {
     config.forEach(item => {
         item.names.forEach(k => {
             formComponentConfig[k] = item.vModelKey
-            formComponentValueChangeConfig[k] = k === 'AInputNumber' ? 'onChange' : `onUpdate:${item.vModelKey}`
+            formComponentValueChangeConfig[k] = `onUpdate:${item.vModelKey}`
         })
     })
 }

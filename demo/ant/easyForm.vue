@@ -147,6 +147,14 @@ export default defineComponent({
         field: "timePicker",
       },
       {
+        type: "a-time-range-picker",
+        title: "time-range-picker",
+        field: "timeRangePicker",
+        props: {
+          valueFormat: 'HH:mm:ss'
+        }
+      },
+      {
         type: "a-input-number",
         title: "input-number",
         field: "inputNumber",
@@ -184,6 +192,64 @@ export default defineComponent({
             { value: '71', label: "iphone 71", disabled: false, },
             { value: '72', label: "iphone 72" },
             { value: '73', label: "iphone 73" },
+          ]
+        }
+      },
+      {
+        type: "a-rate",
+        title: "rate",
+        field: "rate",
+        value: 2
+      },
+      {
+        type: "a-slider",
+        title: "slider",
+        field: "slider",
+        value: 20
+      },
+      {
+        type: "a-switch",
+        title: "switch",
+        field: "switch",
+      },
+      {
+        type: "a-transfer",
+        title: "transfer",
+        field: "transfer",
+        props: {
+          // 必须配置
+          render: (item: any) => item.title,
+          // key 必须是字符串
+          dataSource: [
+            { key: "1", title: 'title1' },
+            { key: "2", title: 'title2' },
+            { key: "3", title: 'title3' },
+          ]
+        }
+      },
+      {
+        type: "a-tree-select",
+        title: "tree-select",
+        field: "treeSelect",
+        props: {
+          treeData: [
+            { value: "1", title: 'title 1' },
+            { value: "2", title: 'title 2' },
+            {
+              title: 'title 3',
+              value: '3',
+              children: [
+                {
+                  title: 'title 3-1',
+                  value: '3-1',
+                  children: [
+                    { title: 'my leaf', value: 'leaf1' },
+                    { title: 'your leaf', value: 'leaf2' },
+                  ],
+                },
+                { title: 'title 3-2', value: '3-2' },
+              ],
+            },
           ]
         }
       },

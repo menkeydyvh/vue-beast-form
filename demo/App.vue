@@ -19,7 +19,7 @@
       <a-layout-header style="background: #fff;">
         <span style="font-size: 16px;font-weight: bold;">{{ selectData ? selectData.title : '' }}</span>
       </a-layout-header>
-      <a-layout-content style="margin:16px">
+      <a-layout-content style="margin:16px;overflow: auto;height: 80vh;">
         <component :is="selectData ? selectData.component : null"></component>
       </a-layout-content>
     </a-layout>

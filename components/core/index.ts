@@ -38,7 +38,7 @@ export default defineComponent({
             }
 
             const rdcTag = cacheResolveDynamicComponent[type];
-            if (isObject(rdcTag)) {                
+            if (isObject(rdcTag)) {
                 const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
                     propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
                     onUpdateModelKey = formComponentValueChangeConfig[rdcTag.name] ? formComponentValueChangeConfig[rdcTag.name] : formComponentValueChangeConfig['default'];
