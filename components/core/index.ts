@@ -1,4 +1,4 @@
-import { defineComponent, ref, reactive, toRefs, toRaw, markRaw, resolveDynamicComponent, watch, onMounted, PropType } from 'vue'
+import { defineComponent, ref, reactive, toRefs, toRaw, markRaw, resolveDynamicComponent, watch, onMounted, PropType, getCurrentInstance, onUpdated } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
 import { renderRule } from './render'
@@ -134,6 +134,7 @@ export default defineComponent({
             if (isForm.value) {
                 const formProps = option.value ? toRaw(option.value.form) : {};
                 formProps.model = model;
+                formProps.ref = 'form';
                 formProps.onSubmit = () => {
                     emit('submit', model)
                 };
@@ -147,11 +148,11 @@ export default defineComponent({
             baseRule.children = fillRuleChildren(rules);
 
             nRule.value = baseRule;
-            console.log(baseRule)
         }
 
         // api
         const apiFn = {
+            $form: undefined as any,
             // 获取规则
             getRule(field: string, rules?: Array<RuleType> | RuleType): RuleType | null {
                 rules = rules || nRule.value;
@@ -178,7 +179,11 @@ export default defineComponent({
                     getRule.value = value;
                     getRule.props[getRule.vModelKey] = value;
                 }
-            }
+            },
+            // 获取输入组件的值
+            getFormData(field?: string): any {
+                return field ? model[field] : model
+            },
         }
 
         // modelValue变更的时候赋值
@@ -188,6 +193,12 @@ export default defineComponent({
                     apiFn.setFieldChange(key, modelValue.value[key])
                 }
             }
+        }
+
+        const initApiFn = () => {
+            const vm = getCurrentInstance();
+            apiFn.$form = vm.refs.form ? vm.refs.form : undefined;
+            emit('update:api', apiFn)
         }
 
         watch(model, () => {
@@ -207,7 +218,11 @@ export default defineComponent({
         })
 
         onMounted(() => {
-            emit('update:api', apiFn)
+            initApiFn()
+        });
+
+        onUpdated(() => {
+            initApiFn()
         })
 
         fillRule();

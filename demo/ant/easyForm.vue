@@ -10,7 +10,8 @@
           </a-radio-group>
         </div>
         <json-layout v-model:api="jApi" v-model="value" :isForm="isForm" :rule="rule" :option="option"
-          @submit="onSubmit" />
+          @submit="onSubmit">
+        </json-layout>
       </a-col>
       <a-col flex="300px">
         <pre v-text="JSON.stringify(value, null, 4)" />
@@ -41,11 +42,6 @@ export default defineComponent({
     const onSubmit = (data: any) => {
       console.log('jApi:', jApi.value)
       console.log('onSubmit', data)
-    }, onReset = () => {
-      console.log('onReset')
-      value.value = {
-        input: 'onReset'
-      }
     }
 
     rule.value = [
@@ -281,23 +277,49 @@ export default defineComponent({
                 type: 'a-button',
                 props: {
                   type: 'primary',
-                  htmlType: 'sbumit'
+                  htmlType: 'sbumit',
+                  onClick: () => {
+                    if (!isForm.value) {
+                      // 不是form的时候获取数据
+                      console.log('formData:', jApi.value.getFormData())
+                    }
+                  }
                 },
-                children: ['提交']
+                children: ['submit btn提交']
               },
               {
                 type: 'a-button',
                 props: {
-                  onClick: onReset
+                  onClick: () => {
+                    value.value = {
+                      input: 'onReset'
+                    }
+                  }
                 },
                 children: ['重置']
-              }
+              },
+              {
+                type: 'a-button',
+                props: {
+                  type: 'primary',
+                  onClick: () => {
+                    console.log('jApi:', jApi.value)
+                    if (isForm.value) {
+                      // 是form的时候可以用$form 调用原始表单控件的方法
+                      jApi.value.$form.validate();
+                    } else {
+                      // 不是form的时候获取数据
+                      console.log('formData:', jApi.value.getFormData())
+                    }
+                  }
+                },
+                children: ['btn提交']
+              },
             ]
           }
         ]
       }
     ]
-
 
     return {
       isForm,
