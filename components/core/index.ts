@@ -15,7 +15,7 @@ export default defineComponent({
         api: { type: Object },
         isForm: { type: Boolean, default: true }
     },
-    emits: ['update:api', 'update:modelValue', 'submit'],
+    emits: ['update:api', 'update:modelValue'],
     setup(props, { emit }) {
         const { rule, option, modelValue, isForm } = toRefs(props),
             model = reactive<any>(modelValue.value ? modelValue.value : {}),
@@ -135,9 +135,6 @@ export default defineComponent({
                 const formProps = option.value ? toRaw(option.value.form) : {};
                 formProps.model = model;
                 formProps.ref = 'form';
-                formProps.onSubmit = () => {
-                    emit('submit', model)
-                };
                 baseRule.type = defaultName.form
                 baseRule.props = formProps
 

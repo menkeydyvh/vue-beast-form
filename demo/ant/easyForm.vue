@@ -9,8 +9,7 @@
             <a-radio-button :value="false">解析成布局</a-radio-button>
           </a-radio-group>
         </div>
-        <json-layout v-model:api="jApi" v-model="value" :isForm="isForm" :rule="rule" :option="option"
-          @submit="onSubmit">
+        <json-layout v-model:api="jApi" v-model="value" :isForm="isForm" :rule="rule" :option="option">
         </json-layout>
       </a-col>
       <a-col flex="300px">

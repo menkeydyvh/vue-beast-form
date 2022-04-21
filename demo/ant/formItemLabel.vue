@@ -1,10 +1,9 @@
 
 <template>
   <a-card class="content-card" :bordered="false" title="title是json的解析">
-    <JsonLayout v-model:api="jApi" :rule="rule" :option="option" @submit="onSubmit" />
+    <JsonLayout v-model:api="jApi" :rule="rule" :option="option" />
   </a-card>
 </template>
-
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
