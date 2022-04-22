@@ -1,9 +1,11 @@
 import type { App } from 'vue';
-import JsonLayout from './core';
+import jlFactory from './core';
 
-JsonLayout.install = (app: App) => {
-  app.component(JsonLayout.name, JsonLayout);
+const jlf = jlFactory();
+
+jlf.install = (app: App) => {
+  app.component(jlf.name, jlf);
   return app;
 };
 
-export default JsonLayout
+export default jlf

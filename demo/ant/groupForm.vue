@@ -12,7 +12,7 @@ import Group from './components/group.vue';
 import type { RuleType } from '@components/types'
 
 export default defineComponent({
-    components: { JsonLayout, Group },
+    components: { JsonLayout },
     setup() {
         const rule = ref<RuleType[]>(),
             jsonLayoutRef = ref(),
