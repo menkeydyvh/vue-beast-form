@@ -8,64 +8,48 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
 import JsonLayout from '@components'
-import { RuleType } from '@components/types'
+import Group from './components/group.vue';
+import type { RuleType } from '@components/types'
 
 export default defineComponent({
-    components: { JsonLayout },
+    components: { JsonLayout, Group },
     setup() {
         const rule = ref<RuleType[]>(),
             jsonLayoutRef = ref(),
             jApi = ref();
+
+        JsonLayout.component(Group.name, Group)
+
         onMounted(() => {
-            console.log(jsonLayoutRef.value)
+            // console.log(jsonLayoutRef.value)
         })
         rule.value = [
             {
-                type: 'a-input',
-                title: "外层input1",
-                field: "input1",
-                validate: [
-                    { required: true, message: '必须填写' },
-                ],
-            },
-            {
-                type: 'a-input',
-                title: "外层input2",
-                field: "input2",
-                validate: [
-                    { required: true, message: '必须填写' },
-                ],
-            },
-            {
-                type: 'a-input',
-                title: "外层input3",
-                field: "input3",
-                validate: [
-                    { required: true, message: '必须填写' },
-                ],
-            },
-            {
-                type: 'json-layout',
-                title: "subForm",
-                field: "subForm",
+                type: 'group',
+                title: "group",
+                field: "group",
                 props: {
                     rule: [
                         {
-                            type: "a-input",
-                            title: "Group Input",
-                            field: "groupInput",
+                            type: 'a-input',
+                            title: "input1",
+                            field: "input1",
                             validate: [
                                 { required: true, message: '必须填写' },
                             ],
                         },
                         {
-                            type: "a-input",
-                            title: "Group Input2",
-                            field: "groupInput2",
+                            type: 'a-input',
+                            title: "input2",
+                            field: "input2",
+                            validate: [
+                                { required: true, message: '必须填写' },
+                            ],
                         },
                     ]
                 }
             },
+
             {
                 type: 'a-button',
                 props: {

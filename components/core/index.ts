@@ -1,12 +1,13 @@
 import { ref, reactive, toRefs, toRaw, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated } from 'vue'
-import type { PropType, ComponentInternalInstance } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
 import { renderRule } from './render'
-import { RuleType, PropsOptionType, ApiFnType } from '../types/index'
+import type { PropType, ComponentInternalInstance } from 'vue'
+import type { RuleType, PropsOptionType, ApiFnType } from '../types/index'
 
 const name: string = 'JsonLayout';
+
 
 export default defineComponent({
     name,
@@ -16,9 +17,7 @@ export default defineComponent({
         option: { type: Object as PropType<PropsOptionType> },
         api: { type: Object as PropType<ApiFnType> },
         isForm: { type: Boolean, default: true },
-        "onUpdate:api": {
-            type: Function
-        },
+        "onUpdate:api": { type: Function },
         "onUpdate:modelValue": { type: Function },
     },
     setup(props, { emit }) {
@@ -51,7 +50,7 @@ export default defineComponent({
             }
 
             const rdcTag = cacheResolveDynamicComponent[type];
-
+            debugger;
             if (isObject(rdcTag)) {
                 const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
                     propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
@@ -60,8 +59,7 @@ export default defineComponent({
                 if (propsKeys.includes(modelKey) && propsKeys.includes(onUpdateModelKey)) {
                     return {
                         modelKey,
-                        onUpdateModelKey,
-                        isSub: rdcTag.name === name
+                        onUpdateModelKey
                     }
                 }
             }
@@ -84,7 +82,7 @@ export default defineComponent({
                 }
 
                 if (gvmTag) {
-                    const { modelKey, onUpdateModelKey, isSub } = gvmTag;
+                    const { modelKey, onUpdateModelKey } = gvmTag;
                     rtItem.vModelKey = modelKey;
 
                     // 判断是表单组件
@@ -93,9 +91,9 @@ export default defineComponent({
                     }
 
                     // 子json-layout组件
-                    if (isSub && !rtItem.props.option) {
-                        rtItem.props.option = deepCopy(option.value)
-                    }
+                    // if (isSub && !rtItem.props.option) {
+                    //     rtItem.props.option = deepCopy(option.value)
+                    // }
 
                     // 赋值处理
                     if (item.field) {

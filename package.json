@@ -19,6 +19,7 @@
     "vue": "^3.2.25"
   },
   "devDependencies": {
+    "@ant-design/icons-vue": "^6.1.0",
     "@types/node": "^17.0.25",
     "@vitejs/plugin-vue": "^2.3.1",
     "ant-design-vue": "^3.2.0",
