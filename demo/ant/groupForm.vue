@@ -1,12 +1,12 @@
 <template>
-    <json-layout :rule="rule" v-model:api="jApi" :option="{
+    <json-layout ref="jsonLayoutRef" :rule="rule" v-model:api="jApi" :option="{
         form: {
             layout: 'vertical'
         }
     }" />
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import JsonLayout from '@components'
 import { RuleType } from '@components/types'
 
@@ -14,13 +14,32 @@ export default defineComponent({
     components: { JsonLayout },
     setup() {
         const rule = ref<RuleType[]>(),
+            jsonLayoutRef = ref(),
             jApi = ref();
-
+        onMounted(() => {
+            console.log(jsonLayoutRef.value)
+        })
         rule.value = [
             {
                 type: 'a-input',
-                title: "外层input",
-                field: "input",
+                title: "外层input1",
+                field: "input1",
+                validate: [
+                    { required: true, message: '必须填写' },
+                ],
+            },
+            {
+                type: 'a-input',
+                title: "外层input2",
+                field: "input2",
+                validate: [
+                    { required: true, message: '必须填写' },
+                ],
+            },
+            {
+                type: 'a-input',
+                title: "外层input3",
+                field: "input3",
                 validate: [
                     { required: true, message: '必须填写' },
                 ],
@@ -53,7 +72,10 @@ export default defineComponent({
                     type: 'primary',
                     onClick: () => {
                         jApi.value.validate((valid: boolean) => {
-                            console.log('api.validate():', valid,)
+                            console.log('api.validate():', valid)
+                            if (valid) {
+                                console.log('data:', jApi.value.getFormData())
+                            }
                         })
                     }
                 },
@@ -63,7 +85,8 @@ export default defineComponent({
 
         return {
             jApi,
-            rule
+            rule,
+            jsonLayoutRef
         }
     }
 })

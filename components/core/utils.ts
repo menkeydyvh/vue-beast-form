@@ -28,15 +28,34 @@ export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field
 }
 
 /**
- * 
- * 更新规则
- * @param oData 
- * @param nData 
+ * 简单的处理一下 后续在复杂处理
+ * @param od 
+ * @param nd 
+ * @returns 
  */
-export const updateRule = (oData: any, nData: any) => {
+const mergeObject = (od: any, nd: any) => {
+    if (Array.isArray(od)) {
+        return [].concat(od, nd)
+    } else if (isObject(od)) {
+        return { ...od, ...nd }
+    } else {
+        return nd
+    }
+}
+
+/**
+ * 更新规则
+ */
+export const updateRule = (oData: any, nData: any, isMerge?: boolean) => {
     if (oData && nData) {
-        for (let key in nData) {
-            oData[key] = nData[key]
+        if (isMerge) {
+            for (let key in nData) {
+                oData[key] = mergeObject(oData[key], nData[key])
+            }
+        } else {
+            for (let key in nData) {
+                oData[key] = nData[key]
+            }
         }
     }
 }

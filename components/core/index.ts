@@ -183,15 +183,11 @@ export default defineComponent({
                 return result
             },
             // 覆盖规则
-            updateRule(field, rule) {
+            updateRule(field, rule, isMerge) {
                 if (rule && isObject(rule)) {
                     const getRule = apiFn.getRule(field)
-                    updateRule(getRule, rule)
+                    updateRule(getRule, rule, isMerge)
                 }
-            },
-            // 合并
-            mergeRule(field, rule) {
-                throw new Error('Function not implemented.')
             },
             // 设置数据
             setFieldChange(field, value) {
@@ -210,13 +206,13 @@ export default defineComponent({
             isModelKey(field) {
                 return Object.keys(model).includes(field)
             },
-            // 验证规则
-            async validate(callback) {
+            // 表单验证，目前表单验证只负责主表单
+            async validate(callback, fields) {
                 let valid = true
-                if (!await formValidate(vm.refs.form)) {
+                if (!await formValidate(vm.refs.form, fields)) {
                     valid = false
                 }
-                if (subFormVm.value) {
+                if (subFormVm.value && !fields) {
                     let i = 0, subFormLength = subFormVm.value.length;
                     for (i; i < subFormLength; i++) {
                         if (!await formValidate(subFormVm.value[i].refs.form)) {
@@ -226,7 +222,6 @@ export default defineComponent({
                 }
                 callback && callback(valid)
             },
-
         }
 
         // modelValue变更的时候赋值
@@ -239,10 +234,10 @@ export default defineComponent({
         }
 
         // 表单验证表单字段验证
-        const formValidate = async (formEvent: any) => {
+        const formValidate = async (formEvent: any, fields?: string | string[]) => {
             if (formEvent) {
                 try {
-                    await formEvent.validate()
+                    await formEvent.validate(fields)
                 } catch (error) {
                     return false;
                 }
@@ -292,13 +287,17 @@ export default defineComponent({
 
         fillRule();
 
+
+        // 方便开发的时候查看
         return {
             nRule,
-            apiFn,
+            subFormVm,
         }
 
+        // return () => renderRule(nRule.value)
     },
     render() {
         return renderRule(this.nRule)
     }
+
 });

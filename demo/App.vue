@@ -52,8 +52,12 @@ export default defineComponent({
             component: './ant/formItemLabel.vue'
           },
           {
+            title: 'Object',
+            component: './ant/objectForm.vue'
+          },
+          {
             title: 'Group',
-            component: './ant/group.vue'
+            component: './ant/groupForm.vue'
           }
         ]
       },
