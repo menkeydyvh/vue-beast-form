@@ -1,8 +1,10 @@
-import { defineComponent, ref, reactive, toRefs, toRaw, markRaw, resolveDynamicComponent, watch, onMounted, PropType, getCurrentInstance, onUpdated } from 'vue'
+import { ref, reactive, toRefs, toRaw, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
+import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated } from 'vue'
+import type { PropType, ComponentInternalInstance } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
 import { renderRule } from './render'
-import { RuleType, PropsOptionType } from '../types/index'
+import { RuleType, PropsOptionType, ApiFnType } from '../types/index'
 
 const name: string = 'JsonLayout';
 
@@ -10,18 +12,29 @@ export default defineComponent({
     name,
     props: {
         rule: { type: Array as PropType<Array<RuleType>>, required: true },
-        modelValue: { type: Object },
+        modelValue: { default: null },
         option: { type: Object as PropType<PropsOptionType> },
-        api: { type: Object },
-        isForm: { type: Boolean, default: true }
+        api: { type: Object as PropType<ApiFnType> },
+        isForm: { type: Boolean, default: true },
+        "onUpdate:api": {
+            type: Function
+        },
+        "onUpdate:modelValue": { type: Function },
     },
-    emits: ['update:api', 'update:modelValue'],
     setup(props, { emit }) {
-        const { rule, option, modelValue, isForm } = toRefs(props),
+        const vm = getCurrentInstance(),
+            { rule, option, modelValue, isForm } = toRefs(props),
             model = reactive<any>(modelValue.value ? modelValue.value : {}),
             nRule = ref<RuleType>({ type: 'div' }),
             // 设立resolveDynamicComponent缓存避免重复解析读取
-            cacheResolveDynamicComponent = markRaw<any>({});
+            cacheResolveDynamicComponent = markRaw<any>({}),
+            subFormVm = ref<ComponentInternalInstance[]>([]);
+
+        // 记录子表单
+        provide('subFormVm', subFormVm.value)
+
+        // 获取注入的子表单
+        const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null)
 
         // 规范化规则的模板
         const ruleTemplate = (config: RuleType): RuleType => {
@@ -38,6 +51,7 @@ export default defineComponent({
             }
 
             const rdcTag = cacheResolveDynamicComponent[type];
+
             if (isObject(rdcTag)) {
                 const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
                     propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
@@ -47,6 +61,7 @@ export default defineComponent({
                     return {
                         modelKey,
                         onUpdateModelKey,
+                        isSub: rdcTag.name === name
                     }
                 }
             }
@@ -69,13 +84,19 @@ export default defineComponent({
                 }
 
                 if (gvmTag) {
-                    const { modelKey, onUpdateModelKey } = gvmTag;
+                    const { modelKey, onUpdateModelKey, isSub } = gvmTag;
                     rtItem.vModelKey = modelKey;
 
                     // 判断是表单组件
                     if (!rtItem.props) {
                         rtItem.props = {};
                     }
+
+                    // 子json-layout组件
+                    if (isSub && !rtItem.props.option) {
+                        rtItem.props.option = deepCopy(option.value)
+                    }
+
                     // 赋值处理
                     if (item.field) {
                         model[item.field] = model[item.field] || item.value;
@@ -147,40 +168,65 @@ export default defineComponent({
             nRule.value = baseRule;
         }
 
+
         // api
-        const apiFn = {
-            $form: undefined as any,
+        const apiFn: ApiFnType = {
             // 获取规则
-            getRule(field: string, rules?: Array<RuleType> | RuleType): RuleType | null {
-                rules = rules || nRule.value;
-                let result = null;
+            getRule(field, rules) {
+                rules = rules || nRule.value
+                let result = null
                 if (Array.isArray(rules)) {
                     result = getArrayRule(rules, field)
                 } else if (rules && rules.children) {
                     result = apiFn.getRule(field, rules.children as Array<RuleType>)
                 }
-                return result;
+                return result
             },
-            // 更新规则
-            updateRule(field: string, rule: RuleType): void {
+            // 覆盖规则
+            updateRule(field, rule) {
                 if (rule && isObject(rule)) {
-                    const getRule = apiFn.getRule(field);
+                    const getRule = apiFn.getRule(field)
                     updateRule(getRule, rule)
                 }
             },
+            // 合并
+            mergeRule(field, rule) {
+                throw new Error('Function not implemented.')
+            },
             // 设置数据
-            setFieldChange(field: string, value: any): void {
-                model[field] = value;
+            setFieldChange(field, value) {
+                model[field] = value
                 const getRule = apiFn.getRule(field)
                 if (getRule) {
-                    getRule.value = value;
-                    getRule.props[getRule.vModelKey] = value;
+                    getRule.value = value
+                    getRule.props[getRule.vModelKey] = value
                 }
             },
             // 获取输入组件的值
-            getFormData(field?: string): any {
+            getFormData(field) {
                 return field ? model[field] : model
             },
+            // 当前字段是否是model的key
+            isModelKey(field) {
+                return Object.keys(model).includes(field)
+            },
+            // 验证规则
+            async validate(callback) {
+                let valid = true
+                if (!await formValidate(vm.refs.form)) {
+                    valid = false
+                }
+                if (subFormVm.value) {
+                    let i = 0, subFormLength = subFormVm.value.length;
+                    for (i; i < subFormLength; i++) {
+                        if (!await formValidate(subFormVm.value[i].refs.form)) {
+                            valid = false
+                        }
+                    }
+                }
+                callback && callback(valid)
+            },
+
         }
 
         // modelValue变更的时候赋值
@@ -192,9 +238,19 @@ export default defineComponent({
             }
         }
 
+        // 表单验证表单字段验证
+        const formValidate = async (formEvent: any) => {
+            if (formEvent) {
+                try {
+                    await formEvent.validate()
+                } catch (error) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         const initApiFn = () => {
-            const vm = getCurrentInstance();
-            apiFn.$form = vm.refs.form ? vm.refs.form : undefined;
             emit('update:api', apiFn)
         }
 
@@ -215,8 +271,20 @@ export default defineComponent({
         })
 
         onMounted(() => {
+            if (parentFrom) {
+                parentFrom.push(vm)
+            }
             initApiFn()
         });
+
+        onBeforeUnmount(() => {
+            if (parentFrom) {
+                let idx = parentFrom.findIndex(item => item.uid === vm.uid)
+                if (idx > -1) {
+                    parentFrom.splice(idx, 1)
+                }
+            }
+        })
 
         onUpdated(() => {
             initApiFn()
@@ -224,6 +292,13 @@ export default defineComponent({
 
         fillRule();
 
-        return () => renderRule(nRule.value)
+        return {
+            nRule,
+            apiFn,
+        }
+
     },
+    render() {
+        return renderRule(this.nRule)
+    }
 });

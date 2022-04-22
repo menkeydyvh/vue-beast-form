@@ -50,6 +50,10 @@ export default defineComponent({
           {
             title: 'FormItem-Label',
             component: './ant/formItemLabel.vue'
+          },
+          {
+            title: 'Group',
+            component: './ant/group.vue'
           }
         ]
       },

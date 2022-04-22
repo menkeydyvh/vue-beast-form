@@ -28,7 +28,11 @@ export type PropsOptionType = {
 }
 
 export type ApiFnType = {
-    getRule(field: string, rules?: RuleType[] | RuleType): RuleType | null;
-    updateRule(field: string, rule: RuleType): void;
-    setFieldChange(field: string, value: any): void;
+    getRule(field: string, rules?: Array<RuleType> | RuleType): RuleType | null
+    updateRule(field: string, rule: RuleType): void
+    mergeRule(field: string, rule: RuleType): void
+    setFieldChange(field: string, value: any): void
+    getFormData(field?: string): any
+    isModelKey(field: string): boolean
+    validate(callback: Function): void
 }

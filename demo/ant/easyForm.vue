@@ -304,8 +304,9 @@ export default defineComponent({
                   onClick: () => {
                     console.log('jApi:', jApi.value)
                     if (isForm.value) {
-                      // 是form的时候可以用$form 调用原始表单控件的方法
-                      jApi.value.$form.validate();
+                      jApi.value.validate((valid: boolean, data: any) => {
+                        console.log(valid, data)
+                      });
                     } else {
                       // 不是form的时候获取数据
                       console.log('formData:', jApi.value.getFormData())
