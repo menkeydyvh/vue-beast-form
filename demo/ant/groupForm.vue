@@ -21,7 +21,7 @@ export default defineComponent({
         rule.value = [
             {
                 type: 'group',
-                title: "group1",
+                title: "group 对应结果  [object,object,object]",
                 field: "group1",
                 value: [{ input1: '1', input2: '1' }],
                 props: {
@@ -47,7 +47,7 @@ export default defineComponent({
             },
             {
                 type: 'group',
-                title: "group2",
+                title: "group 对应结果  ['','']",
                 field: "group2",
                 value: ['1', '2'],
                 props: {

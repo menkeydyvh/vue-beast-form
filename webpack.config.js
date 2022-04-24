@@ -21,9 +21,8 @@ module.exports = {
         'index': './components/index.ts',
     },
     output: {
-        filename: '[name].js',// 生成的fiename需要与package.json中的main一致
+        filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
-        libraryTarget: 'commonjs',
     },
     module: {
         rules: [

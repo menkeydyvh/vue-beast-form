@@ -58,7 +58,7 @@ export default defineComponent({
           {
             title: 'Group',
             component: './ant/groupForm.vue'
-          }
+          },
         ]
       },
     ]), selectData = ref<MenuItem>();
