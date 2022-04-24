@@ -1,8 +1,7 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
-import { getArrayRule, updateRule, deepCopy } from './utils'
-import { isObject, getParentCompnent } from '../tool'
+import { isObject, getParentCompnent, getArrayRule, updateRule, deepCopy } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance, Component } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types/index'
@@ -306,7 +305,7 @@ export default function factory() {
 
             return () => renderRule(nRule.value)
         },
-      
+
 
     });
 

@@ -9,5 +9,3 @@ component.install = (app: App) => {
 };
 
 export default component
-
-

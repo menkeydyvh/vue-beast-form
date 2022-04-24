@@ -15,7 +15,7 @@
 import { defineComponent, ref, toRefs, getCurrentInstance, watch } from 'vue'
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue"
 import JsonLayout from '@components'
-import { realizeCloneDeep, getParentCompnent } from '@components/tool'
+import { deepCopy, getParentCompnent } from '@components/tool'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '@components/types'
 
@@ -56,15 +56,15 @@ export default defineComponent({
 
         const onAdd = (isInit?: boolean) => {
             // 添加
-            let ruleItem = realizeCloneDeep(rule.value), optionItem = null;
+            let ruleItem = deepCopy(rule.value), optionItem = null;
             if (option.value) {
-                optionItem = realizeCloneDeep(option.value)
+                optionItem = deepCopy(option.value)
             } else {
                 const parent = getParentCompnent(vm.parent, JsonLayout.name);
                 if (parent) {
                     const parentOption = parent.props.option as PropsOptionType;
                     if (parentOption) {
-                        optionItem = realizeCloneDeep(parentOption)
+                        optionItem = deepCopy(parentOption)
                     }
                 }
             }
