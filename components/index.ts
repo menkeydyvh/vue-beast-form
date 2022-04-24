@@ -1,11 +1,13 @@
 import type { App } from 'vue';
-import jlFactory from './core';
+import factory from './core';
 
-const jlf = jlFactory();
+const component = factory();
 
-jlf.install = (app: App) => {
-  app.component(jlf.name, jlf);
+component.install = (app: App) => {
+  app.component(component.name, component);
   return app;
 };
 
-export default jlf
+export default component
+
+

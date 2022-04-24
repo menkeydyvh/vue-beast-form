@@ -1,7 +1,8 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
-import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated } from 'vue'
+import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
-import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
+import { getArrayRule, updateRule, deepCopy } from './utils'
+import { isObject, getParentCompnent } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance, Component } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types/index'
@@ -12,18 +13,8 @@ export default function factory() {
 
     const components: Record<string, Component> = {}
 
-    /**
-     * 加载组件
-     * @param name 
-     * @param component 
-     */
-    const component = (name: string, component: Component) => {
-        components[name] = component
-    }
-
     return defineComponent({
         name,
-        component,
         components,
         props: {
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
@@ -38,7 +29,7 @@ export default function factory() {
             const vm = getCurrentInstance(),
                 { rule, option, modelValue, isForm } = toRefs(props),
                 model = reactive<any>(modelValue.value ? modelValue.value : {}),
-                nRule = ref<RuleType>({ type: 'div' }),
+                nRule = computed(() => fillRule()),
                 // 设立resolveDynamicComponent缓存避免重复解析读取
                 cacheResolveDynamicComponent = markRaw<any>({}),
                 subFormVm = ref<ComponentInternalInstance[]>([]);
@@ -49,22 +40,19 @@ export default function factory() {
             // 获取注入的子表单
             const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null)
 
+            // 自动挂载组件
+            const parentComponent = vm.parent as any | ComponentInternalInstance;
+            if (parentComponent.components) {
+                for (let componentName in parentComponent.components) {
+                    components[componentName] = parentComponent.components[componentName]
+                }
+            }
+
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
                 return {
                     showFormItem: isForm.value === true,
                     ...config,
-                }
-            }
-
-            // 自动挂载组件
-            if (vm.parent && vm.parent.components) {
-                for (let componentName in vm.parent.components) {
-                    components[componentName] = vm.parent.components[componentName]
-                }
-            } else {
-                for (let name in components) {
-                    delete components[name]
                 }
             }
 
@@ -175,11 +163,11 @@ export default function factory() {
             const fillRule = () => {
                 const baseRule = ruleTemplate({
                     type: '',
-                }), rules = deepCopy(rule.value);
+                }), rules = computed(() => deepCopy(rule.value));
 
                 if (isForm.value) {
                     let defaultOption = {};
-                    const parent = getParent();
+                    const parent = getParentCompnent(parentComponent, name);
                     if (parent) {
                         const parentOption = parent.props.option as PropsOptionType;
                         if (parentOption) {
@@ -196,9 +184,9 @@ export default function factory() {
                     baseRule.type = 'div';
                 }
 
-                baseRule.children = fillRuleChildren(rules);
+                baseRule.children = fillRuleChildren(rules.value);
 
-                nRule.value = baseRule;
+                return baseRule;
             }
 
 
@@ -279,21 +267,6 @@ export default function factory() {
             }
 
             // 初始化api
-            const getParent = (parent?: ComponentInternalInstance): ComponentInternalInstance => {
-                if (!parent) {
-                    parent = vm.parent
-                }
-
-                if (parent.type.name === name) {
-                    return parent
-                } else if (parent.uid === 1) {
-                    return null;
-                } else {
-                    return getParent(parent.parent)
-                }
-            }
-
-            // 初始化api
             const initApiFn = () => {
                 emit('update:api', apiFn)
             }
@@ -304,9 +277,6 @@ export default function factory() {
                 deep: true
             })
 
-            watch(isForm, () => {
-                fillRule()
-            })
 
             watch(modelValue, () => {
                 changeModelValue();
@@ -334,21 +304,12 @@ export default function factory() {
                 initApiFn()
             })
 
-            fillRule();
-
-
-            // 方便开发的时候查看
-            return {
-                nRule,
-                subFormVm,
-            }
-
-            // return () => renderRule(nRule.value)
+            return () => renderRule(nRule.value)
         },
-        render() {
-            return renderRule(this.nRule)
-        }
+      
 
     });
+
+
 
 }

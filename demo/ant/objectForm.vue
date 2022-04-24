@@ -29,22 +29,6 @@ export default defineComponent({
                 ],
             },
             {
-                type: 'a-input',
-                title: "外层input2",
-                field: "input2",
-                validate: [
-                    { required: true, message: '必须填写' },
-                ],
-            },
-            {
-                type: 'a-input',
-                title: "外层input3",
-                field: "input3",
-                validate: [
-                    { required: true, message: '必须填写' },
-                ],
-            },
-            {
                 type: 'json-layout',
                 title: "subForm",
                 field: "subForm",
