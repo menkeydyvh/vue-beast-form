@@ -7,8 +7,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
-import JsonLayout from '@components'
-import { RuleType } from '@components/types'
+import JsonLayout from 'json-layout'
+import { RuleType } from 'json-layout/components/types'
 
 export default defineComponent({
     components: { JsonLayout },

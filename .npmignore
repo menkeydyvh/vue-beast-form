@@ -5,7 +5,5 @@ node_modules
 index.html
 *-lock.json
 tsconfig.json
-tsconfig.node.json
-vite.config.ts
 webpack.config.js
 .env.local

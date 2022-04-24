@@ -23,7 +23,7 @@
     "allowJs": true,
     // "useDefineForClassFields": true,
     // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
-    // "module": "esnext",
+    // "module": "commonjs",
     // 用来指定编译时是否生成.map文件
     // "sourceMap": true,
     // "resolveJsonModule": true,
@@ -36,22 +36,14 @@
       "esnext",
       "dom"
     ],
-    "typeRoots": ["./components/types"],
-    "baseUrl": ".",
-    "paths": {
-      "@components": [
-        "components"
-      ],
-      "@components/*": [
-        "components/*"
-      ]
-    }
   },
   "include": [
-    "components/*.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
   ],
   "exclude": [
     "node_modules",
-    "lib",
   ]
 }
