@@ -12,13 +12,13 @@ import Group from './components/group.vue';
 import type { RuleType } from '@components/types'
 
 export default defineComponent({
-    components: { JsonLayout },
+    components: { JsonLayout, Group },
     setup() {
         const rule = ref<RuleType[]>(),
             jsonLayoutRef = ref(),
             jApi = ref();
 
-        JsonLayout.component(Group.name, Group)
+        // JsonLayout.component(Group.name, Group)
 
         onMounted(() => {
             // console.log(jsonLayoutRef.value)

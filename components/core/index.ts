@@ -1,23 +1,30 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
-import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, Component } from 'vue'
+import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
 import { isObject, getArrayRule, updateRule, deepCopy } from './utils'
 import { renderRule } from './render'
-import type { PropType, ComponentInternalInstance } from 'vue'
+import type { PropType, ComponentInternalInstance, Component } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types/index'
 
 const name: string = 'JsonLayout';
 
 export default function factory() {
 
+    const components: Record<string, Component> = {}
+
+    /**
+     * 加载组件
+     * @param name 
+     * @param component 
+     */
     const component = (name: string, component: Component) => {
-        const vm = getCurrentInstance();
-        vm.appContext.components[name] = component
+        components[name] = component
     }
 
     return defineComponent({
         name,
         component,
+        components,
         props: {
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
@@ -47,6 +54,17 @@ export default function factory() {
                 return {
                     showFormItem: isForm.value === true,
                     ...config,
+                }
+            }
+
+            // 自动挂载组件
+            if (vm.parent && vm.parent.components) {
+                for (let componentName in vm.parent.components) {
+                    components[componentName] = vm.parent.components[componentName]
+                }
+            } else {
+                for (let name in components) {
+                    delete components[name]
                 }
             }
 
