@@ -3,24 +3,23 @@ import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
 import { isObject, getParentCompnent, getArrayRule, updateRule, deepCopy } from '../tool'
 import { renderRule } from './render'
-import type { PropType, ComponentInternalInstance, Component } from 'vue'
+import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
 const name: string = 'JsonLayout';
 
 export default function factory() {
 
-    const components: Record<string, Component> = {}
-
     return defineComponent({
         name,
-        components,
+        components: {},
         props: {
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
             option: { type: Object as PropType<PropsOptionType> },
             api: { type: Object as PropType<ApiFnType> },
             isForm: { type: Boolean, default: true },
+            disabled: { type: Boolean },
             "onUpdate:api": { type: Function },
             "onUpdate:modelValue": { type: Function },
         },
@@ -39,18 +38,10 @@ export default function factory() {
             // 获取注入的子表单
             const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null)
 
-            // 自动挂载组件
-            const parentComponent = vm.parent as any | ComponentInternalInstance;
-            if (parentComponent.components) {
-                for (let componentName in parentComponent.components) {
-                    components[componentName] = parentComponent.components[componentName]
-                }
-            }
-
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
                 return {
-                    showFormItem: isForm.value === true,
+                    native: isForm.value === true,
                     ...config,
                 }
             }
@@ -118,7 +109,7 @@ export default function factory() {
                             }
                         }
 
-                        if (rtItem.showFormItem) {
+                        if (rtItem.native) {
 
                             const result = ruleTemplate({
                                 type: defaultName.formItem,
@@ -166,7 +157,7 @@ export default function factory() {
 
                 if (isForm.value) {
                     let defaultOption = {};
-                    const parent = getParentCompnent(parentComponent, name);
+                    const parent = getParentCompnent(vm.parent, name);
                     if (parent) {
                         const parentOption = parent.props.option as PropsOptionType;
                         if (parentOption) {

@@ -1,4 +1,3 @@
-// https://juejin.cn/post/6844904093568221191 
 {
   "compilerOptions": {
     "jsx": "preserve",
@@ -36,6 +35,9 @@
       "esnext",
       "dom"
     ],
+    // 配置别名
+    // "baseUrl": "./",
+    // "paths": {}
   },
   "include": [
     "src/**/*.ts",

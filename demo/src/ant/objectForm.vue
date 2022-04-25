@@ -1,9 +1,11 @@
 <template>
-    <json-layout ref="jsonLayoutRef" :rule="rule" v-model:api="jApi" :option="{
-        form: {
-            layout: 'vertical'
-        }
-    }" />
+    <a-card class="content-card" :bordered="false" title="object的处理">
+        <json-layout ref="jsonLayoutRef" :rule="rule" v-model:api="jApi" :option="{
+            form: {
+                layout: 'vertical'
+            }
+        }" />
+    </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'

@@ -31,6 +31,7 @@ import { defineComponent, ref, markRaw } from 'vue'
 
 interface MenuItem {
   title: string;
+  base?: string;
   component?: any;
   children?: MenuItem[];
 }
@@ -41,44 +42,48 @@ export default defineComponent({
     const menu = ref<MenuItem[]>([
       {
         title: 'ant-design-vue',
+        base: 'ant',
         children: [
           {
             title: '简易表单',
-            component: './ant/easyForm.vue'
+            component: 'easyForm.vue'
           },
           {
             title: 'FormItem-Label',
-            component: './ant/formItemLabel.vue'
+            component: 'formItemLabel.vue'
           },
           {
             title: 'Object',
-            component: './ant/objectForm.vue'
+            component: 'objectForm.vue'
           },
           {
             title: 'Group',
-            component: './ant/groupForm.vue'
+            component: 'groupForm.vue'
           },
         ]
       },
     ]), selectData = ref<MenuItem>();
 
     const onMenuItemClick = async (itemData: any) => {
-      let data: MenuItem = null;
+      let data: MenuItem = null, base = '';
       itemData.key.split('-').forEach((item: number) => {
         if (data) {
           data = data.children[item];
         } else {
           data = menu.value[item];
+          if (data.base) {
+            base = data.base
+          }
         }
       })
       if (data) {
         const nData = { ...data },
-          result: any = await getComponent(data.component);
+          result: any = await getComponent(base, data.component);
         nData.component = markRaw(result.default);
         selectData.value = nData;
       }
-    }, getComponent = async (component: string) => {
-      return await import(component)
+    }, getComponent = async (base: string, component: string) => {
+      return await import(`./${base}/${component}`)
     }
 
 

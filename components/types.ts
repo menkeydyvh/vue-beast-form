@@ -10,7 +10,7 @@ export type RuleType = {
     value?: any;
     vModelKey?: string;
     validate?: Array<RuleValidateType>;
-    showFormItem?: Boolean;
+    native?: Boolean;
     // 布局相关
     children?: Array<RuleType | string>;
     slot?: string;

@@ -1,7 +1,7 @@
 
 <template>
   <a-card class="content-card" :bordered="false" title="title是json的解析">
-    <JsonLayout v-model:api="jApi" :rule="rule" :option="option" />
+    <json-layout v-model:api="jApi" :rule="rule" :option="option" />
   </a-card>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
-    <div style="text-align: right;">
+    <div style="text-align: right;" v-if="!disabled">
         <plus-square-outlined @click="() => onAdd()" />
     </div>
     <a-row v-for="(item, index) in groupRule">
         <a-col flex="auto">
-            <json-layout :rule="item.rule" :option="item.option" v-model="value[index]" />
+            <json-layout :rule="item.rule" :option="item.option" v-model="value[index]" :disabled="disabled" />
         </a-col>
-        <a-col>
+        <a-col v-if="!disabled">
             <minus-square-outlined @click="() => onDel(index)" />
         </a-col>
     </a-row>
@@ -31,6 +31,7 @@ export default defineComponent({
         field: { type: String },
         rule: { type: Array as PropType<Array<RuleType>>, required: true },
         option: { type: Object as PropType<PropsOptionType> },
+        disabled: { type: Boolean },
         modelValue: { default: null },
         "onUpdate:modelValue": { type: Function },
     },
@@ -38,23 +39,30 @@ export default defineComponent({
         const vm = getCurrentInstance(),
             { rule, option, modelValue, field } = toRefs(props),
             groupRule = ref<GroupRule[]>([]),
-            value = ref([]),
+            value = ref<Array<any>>([]),
             jApi = ref();
 
-        // 处理 array[] 和 array[object]的初始化赋值
-        if (field.value) {
-            modelValue.value.forEach((item: any) => {
-                let json: any = {};
-                json[field.value] = item;
-                value.value.push(json)
-            })
-        } else {
-            if (modelValue.value) {
-                value.value = modelValue.value
+        const onInit = () => {
+            // 处理 array['',''] 和 array[object,object]的初始化赋值
+            if (field.value) {
+                modelValue.value.forEach((item: any) => {
+                    let json: any = {};
+                    json[field.value] = item;
+                    value.value.push(json)
+                })
+            } else {
+                if (modelValue.value) {
+                    value.value = modelValue.value
+                }
             }
-        }
 
-        const onAdd = (isInit?: boolean) => {
+            // 布局初始化
+            if (value.value && value.value.length) {
+                value.value.forEach(() => {
+                    onAdd(true);
+                })
+            }
+        }, onAdd = (isInit?: boolean) => {
             // 添加
             let ruleItem = deepCopy(rule.value), optionItem = null;
             if (option.value) {
@@ -79,28 +87,26 @@ export default defineComponent({
             // 删除
             groupRule.value.splice(index, 1)
             value.value.splice(index, 1)
-        }
-
-        if (value.value) {
-            value.value.forEach(() => {
-                onAdd(true);
-            })
-        }
-
-        watch(value, () => {
+        }, resultValue = () => {
             // 处理 array[] 和 array[object]的返回结果
-            let resultValue: any = [];
+            let result: Array<any> = [];
             if (field.value) {
                 value.value.forEach(item => {
-                    resultValue.push(item[field.value]);
+                    result.push(item[field.value]);
                 })
             } else {
-                resultValue = value.value
+                result = value.value
             }
-            emit('update:modelValue', resultValue)
+            return result
+        };
+
+        watch(value, () => {
+            emit('update:modelValue', resultValue())
         }, {
             deep: true
         });
+
+        onInit();
 
         return {
             jApi,
