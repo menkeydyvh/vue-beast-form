@@ -1,6 +1,16 @@
 import { h, resolveDynamicComponent } from 'vue'
+import { isObject } from '../tool'
 import type { Slot, Component } from 'vue'
 import type { RuleType } from '../types'
+
+const propsStyle = (oStyle: any, nStyle: any): string => {
+    let result = '';
+    if (isObject(oStyle)) {
+
+    }
+    return result;
+}
+
 
 /**
  * 
@@ -10,8 +20,17 @@ import type { RuleType } from '../types'
  * @param {Object|Array} slot 
  * @returns 
  */
-const render = (tag: string, props: any, slot: Slot) => {
-    return h(resolveDynamicComponent(tag) as Component, props, slot)
+const render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
+    if (rule.display === 'show') {
+        if (props.style) {
+            
+        }
+    }
+
+    // 后续处理指令
+    const vNode = h(resolveDynamicComponent(tag) as Component, props, slot)
+
+    return vNode
 }
 
 /**
@@ -49,7 +68,7 @@ const renderChildren = (children: Array<RuleType>): any => {
  * @returns 
  */
 const renderItem = (rule: RuleType) => {
-    return render(rule.type, { ...rule.props }, renderChildren(rule.children as Array<RuleType>))
+    return render(rule.type, { ...rule.props }, renderChildren(rule.children as Array<RuleType>), rule)
 }
 
 

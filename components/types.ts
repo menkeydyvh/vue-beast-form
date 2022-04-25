@@ -14,6 +14,7 @@ export type RuleType = {
     // 布局相关
     children?: Array<RuleType | string>;
     slot?: string;
+    display?: 'show' | 'if';
 }
 
 export interface RuleValidateType {

@@ -25,7 +25,7 @@ export default function factory() {
         },
         setup(props, { emit }) {
             const vm = getCurrentInstance(),
-                { rule, option, modelValue, isForm } = toRefs(props),
+                { rule, option, modelValue, isForm, disabled } = toRefs(props),
                 model = reactive<any>(modelValue.value ? modelValue.value : {}),
                 nRule = computed(() => fillRule()),
                 // 设立resolveDynamicComponent缓存避免重复解析读取
@@ -40,10 +40,17 @@ export default function factory() {
 
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
-                return {
+                const rt = {
                     native: isForm.value === true,
                     ...config,
                 }
+                if (!rt.props) {
+                    rt.props = {}
+                }
+                if (typeof disabled.value === 'boolean') {
+                    rt.props.disabled = disabled.value
+                }
+                return rt
             }
 
             // 获取对应得 v-model 的key和事件
@@ -63,7 +70,6 @@ export default function factory() {
                         return {
                             modelKey,
                             onUpdateModelKey,
-                            isSub: rdcTag.name === name,
                         }
                     }
                 }
@@ -78,6 +84,7 @@ export default function factory() {
                         return item;
                     }
 
+                    let result: RuleType;
                     const rtItem = ruleTemplate(item),
                         gvmTag = getVModel(rtItem.type);
 
@@ -86,19 +93,8 @@ export default function factory() {
                     }
 
                     if (gvmTag) {
-                        const { modelKey, onUpdateModelKey, isSub } = gvmTag;
+                        const { modelKey, onUpdateModelKey } = gvmTag;
                         rtItem.vModelKey = modelKey;
-
-                        // 判断是表单组件
-                        if (!rtItem.props) {
-                            rtItem.props = {};
-                        }
-
-
-                        // 子json-layout组件
-                        if (isSub && !rtItem.props.option) {
-                            // rtItem.props.option = deepCopy(option.value)
-                        }
 
                         // 赋值处理
                         if (item.field) {
@@ -110,42 +106,48 @@ export default function factory() {
                         }
 
                         if (rtItem.native) {
-
-                            const result = ruleTemplate({
+                            result = ruleTemplate({
                                 type: defaultName.formItem,
-                                props: null
-                            }), resultChildren = [];
+                                props: null,
+                                children: [],
+                                display: rtItem.display
+                            });
+                            rtItem.display = undefined;
 
                             // 显示form-item
                             const formItemProps: any = {};
                             formItemProps[defaultName.formItemPropName] = item.field
-                            if (item.validate) {
-                                if (Array.isArray(item.validate)) {
-                                    if (item.validate.find(item => item.required)) {
-                                        formItemProps.required = true
+                            if (rtItem.props.disabled !== true) {
+                                if (item.validate) {
+                                    if (Array.isArray(item.validate)) {
+                                        if (item.validate.find(item => item.required)) {
+                                            formItemProps.required = true
+                                        }
                                     }
-                                }
-                                formItemProps['rules'] = item.validate
+                                    formItemProps['rules'] = item.validate
 
+                                }
                             }
+
                             if (typeof item.title === 'string') {
                                 formItemProps[defaultName.formItemPropLabel] = item.title
                             }
 
                             result.props = formItemProps;
                             if (isObject(item.title)) {
-                                resultChildren.push({
+                                result.children.push({
                                     ...item.title as RuleType,
                                     slot: defaultName.formItemSlotTitle
                                 })
                             }
-                            resultChildren.push(rtItem)
-                            result.children = resultChildren;
-                            return result
+                            result.children.push(rtItem)
                         }
-
                     }
-                    return rtItem;
+
+                    if (!result) {
+                        result = rtItem
+                    }
+                    return result;
                 });
             }
 
