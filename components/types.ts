@@ -1,5 +1,3 @@
-import type { Component, App } from 'vue'
-
 export type RuleType = {
     // 必须
     type: string;

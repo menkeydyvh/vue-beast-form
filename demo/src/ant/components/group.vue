@@ -17,7 +17,7 @@ import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue"
 import JsonLayout from 'json-layout'
 import { deepCopy, getParentCompnent } from 'json-layout/lib/tool'
 import type { PropType } from 'vue'
-import type { RuleType, PropsOptionType } from 'json-layout'
+import type { RuleType, PropsOptionType } from 'json-layout/lib/types'
 
 interface GroupRule {
     rule: Array<RuleType>;

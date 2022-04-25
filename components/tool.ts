@@ -1,5 +1,5 @@
 import type { ComponentInternalInstance } from "vue"
-import type { RuleType } from '../typings/index'
+import type { RuleType } from './types'
 
 /**
  * ES6 深拷贝 终极版

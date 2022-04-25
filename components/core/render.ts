@@ -1,6 +1,6 @@
 import { h, resolveDynamicComponent } from 'vue'
 import type { Slot, Component } from 'vue'
-import type { RuleType } from '../../typings/index'
+import type { RuleType } from '../types'
 
 /**
  * 

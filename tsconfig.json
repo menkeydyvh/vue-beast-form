@@ -19,9 +19,6 @@
       "esnext",
       "dom"
     ],
-    "typeRoots": [
-      "typings"
-    ],
   },
   "include": [
     "components/**/*.d.ts",
