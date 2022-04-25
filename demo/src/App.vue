@@ -12,7 +12,6 @@
           }}
           </a-menu-item>
         </a-sub-menu>
-
       </a-menu>
     </a-layout-sider>
     <a-layout>

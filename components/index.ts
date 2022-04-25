@@ -8,4 +8,7 @@ component.install = (app: App) => {
   return app;
 };
 
+
+export * from "../typings";
+
 export default component

@@ -8,12 +8,11 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
 import JsonLayout from 'json-layout'
-import { RuleType } from 'json-layout/components/types'
 
 export default defineComponent({
     components: { JsonLayout },
     setup() {
-        const rule = ref<RuleType[]>(),
+        const rule = ref(),
             jsonLayoutRef = ref(),
             jApi = ref();
         onMounted(() => {

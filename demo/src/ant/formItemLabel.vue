@@ -8,7 +8,6 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import JsonLayout from 'json-layout'
-// import { RuleType } from '../types'
 
 export default defineComponent({
   components: { JsonLayout },

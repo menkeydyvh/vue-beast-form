@@ -9,12 +9,11 @@
 import { defineComponent, ref } from 'vue'
 import JsonLayout from 'json-layout'
 import Group from './components/group.vue';
-import type { RuleType } from 'json-layout/components/types'
 
 export default defineComponent({
     components: { JsonLayout, Group },
     setup() {
-        const rule = ref<RuleType[]>(),
+        const rule = ref(),
             jsonLayoutRef = ref(),
             jApi = ref();
 
