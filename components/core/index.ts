@@ -4,7 +4,7 @@ import { formComponentConfig, formComponentValueChangeConfig, defaultName } from
 import { isObject, getParentCompnent, getArrayRule, updateRule, deepCopy } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance, Component } from 'vue'
-import type { RuleType, PropsOptionType, ApiFnType } from '../types/index'
+import type { RuleType, PropsOptionType, ApiFnType } from '../../typings/index'
 
 const name: string = 'JsonLayout';
 
