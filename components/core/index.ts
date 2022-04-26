@@ -1,7 +1,7 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
-import { isObject, getParentCompnent, getArrayRule, updateRule, deepCopy } from '../tool'
+import { isObject, getParentCompnent, loopRule, updateRule, deepCopy } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
@@ -160,11 +160,13 @@ export default function factory() {
                         if (rtItem.native) {
                             result = ruleTemplate({
                                 type: defaultName.formItem,
+                                field: rtItem.field,
                                 props: null,
                                 children: [],
                                 display: rtItem.display
                             });
                             rtItem.display = undefined;
+                            rtItem.field = undefined;
 
                             // 显示form-item
                             const formItemProps: any = {};
@@ -236,14 +238,11 @@ export default function factory() {
             // api
             const apiFn: ApiFnType = {
                 // 获取规则
-                getRule(field, rules) {
-                    rules = rules || nRule.value
+                getRule(field) {
                     let result = null
-                    if (Array.isArray(rules)) {
-                        result = getArrayRule(rules, field)
-                    } else if (rules && rules.children) {
-                        result = apiFn.getRule(field, rules.children as Array<RuleType>)
-                    }
+                    loopRule(nRule.value.children as Array<RuleType>, field, (item: RuleType) => {
+                        result = item
+                    })
                     return result
                 },
                 // 覆盖规则
@@ -265,6 +264,26 @@ export default function factory() {
                         }
                     } else {
                         model[field] = value
+                    }
+                },
+                // 设置 display
+                display(field, display) {
+                    const getRule = apiFn.getRule(field);
+                    if (getRule) {
+                        getRule.display = display
+                    }
+                },
+                // 设置 disabled
+                disabled(field, isBool) {
+                    let boolValue = isBool === true ? true : undefined
+                    if (field) {
+                        apiFn.updateRule(field, {
+                            props: {
+                                disabled: boolValue
+                            }
+                        })
+                    } else {
+                        emit('update:disabled', boolValue)
                     }
                 },
                 // 获取输入组件的值

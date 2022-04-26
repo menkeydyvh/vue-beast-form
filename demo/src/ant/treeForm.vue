@@ -1,5 +1,5 @@
 <template>
-    <a-card class="content-card" :bordered="false" title="tree组件">
+    <a-card class="content-card" :bordered="false" title="tree组件 支持多个v-model处理">
         <json-layout :rule="rule" v-model="value" v-model:api="jApi" :option="{
             form: {
                 layout: 'vertical'
@@ -9,10 +9,10 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-// import JsonLayout from 'json-layout'
-// import { RuleType } from 'json-layout/lib/types'
-import JsonLayout from '../../../components'
-import type { RuleType } from '../../../components/types'
+import JsonLayout from 'json-layout'
+import { RuleType } from 'json-layout/lib/types'
+// import JsonLayout from '../../../components'
+// import type { RuleType } from '../../../components/types'
 
 export default defineComponent({
     components: { JsonLayout },
@@ -58,7 +58,6 @@ export default defineComponent({
                 },
                 vModelKey: ['expandedKeys', 'selectedKeys', 'checkedKeys']
             },
-
             {
                 type: 'a-button',
                 props: {

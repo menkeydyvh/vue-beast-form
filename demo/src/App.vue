@@ -8,7 +8,7 @@
         </div>
         <a-sub-menu :key="`${itemIndex}`" v-for="(item, itemIndex) in menu" :title="item.title">
           <a-menu-item v-for="(child, childIndex) in item.children" :key="`${itemIndex}-${childIndex}`">{{
-            child.title
+              child.title
           }}
           </a-menu-item>
         </a-sub-menu>
@@ -67,6 +67,10 @@ export default defineComponent({
           {
             title: 'Tree',
             component: 'treeForm.vue'
+          },
+          {
+            title: 'ApiTest',
+            component: 'apiForm.vue'
           },
         ]
       },

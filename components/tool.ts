@@ -66,24 +66,17 @@ export const getParentCompnent = (parent: ComponentInternalInstance, name: strin
  * @param key 
  * @returns 
  */
-export const getArrayRule = (rules: Array<RuleType>, value: any, key: string = 'field'): RuleType => {
-    let length = 0, result = null;
-    if (Array.isArray(rules)) {
-        length = rules.length
-        for (let i = 0; i < length; i++) {
-            if (rules[i][key] === value) {
-                result = rules[i]
-                break;
-            }
-            if (rules[i].children) {
-                result = getArrayRule(rules[i].children as RuleType[], value, key)
-                if (result) {
-                    break;
-                }
-            }
+export const loopRule = (rules: RuleType[], value: any, callback: Function, key: string = 'field') => {
+    rules.forEach((item, index) => {
+        if (item[key] === value) {
+            return callback(item, index, rules)
         }
-    }
-    return result;
+
+        if (item.children) {
+            return loopRule(item.children as RuleType[], value, callback, key)
+        }
+    })
+
 }
 
 /**
@@ -129,7 +122,7 @@ export const deepCopy = (data: any): any => {
 }
 
 export default {
-    getArrayRule,
+    loopRule,
     updateRule,
     deepCopy,
 }
