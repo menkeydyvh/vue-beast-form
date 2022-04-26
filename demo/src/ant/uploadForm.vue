@@ -10,8 +10,8 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { InboxOutlined } from '@ant-design/icons-vue'
-// import JsonLayout from 'json-layout'
-import JsonLayout from '../../../components'
+import JsonLayout from 'json-layout'
+// import JsonLayout from '../../../components'
 
 export default defineComponent({
     components: { JsonLayout },

@@ -64,6 +64,10 @@ export default defineComponent({
             title: 'Upload',
             component: 'uploadForm.vue'
           },
+          {
+            title: 'Tree',
+            component: 'treeForm.vue'
+          },
         ]
       },
     ]), selectData = ref<MenuItem>();

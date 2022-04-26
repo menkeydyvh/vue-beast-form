@@ -54,7 +54,7 @@ export default function factory() {
             }
 
             // 获取对应得 v-model 的key和事件
-            const getVModel = (type: string) => {
+            const getVModel = (type: string, vModelKey?: string | string[]) => {
                 if (!cacheResolveDynamicComponent[type]) {
                     cacheResolveDynamicComponent[type] = resolveDynamicComponent(type)
                 }
@@ -62,16 +62,46 @@ export default function factory() {
                 const rdcTag = cacheResolveDynamicComponent[type];
 
                 if (isObject(rdcTag)) {
-                    const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
-                        propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
-                        onUpdateModelKey = formComponentValueChangeConfig[rdcTag.name] ? formComponentValueChangeConfig[rdcTag.name] : formComponentValueChangeConfig['default'];
+                    if (Array.isArray(vModelKey)) {
+                        const propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [];
+                        let modelKey = [], onUpdateModelKey = [];
+                        vModelKey.forEach(key => {
+                            if (propsKeys.includes(key) && propsKeys.includes(`onUpdate:${key}`)) {
+                                modelKey.push(key)
+                                onUpdateModelKey.push(`onUpdate:${key}`);
+                            }
+                        })
 
-                    if (propsKeys.includes(modelKey) && propsKeys.includes(onUpdateModelKey)) {
-                        return {
-                            modelKey,
-                            onUpdateModelKey,
+                        if (modelKey.length) {
+                            return {
+                                modelKey,
+                                onUpdateModelKey,
+                            }
+                        }
+                    } else if (vModelKey) {
+                        const modelKey = vModelKey,
+                            propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
+                            onUpdateModelKey = `onUpdate:${vModelKey}`;
+
+                        if (propsKeys.includes(modelKey) && propsKeys.includes(onUpdateModelKey)) {
+                            return {
+                                modelKey,
+                                onUpdateModelKey,
+                            }
+                        }
+                    } else {
+                        const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
+                            propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
+                            onUpdateModelKey = formComponentValueChangeConfig[rdcTag.name] ? formComponentValueChangeConfig[rdcTag.name] : formComponentValueChangeConfig['default'];
+
+                        if (propsKeys.includes(modelKey) && propsKeys.includes(onUpdateModelKey)) {
+                            return {
+                                modelKey,
+                                onUpdateModelKey,
+                            }
                         }
                     }
+
                 }
                 return null
             }
@@ -86,24 +116,44 @@ export default function factory() {
 
                     let result: RuleType;
                     const rtItem = ruleTemplate(item),
-                        gvmTag = getVModel(rtItem.type);
+                        gvmTag = getVModel(rtItem.type, rtItem.vModelKey);
 
                     if (rtItem.children) {
                         rtItem.children = fillRuleChildren(rtItem.children as Array<RuleType>)
                     }
 
                     if (gvmTag) {
-                        const { modelKey, onUpdateModelKey } = gvmTag;
-                        rtItem.vModelKey = modelKey;
+                        const { modelKey, onUpdateModelKey } = gvmTag, rtField = rtItem.field;
+
+                        if (!rtItem.vModelKey) {
+                            rtItem.vModelKey = modelKey;
+                        }
 
                         // 赋值处理
-                        if (item.field) {
-                            if (!apiFn.isModelKey(item.field)) {
-                                model[item.field] = item.value;
+                        if (rtField) {
+                            if (!apiFn.isModelKey(rtField)) {
+                                if (Array.isArray(modelKey)) {
+                                    const json = {};
+                                    modelKey.forEach(key => {
+                                        json[key] = item.value ? item.value[key] : undefined;
+                                    })
+                                    model[rtField] = json;
+                                } else {
+                                    model[rtField] = item.value;
+                                }
                             }
-                            rtItem.props[modelKey] = model[item.field];
-                            rtItem.props[onUpdateModelKey] = (value: any) => {
-                                apiFn.setFieldValue(item.field || '', value);
+                            if (Array.isArray(modelKey)) {
+                                modelKey.forEach((key, keyIndex) => {
+                                    rtItem.props[key] = model[rtField] ? model[rtField][key] : undefined;
+                                    rtItem.props[onUpdateModelKey[keyIndex]] = (value: any) => {
+                                        apiFn.setFieldValue(rtField, value, key);
+                                    }
+                                })
+                            } else {
+                                rtItem.props[modelKey] = model[rtField];
+                                rtItem.props[onUpdateModelKey] = (value: any) => {
+                                    apiFn.setFieldValue(rtField, value);
+                                }
                             }
                         }
 
@@ -118,7 +168,7 @@ export default function factory() {
 
                             // 显示form-item
                             const formItemProps: any = {};
-                            formItemProps[defaultName.formItemPropName] = item.field
+                            formItemProps[defaultName.formItemPropName] = rtField
                             if (rtItem.props.disabled !== true) {
                                 if (item.validate) {
                                     if (Array.isArray(item.validate)) {
@@ -127,7 +177,6 @@ export default function factory() {
                                         }
                                     }
                                     formItemProps['rules'] = item.validate
-
                                 }
                             }
 
@@ -205,8 +254,18 @@ export default function factory() {
                     }
                 },
                 // 设置数据
-                setFieldValue(field, value) {
-                    model[field] = value
+                setFieldValue(field, value, key) {
+                    if (key) {
+                        if (model[field]) {
+                            model[field][key] = value
+                        } else {
+                            const json = {};
+                            json[key] = value;
+                            model[field][key] = json
+                        }
+                    } else {
+                        model[field] = value
+                    }
                 },
                 // 获取输入组件的值
                 getFormData(field) {
