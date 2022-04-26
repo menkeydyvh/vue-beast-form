@@ -79,6 +79,7 @@ const ant: AddConfigType[] = [
         vModelKey: "fileList",
         names: [
             "AUpload",
+            "AUploadDragger",
         ]
     }
 ]

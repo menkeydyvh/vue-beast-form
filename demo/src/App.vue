@@ -60,6 +60,10 @@ export default defineComponent({
             title: 'Group',
             component: 'groupForm.vue'
           },
+          {
+            title: 'Upload',
+            component: 'uploadForm.vue'
+          },
         ]
       },
     ]), selectData = ref<MenuItem>();

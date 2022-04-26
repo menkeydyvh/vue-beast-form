@@ -22,7 +22,7 @@
     "allowJs": true,
     // "useDefineForClassFields": true,
     // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
-    // "module": "commonjs",
+    "module": "esnext",
     // 用来指定编译时是否生成.map文件
     // "sourceMap": true,
     // "resolveJsonModule": true,
