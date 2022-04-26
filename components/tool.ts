@@ -66,7 +66,7 @@ export const getParentCompnent = (parent: ComponentInternalInstance, name: strin
  * @param key 
  * @returns 
  */
-export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field'): RuleType | null => {
+export const getArrayRule = (rules: Array<RuleType>, value: any, key: string = 'field'): RuleType => {
     let length = 0, result = null;
     if (Array.isArray(rules)) {
         length = rules.length
@@ -76,7 +76,7 @@ export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field
                 break;
             }
             if (rules[i].children) {
-                result = getArrayRule(rules[i].children, value, key)
+                result = getArrayRule(rules[i].children as RuleType[], value, key)
                 if (result) {
                     break;
                 }
@@ -92,7 +92,7 @@ export const getArrayRule = (rules: Array<any>, value: any, key: string = 'field
  * @param nd 
  * @returns 
  */
-const mergeObject = (od: any, nd: any) => {
+const mergeObject = <T>(od: T, nd: T) => {
     if (Array.isArray(od)) {
         return [].concat(od, nd)
     } else if (isObject(od)) {

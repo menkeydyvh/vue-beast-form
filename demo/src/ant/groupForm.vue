@@ -1,6 +1,6 @@
 <template>
     <a-card class="content-card" :bordered="false" title="数组的处理，引入Group组件">
-        <json-layout ref="jsonLayoutRef" :rule="rule" v-model:api="jApi" :option="{
+        <json-layout :rule="rule" v-model:api="jApi" :option="{
             form: {
                 layout: 'vertical'
             }
@@ -16,7 +16,6 @@ export default defineComponent({
     components: { JsonLayout },
     setup() {
         const rule = ref(),
-            jsonLayoutRef = ref(),
             jApi = ref();
 
         // 导入组件 用法和当前组件的按需引入一样
@@ -79,10 +78,7 @@ export default defineComponent({
                     type: 'primary',
                     onClick: () => {
                         jApi.value.validate((valid: boolean) => {
-                            console.log('api.validate():', valid)
-                            if (valid) {
-                                console.log('data:', jApi.value.getFormData())
-                            }
+                            console.log(valid, jApi.value.getFormData())
                         })
                     }
                 },
@@ -93,7 +89,6 @@ export default defineComponent({
         return {
             jApi,
             rule,
-            jsonLayoutRef
         }
     }
 })

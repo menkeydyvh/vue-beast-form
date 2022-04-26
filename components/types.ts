@@ -31,7 +31,7 @@ export type PropsOptionType = {
 export type ApiFnType = {
     getRule(field: string, rules?: Array<RuleType> | RuleType): RuleType | null
     updateRule(field: string, rule: RuleType, isMerge?: boolean): void
-    setFieldChange(field: string, value: any): void
+    setFieldValue(field: string, value: any): void
     getFormData(field?: string): any
     isModelKey(field: string): boolean
     validate(callback: Function, fields: string | string[]): void

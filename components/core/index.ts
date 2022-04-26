@@ -98,10 +98,12 @@ export default function factory() {
 
                         // 赋值处理
                         if (item.field) {
-                            model[item.field] = model[item.field] || item.value;
+                            if (!apiFn.isModelKey(item.field)) {
+                                model[item.field] = item.value;
+                            }
                             rtItem.props[modelKey] = model[item.field];
                             rtItem.props[onUpdateModelKey] = (value: any) => {
-                                apiFn.setFieldChange(item.field || '', value);
+                                apiFn.setFieldValue(item.field || '', value);
                             }
                         }
 
@@ -203,13 +205,8 @@ export default function factory() {
                     }
                 },
                 // 设置数据
-                setFieldChange(field, value) {
+                setFieldValue(field, value) {
                     model[field] = value
-                    const getRule = apiFn.getRule(field)
-                    if (getRule) {
-                        getRule.value = value
-                        getRule.props[getRule.vModelKey] = value
-                    }
                 },
                 // 获取输入组件的值
                 getFormData(field) {
@@ -241,7 +238,7 @@ export default function factory() {
             const changeModelValue = () => {
                 for (let key in model) {
                     if (model[key] !== modelValue.value[key]) {
-                        apiFn.setFieldChange(key, modelValue.value[key])
+                        apiFn.setFieldValue(key, modelValue.value[key])
                     }
                 }
             }

@@ -74,6 +74,12 @@ const ant: AddConfigType[] = [
         names: [
             "ATransfer",
         ]
+    },
+    {
+        vModelKey: "fileList",
+        names: [
+            "AUpload",
+        ]
     }
 ]
 

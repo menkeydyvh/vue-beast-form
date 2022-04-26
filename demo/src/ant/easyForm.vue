@@ -22,10 +22,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-// import JsonLayout from 'json-layout'
-// import { RuleType } from 'json-layout/lib/types'
-import JsonLayout from '../../../components'
-import { RuleType } from '../../../components/types'
+import JsonLayout from 'json-layout'
+import { RuleType } from 'json-layout/lib/types'
+// import JsonLayout from '../../../components'
+// import { RuleType } from '../../../components/types'
 
 export default defineComponent({
   components: { JsonLayout },
@@ -33,7 +33,7 @@ export default defineComponent({
     const jApi = ref(),
       disabled = ref(false),
       isForm = ref(true),
-      value = ref({ input: '123' }),
+      value = ref({}),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
@@ -59,7 +59,6 @@ export default defineComponent({
         validate: [
           { required: true, message: '必须填写', trigger: 'blur' },
         ],
-        display: "if",
       },
       {
         type: "a-select",
@@ -267,8 +266,9 @@ export default defineComponent({
             props: {
               type: "password",
             },
+            display: "show",
           },
-          "input下方"
+          "input下方",
         ],
       },
       {
@@ -283,34 +283,9 @@ export default defineComponent({
                   type: 'primary',
                   htmlType: 'sbumit',
                   onClick: () => {
-                    if (!isForm.value) {
-                      // 不是form的时候获取数据
-                      console.log('formData:', jApi.value.getFormData())
-                    }
-                  }
-                },
-                children: ['submit btn提交']
-              },
-              {
-                type: 'a-button',
-                props: {
-                  onClick: () => {
-                    value.value = {
-                      input: 'onReset'
-                    }
-                  }
-                },
-                children: ['重置']
-              },
-              {
-                type: 'a-button',
-                props: {
-                  type: 'primary',
-                  onClick: () => {
-                    console.log('jApi:', jApi.value)
                     if (isForm.value) {
-                      jApi.value.validate((valid: boolean, data: any) => {
-                        console.log(valid, data)
+                      jApi.value.validate((valid: boolean) => {
+                        console.log(valid, jApi.value.getFormData())
                       });
                     } else {
                       // 不是form的时候获取数据
@@ -318,8 +293,21 @@ export default defineComponent({
                     }
                   }
                 },
-                children: ['btn提交']
+                children: ['提交']
               },
+              {
+                type: 'a-button',
+                props: {
+                  onClick: () => {
+                    value.value = {
+                      input: 'onReset',
+                      select: '',
+                    }
+                  }
+                },
+                children: ['重置']
+              },
+
             ]
           }
         ]
