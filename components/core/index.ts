@@ -26,9 +26,8 @@ export default function factory() {
         setup(props, { emit }) {
             const vm = getCurrentInstance(),
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
-                model = reactive<any>(modelValue.value ? modelValue.value : {}),
+                model = reactive({ ...modelValue.value }),
                 nRule = computed(() => fillRule()),
-                // 设立resolveDynamicComponent缓存避免重复解析读取
                 cacheResolveDynamicComponent = markRaw<any>({}),
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 
@@ -109,12 +108,10 @@ export default function factory() {
             // 补足渲染规则
             const fillRuleChildren = (children: Array<RuleType>): Array<RuleType> => {
                 return children.map(item => {
-
                     if (!isObject(item)) {
                         return item;
                     }
 
-                    let result: RuleType;
                     const rtItem = ruleTemplate(item),
                         gvmTag = getVModel(rtItem.type, rtItem.vModelKey);
 
@@ -124,11 +121,9 @@ export default function factory() {
 
                     if (gvmTag) {
                         const { modelKey, onUpdateModelKey } = gvmTag, rtField = rtItem.field;
-
                         if (!rtItem.vModelKey) {
                             rtItem.vModelKey = modelKey;
                         }
-
                         // 赋值处理
                         if (rtField) {
                             if (!apiFn.isModelKey(rtField)) {
@@ -157,50 +152,11 @@ export default function factory() {
                             }
                         }
 
-                        if (rtItem.native) {
-                            result = ruleTemplate({
-                                type: defaultName.formItem,
-                                field: rtItem.field,
-                                props: null,
-                                children: [],
-                                display: rtItem.display
-                            });
-                            rtItem.display = undefined;
-                            rtItem.field = undefined;
-
-                            // 显示form-item
-                            const formItemProps: any = {};
-                            formItemProps[defaultName.formItemPropName] = rtField
-                            if (rtItem.props.disabled !== true) {
-                                if (item.validate) {
-                                    if (Array.isArray(item.validate)) {
-                                        if (item.validate.find(item => item.required)) {
-                                            formItemProps.required = true
-                                        }
-                                    }
-                                    formItemProps['rules'] = item.validate
-                                }
-                            }
-
-                            if (typeof item.title === 'string') {
-                                formItemProps[defaultName.formItemPropLabel] = item.title
-                            }
-
-                            result.props = formItemProps;
-                            if (isObject(item.title)) {
-                                result.children.push({
-                                    ...item.title as RuleType,
-                                    slot: defaultName.formItemSlotTitle
-                                })
-                            }
-                            result.children.push(rtItem)
-                        }
+                    } else {
+                        rtItem.vModelKey = undefined;
                     }
 
-                    if (!result) {
-                        result = rtItem
-                    }
-                    return result;
+                    return rtItem;
                 });
             }
 
@@ -254,17 +210,22 @@ export default function factory() {
                 },
                 // 设置数据
                 setFieldValue(field, value, key) {
-                    if (key) {
-                        if (model[field]) {
-                            model[field][key] = value
+                    const getRule = apiFn.getRule(field);
+                    if (getRule) {
+                        debugger
+                        if (Array.isArray(getRule.vModelKey)) {
+                            if (model[field]) {
+                                model[field][key] = value
+                            } else {
+                                const json = {};
+                                json[key] = value;
+                                model[field][key] = json
+                            }
                         } else {
-                            const json = {};
-                            json[key] = value;
-                            model[field][key] = json
+                            model[field] = value
                         }
-                    } else {
-                        model[field] = value
                     }
+                    console.log(getRule)
                 },
                 // 设置 display
                 display(field, display) {
@@ -335,7 +296,8 @@ export default function factory() {
                 emit('update:api', apiFn)
             }
 
-            watch(model, () => {
+
+            watch(() => model, () => {
                 emit('update:modelValue', model)
             }, {
                 deep: true

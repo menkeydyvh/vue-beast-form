@@ -1,3 +1,5 @@
+import type { Directive } from 'vue'
+
 export type RuleType = {
     // 必须
     type: string;
@@ -15,6 +17,9 @@ export type RuleType = {
     children?: Array<RuleType | string>;
     slot?: string;
     display?: 'show' | 'if';
+    directives?: [
+        [string | Directive, ...any]
+    ]
 }
 
 export interface RuleValidateType {

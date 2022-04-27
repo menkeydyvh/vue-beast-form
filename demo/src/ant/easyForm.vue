@@ -22,10 +22,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import JsonLayout from 'json-layout'
-import { RuleType } from 'json-layout/lib/types'
-// import JsonLayout from '../../../components'
-// import { RuleType } from '../../../components/types'
+// import JsonLayout from 'json-layout'
+// import type { RuleType } from 'json-layout/lib/types'
+import JsonLayout from '../../../components'
+import type { RuleType } from '../../../components/types'
 
 export default defineComponent({
   components: { JsonLayout },

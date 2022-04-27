@@ -1,6 +1,7 @@
-import { h, resolveDynamicComponent } from 'vue'
+import { h, resolveDynamicComponent, withDirectives, resolveDirective } from 'vue'
 import { isObject } from '../tool'
-import type { Slot, Component } from 'vue'
+import { defaultName } from './config'
+import type { Slot, Component, VNode } from 'vue'
 import type { RuleType } from '../types'
 
 const mergeStyle = (oStyle: any, nStyle: any): any => {
@@ -32,6 +33,28 @@ const mergeStyle = (oStyle: any, nStyle: any): any => {
     return result;
 }
 
+/**
+ * 使用指令
+ * @param vNode 
+ * @param rule 
+ * @returns 
+ */
+const directivesRender = (vNode: VNode, rule: RuleType) => {
+    if (rule.directives) {
+        const directives = rule.directives.map(item => {
+            if (Array.isArray(item)) {
+                if (typeof item[0] === 'string') {
+                    item[0] = resolveDirective(item[0])
+                }
+                return item
+            }
+        }).filter(item => item)
+        return withDirectives(vNode, directives as any)
+    } else {
+        return vNode
+    }
+}
+
 
 /**
  * 
@@ -42,16 +65,45 @@ const mergeStyle = (oStyle: any, nStyle: any): any => {
  * @returns 
  */
 const render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
+    if (rule.display === 'if') {
+        return undefined;
+    }
+
     if (rule.display === 'show') {
         props.style = mergeStyle(props.style, {
-            display: 'none'
+            display: "none"
         });
     }
 
-    // 后续处理指令
-    const vNode = h(resolveDynamicComponent(tag) as Component, props, slot)
+    let formItemVNode = null, vNode = h(resolveDynamicComponent(tag) as Component, props, slot)
 
-    return vNode
+    if (rule.native && rule.vModelKey) {
+        const formItemProps: any = {
+            style: rule.display === 'show' ? "display: none" : undefined,
+        }, formItemSlot = {
+            default: () => vNode
+        };
+        formItemProps[defaultName.formItemPropName] = rule.field;
+        if (rule.props.disabled !== true) {
+            if (rule.validate) {
+                if (Array.isArray(rule.validate)) {
+                    if (rule.validate.find(item => item.required)) {
+                        formItemProps.required = true
+                    }
+                }
+                formItemProps['rules'] = rule.validate
+            }
+        }
+        if (typeof rule.title === 'string') {
+            formItemProps[defaultName.formItemPropLabel] = rule.title
+        } else {
+            formItemSlot[defaultName.formItemSlotTitle] = () => renderItem(rule.title as RuleType)
+        }
+
+        formItemVNode = h(resolveDynamicComponent(defaultName.formItem) as Component, formItemProps, formItemSlot)
+    }
+
+    return directivesRender(formItemVNode ? formItemVNode : vNode, rule)
 }
 
 /**
@@ -59,26 +111,22 @@ const render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
  * @param {Array} children 
  * @returns 
  */
-const renderChildren = (children: Array<RuleType>): any => {
-    let slots: any = null;
-    if (children) {
-        if (Array.isArray(children)) {
-            slots = {};
-            const slotAry: any = {};
-            children.filter(child => child.display != 'if').forEach(child => {
-                let slotsKey: string = 'default', isObj: boolean = typeof child === 'object';
-                if (isObj) {
-                    slotsKey = child.slot ? child.slot : slotsKey;
-                }
-                if (!slotAry[slotsKey]) {
-                    slotAry[slotsKey] = []
-                }
-                slotAry[slotsKey].push(isObj ? renderItem(child) : child)
-            })
-            for (let key in slotAry) {
-                slots[key] = () => slotAry[key]
-            }
+const renderChildren = (children: Array<RuleType | string>): any => {
+    const slots: any = {}, slotAry: any = {};
+    children.forEach(child => {
+        let slotsKey = 'default', isObj = false;
+        if (typeof child !== 'string') {
+            slotsKey = child.slot ? child.slot : slotsKey;
+            isObj = true
         }
+
+        if (!slotAry[slotsKey]) {
+            slotAry[slotsKey] = []
+        }
+        slotAry[slotsKey].push(isObj ? renderItem(child as RuleType) : child)
+    })
+    for (let key in slotAry) {
+        slots[key] = () => slotAry[key]
     }
     return slots
 }
@@ -89,7 +137,13 @@ const renderChildren = (children: Array<RuleType>): any => {
  * @returns 
  */
 const renderItem = (rule: RuleType) => {
-    return render(rule.type, { ...rule.props }, renderChildren(rule.children as Array<RuleType>), rule)
+    let slot = undefined;
+
+    if (rule.children && rule.children.length) {
+        slot = renderChildren(rule.children)
+    }
+
+    return render(rule.type, { ...rule.props }, slot, rule)
 }
 
 

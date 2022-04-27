@@ -9,12 +9,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
-import JsonLayout from 'json-layout'
+// import JsonLayout from 'json-layout'
+import JsonLayout from '../../../components'
+import type { RuleType } from '../../../components/types'
 
 export default defineComponent({
     components: { JsonLayout },
     setup() {
-        const rule = ref(),
+        const rule = ref<RuleType[]>(),
             jsonLayoutRef = ref(),
             jApi = ref();
         onMounted(() => {

@@ -9,13 +9,15 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import JsonLayout from 'json-layout'
+// import JsonLayout from 'json-layout'
 import Group from './components/group.vue';
+import JsonLayout from '../../../components'
+import type { RuleType } from '../../../components/types'
 
 export default defineComponent({
     components: { JsonLayout },
     setup() {
-        const rule = ref(),
+        const rule = ref<RuleType[]>(),
             jApi = ref();
 
         // 导入组件 用法和当前组件的按需引入一样

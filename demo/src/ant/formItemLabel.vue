@@ -7,14 +7,16 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import JsonLayout from 'json-layout'
+// import JsonLayout from 'json-layout'
+import JsonLayout from '../../../components'
+import type { RuleType } from '../../../components/types'
 
 export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
       value = ref({ goods_name: '123' }),
-      rule = ref([]),
+      rule = ref<RuleType[]>([]),
       option = ref({
         form: {
           // wrapperCol: { span: 14 },

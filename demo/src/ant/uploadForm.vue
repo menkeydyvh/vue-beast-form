@@ -10,13 +10,14 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { InboxOutlined } from '@ant-design/icons-vue'
-import JsonLayout from 'json-layout'
-// import JsonLayout from '../../../components'
+// import JsonLayout from 'json-layout'
+import JsonLayout from '../../../components'
+import type { RuleType, ApiFnType } from '../../../components/types'
 
 export default defineComponent({
     components: { JsonLayout },
     setup() {
-        const rule = ref(),
+        const rule = ref<RuleType[]>(),
             value = ref({
                 input1: [{
                     uid: '-1',
@@ -26,7 +27,7 @@ export default defineComponent({
                     thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
                 }]
             }),
-            jApi = ref();
+            jApi = ref<ApiFnType>();
 
         JsonLayout.components = { InboxOutlined }
 
