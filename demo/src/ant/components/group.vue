@@ -13,11 +13,13 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, toRefs, getCurrentInstance, watch } from 'vue'
-import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue"
-import JsonLayout from 'json-layout'
-import { deepCopy, getParentCompnent } from 'json-layout/lib/tool'
 import type { PropType } from 'vue'
-import type { RuleType, PropsOptionType } from 'json-layout/lib/types'
+import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue"
+import { deepCopy, getParentCompnent } from 'json-layout/lib/tool'
+// import JsonLayout from 'json-layout'
+// import type { RuleType, PropsOptionType } from 'json-layout/lib/types'
+import JsonLayout from '../../../../components'
+import type { RuleType, PropsOptionType } from '../../../../components/types'
 
 interface GroupRule {
     rule: Array<RuleType>;
@@ -44,15 +46,17 @@ export default defineComponent({
 
         const onInit = () => {
             // 处理 array['',''] 和 array[object,object]的初始化赋值
-            if (field.value) {
-                modelValue.value.forEach((item: any) => {
-                    let json: any = {};
-                    json[field.value] = item;
-                    value.value.push(json)
-                })
-            } else {
-                if (modelValue.value) {
-                    value.value = modelValue.value
+            if (modelValue.value) {
+                if (field.value) {
+                    modelValue.value.forEach((item: any) => {
+                        let json: any = {};
+                        json[field.value] = item;
+                        value.value.push(json)
+                    })
+                } else {
+                    if (modelValue.value) {
+                        value.value = modelValue.value
+                    }
                 }
             }
 

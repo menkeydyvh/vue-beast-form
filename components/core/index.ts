@@ -28,7 +28,7 @@ export default function factory() {
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
                 model = reactive({ ...modelValue.value }),
                 nRule = computed(() => fillRule()),
-                cacheResolveDynamicComponent = markRaw<any>({}),
+                cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 
             // 记录子表单
@@ -139,13 +139,13 @@ export default function factory() {
                             }
                             if (Array.isArray(modelKey)) {
                                 modelKey.forEach((key, keyIndex) => {
-                                    rtItem.props[key] = model[rtField] ? model[rtField][key] : undefined;
+                                    // rtItem.props[key] = model[rtField] ? model[rtField][key] : undefined;
                                     rtItem.props[onUpdateModelKey[keyIndex]] = (value: any) => {
                                         apiFn.setFieldValue(rtField, value, key);
                                     }
                                 })
                             } else {
-                                rtItem.props[modelKey] = model[rtField];
+                                // rtItem.props[modelKey] = model[rtField];
                                 rtItem.props[onUpdateModelKey] = (value: any) => {
                                     apiFn.setFieldValue(rtField, value);
                                 }
@@ -186,7 +186,7 @@ export default function factory() {
                 }
 
                 baseRule.children = fillRuleChildren(rules.value);
-
+                
                 return baseRule;
             }
 
@@ -212,7 +212,6 @@ export default function factory() {
                 setFieldValue(field, value, key) {
                     const getRule = apiFn.getRule(field);
                     if (getRule) {
-                        debugger
                         if (Array.isArray(getRule.vModelKey)) {
                             if (model[field]) {
                                 model[field][key] = value
@@ -225,7 +224,6 @@ export default function factory() {
                             model[field] = value
                         }
                     }
-                    console.log(getRule)
                 },
                 // 设置 display
                 display(field, display) {
