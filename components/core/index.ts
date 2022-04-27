@@ -48,9 +48,9 @@ export default function factory() {
                     rt.props = {}
                 }
                 if (typeof disabled.value === 'boolean') {
-                    rt.props.disabled = disabled.value
+                    rt.props.disabled = disabled.value === true ? true : undefined;
                 }
-                return rt
+                return reactive(rt)
             }
 
             // 获取对应得 v-model 的key和事件
@@ -277,13 +277,10 @@ export default function factory() {
                 disabled(field, isBool) {
                     let boolValue = isBool === true ? true : undefined
                     if (field) {
-                        apiFn.updateRule(field, {
-                            props: {
-                                disabled: boolValue
-                            }
-                        })
-                    } else {
-                        emit('update:disabled', boolValue)
+                        const getRule = apiFn.getRule(field);
+                        if (getRule) {
+                            getRule.props.disabled = boolValue;
+                        }
                     }
                 },
                 // 获取输入组件的值

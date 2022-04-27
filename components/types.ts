@@ -35,6 +35,6 @@ export type ApiFnType = {
     getFormData(field?: string): any
     isModelKey(field: string): boolean
     display(field: string, display?: 'show' | 'if'): void
-    disabled(field?: string, isBool?: boolean): void
+    disabled(field: string, isBool?: boolean): void
     validate(callback: Function, fields?: string | string[]): void
 }

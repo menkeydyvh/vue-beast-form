@@ -42,6 +42,20 @@ export default defineComponent({
                 children: ['这是一个div']
             },
             {
+                type: 'div',
+                props: {
+                    style: 'padding:16px 0'
+                },
+                children: [{
+                    type: 'a-button',
+                    field: "divBtn",
+                    props: {
+                        type: 'primary',
+                    },
+                    children: ['展示用的按钮']
+                }]
+            },
+            {
                 type: "a-space",
                 children: [
                     {
@@ -50,7 +64,6 @@ export default defineComponent({
                             onClick: () => {
                                 display = display ? null : 'if';
                                 jApi.value.display('input1', display)
-                                console.log(`api.display(display=${display})`)
                             }
                         },
                         children: ['隐藏显示input1']
@@ -60,11 +73,11 @@ export default defineComponent({
                         props: {
                             onClick: () => {
                                 disbaled = !disbaled
-                                jApi.value.disabled(null, !disbaled)
-                                console.log(`api.disabled(disbaled=${disbaled})`)
+                                jApi.value.disabled('input2', disbaled)
+                                jApi.value.disabled('divBtn', disbaled)
                             }
                         },
-                        children: ['disabled表单']
+                        children: ['禁用启用按钮和input2']
                     },
                     {
                         type: 'a-button',
