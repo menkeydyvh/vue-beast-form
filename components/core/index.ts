@@ -54,7 +54,7 @@ export default function factory() {
             }
 
             // 获取对应得 v-model 的key和事件
-            const getVModel = (type: string, vModelKey?: string | string[]) => {
+            const getVModel = (type: string, vModelKey?: string | string[], vModelKeyDefaultValue?: any | any[]) => {
                 if (!cacheResolveDynamicComponent[type]) {
                     cacheResolveDynamicComponent[type] = resolveDynamicComponent(type)
                 }
@@ -64,7 +64,7 @@ export default function factory() {
                 if (isObject(rdcTag)) {
                     let defaultModelKey: string | string[] = vModelKey || formDataComponentKey[rdcTag.name] || formDataComponentKey['default'],
                         defaultEvents: any = null,
-                        defaultValue: any = null,
+                        defaultValue: any = vModelKeyDefaultValue || null,
                         propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
                         isBool = true;
 
@@ -119,7 +119,7 @@ export default function factory() {
                     }
 
                     const rtItem = ruleTemplate(item),
-                        gvmTag = getVModel(rtItem.type, rtItem.vModelKey);
+                        gvmTag = getVModel(rtItem.type, rtItem.vModelKey, rtItem.vModelKeyDefaultValue);
 
                     if (rtItem.children) {
                         rtItem.children = fillRuleChildren(rtItem.children as Array<RuleType>)
@@ -203,7 +203,7 @@ export default function factory() {
                 } else {
                     baseRule.type = 'div';
                 }
-                console.log('fillRule')
+                // console.log('用来检测是否全局重载打印:fillRule')
                 return baseRule;
             }
 

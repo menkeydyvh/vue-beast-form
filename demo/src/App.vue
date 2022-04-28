@@ -65,8 +65,8 @@ export default defineComponent({
             component: 'uploadForm.vue'
           },
           {
-            title: 'Tree',
-            component: 'treeForm.vue'
+            title: '其他v-model组件',
+            component: 'otherModel.vue'
           },
           {
             title: 'ApiTest',

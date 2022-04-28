@@ -11,6 +11,7 @@ export type RuleType = {
     title?: string | RuleType;
     value?: any;
     vModelKey?: string | string[];
+    vModelKeyDefaultValue?: any | any[];
     validate?: Array<RuleValidateType>;
     native?: Boolean;
     // 布局相关

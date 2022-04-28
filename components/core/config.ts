@@ -48,7 +48,6 @@ const formDataComponentKey = {
     ATransfer: ["selectedKeys", "targetKeys"],
     AUpload: 'fileList',
     AUploadDragger: "fileList",
-    ATree: ['expandedKeys', 'selectedKeys', 'checkedKeys']
 }
 
 /**
