@@ -48,6 +48,7 @@ const formDataComponentKey = {
     ATransfer: ["selectedKeys", "targetKeys"],
     AUpload: 'fileList',
     AUploadDragger: "fileList",
+    ATree: ['expandedKeys', 'selectedKeys', 'checkedKeys']
 }
 
 /**
@@ -85,67 +86,33 @@ const updateDefaultName = (config: DefaultName) => {
 
 /**
  * 添加更多配置
- * @param names 
+ * @param name
  * @param keys 
  * @param events 
+ * @param defaultValues 
  */
-const setFormDataComponent = (names: string | string[], keys: string | string[], events: string | string[], defaultValues?: any) => {
-    if (Array.isArray(names)) {
-        names.forEach((name, nameIndex) => {
-            if (Array.isArray(keys)) {
-                if (keys.length != names.length) {
-                    throw new Error('names and keys different lengths')
-                } else {
-                    formDataComponentKey[name] = keys[nameIndex]
-                }
-            } else {
-                formDataComponentKey[name] = keys;
+const setFormDataComponent = (name: string, keys: string | string[], events: string | string[], defaultValues?: any) => {
+    formDataComponentChangeKeyEvent[name] = keys
+    if (typeof keys === typeof events) {
+        if (Array.isArray(keys)) {
+            if (keys.length != events.length) {
+                throw new Error('keys and events different lengths')
             }
-            if (Array.isArray(events)) {
-                if (events.length != names.length) {
-                    throw new Error('names and events different lengths')
-                } else {
-                    formDataComponentChangeKeyEvent[name] = events[nameIndex]
-                }
-            } else {
-                formDataComponentChangeKeyEvent[name] = events;
-            }
-
-            if (defaultValues !== null && defaultValues !== undefined) {
-                if (Array.isArray(defaultValues)) {
-                    if (defaultValues.length != defaultValues.length) {
-                        throw new Error('names and events different lengths')
-                    } else {
-                        formDataComponentDefaultValue[name] = defaultValues[nameIndex]
-                    }
-                } else {
-                    formDataComponentDefaultValue[name] = defaultValues;
-                }
-            }
-        })
-    } else {
-        formDataComponentChangeKeyEvent[names] = keys
-        if (typeof keys === typeof events) {
-            if (Array.isArray(keys)) {
-                if (keys.length != events.length) {
-                    throw new Error('keys and events different lengths')
-                }
-            }
-            formDataComponentChangeKeyEvent[names] = events;
-        } else {
-            throw new Error('keys and events different typeof')
         }
-        if (defaultValues !== null && defaultValues !== undefined) {
-            if (typeof keys === typeof defaultValues) {
-                if (Array.isArray(keys)) {
-                    if (keys.length != defaultValues.length) {
-                        throw new Error('keys and defaultValues different lengths')
-                    }
+        formDataComponentChangeKeyEvent[name] = events;
+    } else {
+        throw new Error('keys and events different typeof')
+    }
+    if (defaultValues !== null && defaultValues !== undefined) {
+        if (typeof keys === typeof defaultValues) {
+            if (Array.isArray(keys)) {
+                if (keys.length != defaultValues.length) {
+                    throw new Error('keys and defaultValues different lengths')
                 }
-            } else {
-                throw new Error('keys and defaultValues different typeof')
             }
-            formDataComponentDefaultValue[names] = defaultValues;
+            formDataComponentDefaultValue[name] = defaultValues;
+        } else {
+            throw new Error('keys and defaultValues different typeof')
         }
     }
 }

@@ -10,7 +10,6 @@ export type RuleType = {
     field?: string;
     title?: string | RuleType;
     value?: any;
-    defaultValue?: any;
     vModelKey?: string | string[];
     validate?: Array<RuleValidateType>;
     native?: Boolean;

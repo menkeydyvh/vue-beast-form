@@ -20,11 +20,7 @@ export default defineComponent({
     components: { JsonLayout },
     setup() {
         const rule = ref<RuleType[]>(),
-            value = ref({
-                input: {
-                    expandedKeys: ["0-0", "0-0-0"]
-                }
-            }),
+            value = ref({}),
             jApi = ref();
 
         rule.value = [
@@ -58,7 +54,6 @@ export default defineComponent({
                         },
                     ]
                 },
-                vModelKey: ['expandedKeys', 'selectedKeys', 'checkedKeys']
             },
             {
                 type: 'a-button',
