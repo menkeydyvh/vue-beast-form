@@ -12,7 +12,7 @@
     "framework"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && webpack"
   },
   "dependencies": {
     "vue": "^3.2.33"
