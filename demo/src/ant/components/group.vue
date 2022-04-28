@@ -54,9 +54,7 @@ export default defineComponent({
                         value.value.push(json)
                     })
                 } else {
-                    if (modelValue.value) {
-                        value.value = modelValue.value
-                    }
+                    value.value = modelValue.value
                 }
             }
 

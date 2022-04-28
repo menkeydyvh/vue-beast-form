@@ -4,7 +4,9 @@
             form: {
                 layout: 'vertical'
             }
-        }" />
+        }" :disabled="disabled" />
+        <br />
+        <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
     </a-card>
 </template>
 <script lang="ts">
@@ -19,7 +21,9 @@ export default defineComponent({
     setup() {
         const rule = ref<RuleType[]>(),
             value = ref({}),
+            disabled = ref(),
             jApi = ref<ApiFnType>();
+
         let disbaled = false, display: any = null;
 
         rule.value = [
@@ -56,7 +60,7 @@ export default defineComponent({
                 }]
             },
             {
-                type: "a-space",
+                type: "div",
                 children: [
                     {
                         type: 'a-button',
@@ -102,14 +106,9 @@ export default defineComponent({
                         type: 'a-button',
                         props: {
                             onClick: () => {
-                                console.log('api.updateRule()', jApi.value.updateRule('divtest', {
-                                    childre: ['覆盖这个内容']
-                                }))
-                                // console.log('api.updateRule()', jApi.value.updateRule('divtest', {
-                                //     childre: [
-                                //         { type: 'div', children: ['添加了内容'] }
-                                //     ]
-                                // }), true)
+                                jApi.value.updateRule('divtest', {
+                                    children: ['覆盖这个内容']
+                                })
                             }
                         },
                         children: ['覆盖规则']
@@ -144,6 +143,7 @@ export default defineComponent({
             jApi,
             value,
             rule,
+            disabled,
         }
     }
 })

@@ -26,7 +26,8 @@ export default function factory() {
         setup(props, { emit }) {
             const vm = getCurrentInstance(),
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
-                model = reactive({ ...modelValue.value }),
+                model = reactive<any>({ ...modelValue.value }),
+                oldModel = markRaw<any>({ ...deepCopy(modelValue.value) }),
                 nRule = computed(() => fillRule()),
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
@@ -126,28 +127,36 @@ export default function factory() {
                         }
                         // 赋值处理
                         if (rtField) {
-                            if (!apiFn.isModelKey(rtField)) {
-                                if (Array.isArray(modelKey)) {
-                                    const json = {};
-                                    modelKey.forEach(key => {
-                                        json[key] = item.value ? item.value[key] : undefined;
-                                    })
-                                    model[rtField] = json;
-                                } else {
-                                    model[rtField] = item.value;
-                                }
-                            }
+                            let fieldValue: any = oldModel[rtField];
                             if (Array.isArray(modelKey)) {
+                                if (!fieldValue) {
+                                    fieldValue = {}
+                                }
                                 modelKey.forEach((key, keyIndex) => {
-                                    // rtItem.props[key] = model[rtField] ? model[rtField][key] : undefined;
+                                    if (!fieldValue[key]) {
+                                        fieldValue[key] = rtItem.value?.[key];
+                                    }
+                                    rtItem.props[key] = fieldValue[key];
                                     rtItem.props[onUpdateModelKey[keyIndex]] = (value: any) => {
                                         apiFn.setFieldValue(rtField, value, key);
                                     }
+
+                                    if (model[rtField] && !Object.keys(model[rtField]).includes(key)) {
+                                        model[rtField][key] = fieldValue[key]
+                                    }
                                 })
+
                             } else {
-                                // rtItem.props[modelKey] = model[rtField];
+                                if (!fieldValue) {
+                                    fieldValue = rtItem.value;
+                                }
+                                rtItem.props[modelKey] = fieldValue;
                                 rtItem.props[onUpdateModelKey] = (value: any) => {
                                     apiFn.setFieldValue(rtField, value);
+                                }
+
+                                if (!apiFn.isModelKey(rtField)) {
+                                    model[rtField] = fieldValue
                                 }
                             }
                         }
@@ -165,6 +174,8 @@ export default function factory() {
                 const baseRule = ruleTemplate({
                     type: '',
                 }), rules = computed(() => deepCopy(rule.value));
+
+                baseRule.children = fillRuleChildren(rules.value);
 
                 if (isForm.value) {
                     let defaultOption = {};
@@ -184,9 +195,7 @@ export default function factory() {
                 } else {
                     baseRule.type = 'div';
                 }
-
-                baseRule.children = fillRuleChildren(rules.value);
-                
+                console.log('fillRule')
                 return baseRule;
             }
 
@@ -213,15 +222,11 @@ export default function factory() {
                     const getRule = apiFn.getRule(field);
                     if (getRule) {
                         if (Array.isArray(getRule.vModelKey)) {
-                            if (model[field]) {
-                                model[field][key] = value
-                            } else {
-                                const json = {};
-                                json[key] = value;
-                                model[field][key] = json
-                            }
+                            model[field][key] = value
+                            getRule.props[key] = value
                         } else {
                             model[field] = value
+                            getRule.props[getRule.vModelKey] = value
                         }
                     }
                 },
@@ -269,10 +274,10 @@ export default function factory() {
             }
 
             // modelValue变更的时候赋值
-            const changeModelValue = () => {
+            const changeModelValue = (isForce?: boolean) => {
                 for (let key in model) {
-                    if (model[key] !== modelValue.value[key]) {
-                        apiFn.setFieldValue(key, modelValue.value[key])
+                    if (isForce || model[key] !== modelValue.value?.[key]) {
+                        apiFn.setFieldValue(key, modelValue.value?.[key])
                     }
                 }
             }
@@ -289,18 +294,17 @@ export default function factory() {
                 return true;
             }
 
-            // 初始化api
-            const initApiFn = () => {
+            // 初始化
+            const init = () => {
                 emit('update:api', apiFn)
             }
 
 
-            watch(() => model, () => {
+            watch(model, () => {
                 emit('update:modelValue', model)
             }, {
                 deep: true
             })
-
 
             watch(modelValue, () => {
                 changeModelValue();
@@ -312,7 +316,7 @@ export default function factory() {
                 if (parentFrom) {
                     parentFrom.push(vm)
                 }
-                initApiFn()
+                init()
             });
 
             onBeforeUnmount(() => {
@@ -325,7 +329,7 @@ export default function factory() {
             })
 
             onUpdated(() => {
-                initApiFn()
+                init()
             })
 
             return () => renderRule(nRule.value)

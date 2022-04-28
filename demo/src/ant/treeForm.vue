@@ -5,6 +5,8 @@
                 layout: 'vertical'
             }
         }" />
+
+        {{ value }}
     </a-card>
 </template>
 <script lang="ts">

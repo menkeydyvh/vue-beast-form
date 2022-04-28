@@ -121,8 +121,24 @@ export const deepCopy = (data: any): any => {
     return realizeCloneDeep(data);
 }
 
+/**
+ * 重新处理值
+ * @param value
+ * @returns 
+ */
+export const newValue = (value: any): any => {
+    if (typeof value === 'object') {
+        return deepCopy(value)
+    } else {
+        return value
+    }
+}
+
+
+
 export default {
     loopRule,
     updateRule,
     deepCopy,
+    newValue,
 }

@@ -33,7 +33,7 @@ export default defineComponent({
     const jApi = ref(),
       disabled = ref(false),
       isForm = ref(true),
-      value = ref({}),
+      value = ref({ input: 'input' }),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
@@ -41,11 +41,6 @@ export default defineComponent({
           layout: 'vertical'
         }
       });
-
-    const onSubmit = (data: any) => {
-      console.log('jApi:', jApi.value)
-      console.log('onSubmit', data)
-    }
 
     rule.value = [
       {
@@ -149,6 +144,7 @@ export default defineComponent({
         type: "a-time-range-picker",
         title: "time-range-picker",
         field: "timeRangePicker",
+        value: ["01:06:00", "05:00:00"],
         props: {
           valueFormat: 'HH:mm:ss'
         }
@@ -285,7 +281,7 @@ export default defineComponent({
                   onClick: () => {
                     if (isForm.value) {
                       jApi.value.validate((valid: boolean) => {
-                        console.log(valid, jApi.value.getFormData())
+                        console.log(valid, jApi.value.getFormData(), value.value)
                       });
                     } else {
                       // 不是form的时候获取数据
@@ -301,7 +297,6 @@ export default defineComponent({
                   onClick: () => {
                     value.value = {
                       input: 'onReset',
-                      select: '',
                     }
                   }
                 },
@@ -321,7 +316,6 @@ export default defineComponent({
       value,
       rule,
       option,
-      onSubmit,
     }
   }
 

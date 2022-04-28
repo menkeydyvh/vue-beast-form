@@ -1,7 +1,8 @@
 
 <template>
   <a-card class="content-card" :bordered="false" title="title是json的解析">
-    <json-layout v-model:api="jApi" :rule="rule" :option="option" />
+    <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
+    {{ value }}
   </a-card>
 </template>
 
@@ -15,7 +16,7 @@ export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
-      value = ref({ goods_name: '123' }),
+      value = ref({ goods_name: '123', name: '123' }),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
@@ -29,17 +30,30 @@ export default defineComponent({
         type: "a-input",
         title: {
           type: 'span',
-          children: ["商品名称2"]
+          children: ["商品名称1"]
         },
         field: "name",
         value: "iphone 7",
         props: {
           type: "text",
         },
-        children: [{ type: 'span', slot: 'prefix', children: ['prefix'] }],
+        children: [{ type: 'span', slot: 'prefix', children: ['前面'] }],
         validate: [
           { required: true, message: '请输入name', trigger: 'blur' },
         ],
+      },
+      {
+        type: "a-input",
+        title: {
+          type: 'span',
+          children: ["商品名称2"]
+        },
+        field: "name2",
+        value: "good2",
+        props: {
+          type: "text",
+        },
+        children: [{ type: 'span', slot: 'prefix', children: ['prefix'] }],
       },
       {
         type: "a-form-item",
@@ -66,17 +80,11 @@ export default defineComponent({
     ]
 
 
-    const onSubmit = (data: any) => {
-      console.log('jApi:', jApi.value)
-      console.log('onSubmit', data)
-    }
-
     return {
       jApi,
       value,
       rule,
       option,
-      onSubmit,
     }
   }
 
