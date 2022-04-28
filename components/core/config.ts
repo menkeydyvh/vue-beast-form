@@ -1,16 +1,15 @@
-interface AddConfigType {
-    // v-model:key
-    vModelKey: string;
-    // v-model:key 对应的组件name
-    names: string[];
-    // 存在不按上面规范但key是一样的情况
-    other?: any
+interface DefaultName {
+    form: string;
+    formItem: string;
+    formItemPropName: string;
+    formItemPropLabel: string;
+    formItemSlotTitle: string;
 }
 
 /**
  * form 组件名称
  */
-const defaultName: any = {
+const defaultName: DefaultName = {
     form: 'a-form',
     formItem: 'a-form-item',
     formItemPropName: 'name',
@@ -18,99 +17,146 @@ const defaultName: any = {
     formItemSlotTitle: 'label',
 }
 
-
 /**
  * 表单组件定义 v-model 的 :key
  */
-const formComponentConfig: any = {
+const formDataComponentKey = {
     // 这个是给自定义组件用的
     default: 'modelValue',
+    // ant
+    AAutoComplete: 'value',
+    ACascader: 'value',
+    ACheckboxGroup: 'value',
+    ADatePicker: 'value',
+    ARangePicker: 'value',
+    AInput: 'value',
+    ATextarea: 'value',
+    AInputPassword: 'value',
+    AInputNumber: 'value',
+    AMentions: 'value',
+    ARadioGroup: 'value',
+    ARate: 'value',
+    ASelect: 'value',
+    ASlider: 'value',
+    ATimePicker: 'value',
+    ATimeRangePicker: 'value',
+    ATreeSelect: 'value',
+    ACheckbox: 'checked',
+    AChecked: 'checked',
+    ARadio: 'checked',
+    ASwitch: 'checked',
+    ATransfer: ["selectedKeys", "targetKeys"],
+    AUpload: 'fileList',
+    AUploadDragger: "fileList",
 }
 
-
 /**
- * 表单组件定义 v-model 的 :key 对应的事件名称
+ * 表单组件定义 v-model 的 :key 对应的默认值 默认值null
+ * PS：如果有特殊默认值需要配置出来，对应formDataComponentKey的值的格式
  */
-const formComponentValueChangeConfig: any = {
+const formDataComponentDefaultValue = {
     // 这个是给自定义组件用的
-    default: 'onUpdate:modelValue',
+    // default: null,
+    // ant
+    ATransfer: [[], []],
 }
 
-// 针对ant相关的数据录入组件配置v-model
-const ant: AddConfigType[] = [
-    {
-        vModelKey: "value",
-        names: [
-            "AAutoComplete",
-            "ACascader",
-            "ACheckboxGroup",
-            "ADatePicker",
-            "ARangePicker",
-            "AInput",
-            "ATextarea",
-            "AInputPassword",
-            "AInputNumber",
-            "AMentions",
-            "ARadioGroup",
-            "ARate",
-            "ASelect",
-            "ASlider",
-            "ATimePicker",
-            "ATimeRangePicker",
-            "ATreeSelect",
-        ],
-    },
-    {
-        vModelKey: "checked",
-        names: [
-            "ACheckbox",
-            "AChecked",
-            "ARadio",
-            "ASwitch",
-        ]
-    },
-    {
-        vModelKey: "targetKeys",
-        names: [
-            "ATransfer",
-        ]
-    },
-    {
-        vModelKey: "fileList",
-        names: [
-            "AUpload",
-            "AUploadDragger",
-        ]
-    }
-]
 
 /**
- * 按vue3的规范可以直接处理
+ * 表单组件定义 v-model 的 :key 对应的事件名称 
+ * PS：如果组件默认值与默认事件监听有出入需要默认配置
+ */
+const formDataComponentChangeKeyEvent = {
+    // 这个是给自定义组件用的
+    // default: 'onUpdate:modelValue',
+    // ant
+    ASelect: 'onChange',
+}
+
+/**
+ * 替换defaultName值
  * @param config 
  */
-const addFormComponentConfig = (config: AddConfigType[]) => {
-    config.forEach(item => {
-        item.names.forEach(k => {
-            formComponentConfig[k] = item.vModelKey
-            formComponentValueChangeConfig[k] = `onUpdate:${item.vModelKey}`
+const updateDefaultName = (config: DefaultName) => {
+    for (let key in config) {
+        defaultName[key] = config[key]
+    }
+}
+
+/**
+ * 添加更多配置
+ * @param names 
+ * @param keys 
+ * @param events 
+ */
+const setFormDataComponent = (names: string | string[], keys: string | string[], events: string | string[], defaultValues?: any) => {
+    if (Array.isArray(names)) {
+        names.forEach((name, nameIndex) => {
+            if (Array.isArray(keys)) {
+                if (keys.length != names.length) {
+                    throw new Error('names and keys different lengths')
+                } else {
+                    formDataComponentKey[name] = keys[nameIndex]
+                }
+            } else {
+                formDataComponentKey[name] = keys;
+            }
+            if (Array.isArray(events)) {
+                if (events.length != names.length) {
+                    throw new Error('names and events different lengths')
+                } else {
+                    formDataComponentChangeKeyEvent[name] = events[nameIndex]
+                }
+            } else {
+                formDataComponentChangeKeyEvent[name] = events;
+            }
+
+            if (defaultValues !== null && defaultValues !== undefined) {
+                if (Array.isArray(defaultValues)) {
+                    if (defaultValues.length != defaultValues.length) {
+                        throw new Error('names and events different lengths')
+                    } else {
+                        formDataComponentDefaultValue[name] = defaultValues[nameIndex]
+                    }
+                } else {
+                    formDataComponentDefaultValue[name] = defaultValues;
+                }
+            }
         })
-    })
+    } else {
+        formDataComponentChangeKeyEvent[names] = keys
+        if (typeof keys === typeof events) {
+            if (Array.isArray(keys)) {
+                if (keys.length != events.length) {
+                    throw new Error('keys and events different lengths')
+                }
+            }
+            formDataComponentChangeKeyEvent[names] = events;
+        } else {
+            throw new Error('keys and events different typeof')
+        }
+        if (defaultValues !== null && defaultValues !== undefined) {
+            if (typeof keys === typeof defaultValues) {
+                if (Array.isArray(keys)) {
+                    if (keys.length != defaultValues.length) {
+                        throw new Error('keys and defaultValues different lengths')
+                    }
+                }
+            } else {
+                throw new Error('keys and defaultValues different typeof')
+            }
+            formDataComponentDefaultValue[names] = defaultValues;
+        }
+    }
 }
-
-
-addFormComponentConfig(ant);
-
-// 这个组件没有按照规范处理
-if (formComponentValueChangeConfig.AInputNumber) {
-    formComponentValueChangeConfig.AInputNumber = 'onChange'
-}
-
 
 export {
     defaultName,
-    formComponentConfig,
-    formComponentValueChangeConfig,
-    addFormComponentConfig,
+    formDataComponentKey,
+    formDataComponentChangeKeyEvent,
+    formDataComponentDefaultValue,
+    updateDefaultName,
+    setFormDataComponent,
 }
 
 

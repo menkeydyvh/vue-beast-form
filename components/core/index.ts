@@ -1,6 +1,6 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
-import { formComponentConfig, formComponentValueChangeConfig, defaultName } from './config'
+import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName } from './config'
 import { isObject, getParentCompnent, loopRule, updateRule, deepCopy } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
@@ -62,46 +62,51 @@ export default function factory() {
                 const rdcTag = cacheResolveDynamicComponent[type];
 
                 if (isObject(rdcTag)) {
-                    if (Array.isArray(vModelKey)) {
-                        const propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [];
-                        let modelKey = [], onUpdateModelKey = [];
-                        vModelKey.forEach(key => {
-                            if (propsKeys.includes(key) && propsKeys.includes(`onUpdate:${key}`)) {
-                                modelKey.push(key)
-                                onUpdateModelKey.push(`onUpdate:${key}`);
+                    let defaultModelKey: string | string[] = vModelKey || formDataComponentKey[rdcTag.name] || formDataComponentKey['default'],
+                        defaultEvents: any = null,
+                        defaultValue: any = null,
+                        propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
+                        isBool = true;
+
+                    // 默认先从配置中取
+                    if (formDataComponentChangeKeyEvent[rdcTag.name]) {
+                        defaultEvents = formDataComponentChangeKeyEvent[rdcTag.name]
+                    }
+                    if (formDataComponentDefaultValue[rdcTag.name]) {
+                        defaultValue = formDataComponentDefaultValue[rdcTag.name]
+                    }
+
+                    if (Array.isArray(defaultModelKey)) {
+                        if (!defaultEvents) {
+                            defaultEvents = defaultModelKey.map(item => `onUpdate:${item}`)
+                        }
+                        if (!defaultValue) {
+                            defaultValue = defaultModelKey.map(() => null)
+                        }
+                        defaultModelKey.forEach((key, itemIndex) => {
+                            if (!propsKeys.includes(key) && propsKeys.includes(defaultEvents[itemIndex])) {
+                                isBool = false
                             }
                         })
-
-                        if (modelKey.length) {
-                            return {
-                                modelKey,
-                                onUpdateModelKey,
-                            }
-                        }
-                    } else if (vModelKey) {
-                        const modelKey = vModelKey,
-                            propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
-                            onUpdateModelKey = `onUpdate:${vModelKey}`;
-
-                        if (propsKeys.includes(modelKey) && propsKeys.includes(onUpdateModelKey)) {
-                            return {
-                                modelKey,
-                                onUpdateModelKey,
-                            }
-                        }
                     } else {
-                        const modelKey = formComponentConfig[rdcTag.name] ? formComponentConfig[rdcTag.name] : formComponentConfig['default'],
-                            propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
-                            onUpdateModelKey = formComponentValueChangeConfig[rdcTag.name] ? formComponentValueChangeConfig[rdcTag.name] : formComponentValueChangeConfig['default'];
-
-                        if (propsKeys.includes(modelKey) && propsKeys.includes(onUpdateModelKey)) {
-                            return {
-                                modelKey,
-                                onUpdateModelKey,
-                            }
+                        if (!defaultEvents) {
+                            defaultEvents = `onUpdate:${defaultModelKey}`
+                        }
+                        if (!defaultValue) {
+                            defaultValue = null
+                        }
+                        if (!(propsKeys.includes(defaultModelKey) && propsKeys.includes(defaultEvents))) {
+                            isBool = false;
                         }
                     }
 
+                    if (isBool) {
+                        return {
+                            modelKey: defaultModelKey,
+                            onUpdateModelKey: defaultEvents,
+                            defaultValue: defaultValue,
+                        }
+                    }
                 }
                 return null
             }
@@ -121,7 +126,7 @@ export default function factory() {
                     }
 
                     if (gvmTag) {
-                        const { modelKey, onUpdateModelKey } = gvmTag, rtField = rtItem.field;
+                        const { modelKey, onUpdateModelKey, defaultValue } = gvmTag, rtField = rtItem.field;
                         if (!rtItem.vModelKey) {
                             rtItem.vModelKey = modelKey;
                         }
@@ -129,26 +134,29 @@ export default function factory() {
                         if (rtField) {
                             let fieldValue: any = oldModel[rtField];
                             if (Array.isArray(modelKey)) {
+                                if (!apiFn.isModelKey(rtField)) {
+                                    model[rtField] = {}
+                                }
                                 if (!fieldValue) {
                                     fieldValue = {}
                                 }
                                 modelKey.forEach((key, keyIndex) => {
                                     if (!fieldValue[key]) {
-                                        fieldValue[key] = rtItem.value?.[key];
+                                        fieldValue[key] = rtItem.value?.[key] || defaultValue[keyIndex];
                                     }
                                     rtItem.props[key] = fieldValue[key];
                                     rtItem.props[onUpdateModelKey[keyIndex]] = (value: any) => {
                                         apiFn.setFieldValue(rtField, value, key);
                                     }
 
-                                    if (model[rtField] && !Object.keys(model[rtField]).includes(key)) {
+                                    if (!Object.keys(model[rtField]).includes(key)) {
                                         model[rtField][key] = fieldValue[key]
                                     }
                                 })
 
                             } else {
                                 if (!fieldValue) {
-                                    fieldValue = rtItem.value;
+                                    fieldValue = rtItem.value || defaultValue;
                                 }
                                 rtItem.props[modelKey] = fieldValue;
                                 rtItem.props[onUpdateModelKey] = (value: any) => {
