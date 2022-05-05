@@ -11,17 +11,21 @@ export type RuleType = {
     title?: string | RuleType;
     value?: any;
     vModelKey?: string | string[];
-    vModelKeyDefaultValue?: any | any[];
+    vModelKeyDefaultValue?: any;
     validate?: Array<RuleValidateType>;
     native?: Boolean;
+    // 如果是表单输入控件会设置在form-item 
+    // 如果非form-item则设置在props中层级大于props但不一样的时候会合并
+    class?: any;
+    style?: any;
+    attrs?: any;
     // 布局相关
     children?: Array<RuleType | string>;
     slot?: string;
     display?: 'show' | 'if';
     // 指令
-    directives?: Array<[string | Directive, ...any]>
+    directives?: Array<[Directive | string] | [Directive | string, any] | [Directive | string, any, string] | [Directive | string, any, string, Record<string, boolean>]>
 }
-
 export interface RuleValidateType {
     type?: string;
     required?: boolean;

@@ -134,6 +134,69 @@ export const newValue = (value: any): any => {
     }
 }
 
+/**
+ * 合并style
+ * @param oData <string|object>
+ * @param nData <string|object>
+ * @returns object
+ */
+export const mergeStyle = (oData: any, nData: any): any => {
+    let result = {};
+    if (oData) {
+        if (typeof oData === 'string') {
+            oData.split(';').forEach(styleStr => {
+                let ssAry = styleStr.split(':');
+                if (ssAry.length === 2) {
+                    result[ssAry[0].trim()] = ssAry[1].trim()
+                }
+            })
+        } else if (isObject(oData)) {
+            result = { ...oData }
+        }
+    }
+    if (nData) {
+        if (typeof nData === 'string') {
+            nData.split(';').forEach(styleStr => {
+                let ssAry = styleStr.split(':');
+                if (ssAry.length === 2) {
+                    result[ssAry[0].trim()] = ssAry[1].trim()
+                }
+            })
+        } else if (isObject(nData)) {
+            result = { ...result, ...nData }
+        }
+    }
+    return result;
+}
+
+/**
+ * 合并className
+ * @param oData <string|array>
+ * @param nData <string|array>
+ * @returns ''
+ */
+export const mergeClassName = (oData: any, nData: any): any => {
+    let result = [];
+    if (oData) {
+        if (typeof oData === 'string') {
+            result = [].concat(result, oData.split(' '))
+        } else if (Array.isArray(oData)) {
+            result = [].concat(result, oData)
+        }
+    }
+    if (nData) {
+        if (typeof nData === 'string') {
+            result = [].concat(result, nData.split(' '))
+        } else if (Array.isArray(nData)) {
+            result = [].concat(result, nData)
+        }
+    }
+
+    result = result.filter(item => item)
+    result = Array.from(new Set(result))
+
+    return result.join(' ');
+}
 
 
 export default {
@@ -141,4 +204,5 @@ export default {
     updateRule,
     deepCopy,
     newValue,
+    mergeStyle,
 }

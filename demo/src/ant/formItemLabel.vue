@@ -57,10 +57,48 @@ export default defineComponent({
         field: "name2",
         value: "good2",
         props: {
+          class: "input-props-class",
           type: "text",
+          attr1: "input-prop-attr1",
+          attr2: "input-prop-attr2",
+          style: {
+            color: "#0ff",
+            "border-bottom": "1px solid #000",
+          },
         },
         children: [{ type: "span", slot: "prefix", children: ["prefix"] }],
         directives: [["test1"], ["test2"]],
+        class: "input-class",
+        attrs: {
+          attr1: "input-attr1",
+          attr2: "input-attr2",
+        },
+        style: {
+          "border-bottom": "2px solid #f00",
+        },
+      },
+      {
+        type: "div",
+        props: {
+          class: "test-div-props-class",
+          attr2: "props2",
+          attr3: "props3",
+          type: "text",
+          style: {
+            color: "#0ff",
+            "border-bottom": "1px solid #000",
+          },
+        },
+        children: ["测试class、attr、style"],
+        attrs: {
+          attr1: "1",
+          attr2: "2",
+        },
+        style: {
+          fontSize: "14px",
+          color: "#0f0",
+        },
+        class: "test-div-class",
       },
       {
         type: "a-form-item",
