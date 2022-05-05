@@ -7,7 +7,7 @@ import type { RuleType } from './types'
  * @param hash 
  * @returns 
  */
-export const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
+const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
     if (!isObject(obj)) {
         return obj
     }

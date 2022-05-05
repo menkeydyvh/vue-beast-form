@@ -24,3 +24,6 @@ dist-ssr
 *-lock.json
 
 lib
+
+.temp
+.cache
