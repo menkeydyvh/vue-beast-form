@@ -1,7 +1,7 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName } from './config'
-import { isObject, getParentCompnent, loopRule, updateRule, deepCopy } from '../tool'
+import { isObject, loopRule, updateRule, deepCopy } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
@@ -32,11 +32,15 @@ export default function factory() {
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 
-            // 记录子表单
-            provide('subFormVm', subFormVm.value)
+            // 获取注入的父级信息
+            const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null),
+                baseFormVm = inject<ComponentInternalInstance>('baseFormVm', null)
 
-            // 获取注入的子表单
-            const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null)
+            // 基础表单记录子表单或传递给子表单信息
+            if (baseFormVm === null) {
+                provide('baseFormVm', vm)
+                provide('subFormVm', subFormVm.value)
+            }
 
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
@@ -187,11 +191,10 @@ export default function factory() {
 
                 if (isForm.value) {
                     let defaultOption = {};
-                    const parent = getParentCompnent(vm.parent, name);
-                    if (parent) {
-                        const parentOption = parent.props.option as PropsOptionType;
-                        if (parentOption) {
-                            defaultOption = deepCopy(parentOption.form)
+                    if (baseFormVm) {
+                        const baseOption = baseFormVm?.props?.option as PropsOptionType;
+                        if (baseOption) {
+                            defaultOption = deepCopy(baseOption.form)
                         }
                     }
                     const formProps = option.value ? deepCopy(option.value.form) : defaultOption;
