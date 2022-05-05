@@ -66,14 +66,18 @@ export const getParentCompnent = (parent: ComponentInternalInstance, name: strin
  * @param key 
  * @returns 
  */
-export const loopRule = (rules: RuleType[], value: any, callback: Function, key: string = 'field') => {
+export const loopRule = (rules: RuleType[], value: any, callback: Function, key = 'field') => {
     rules.forEach((item, index) => {
         if (item[key] === value) {
             return callback(item, index, rules)
         }
 
-        if (item.children) {
+        if (item?.children) {
             return loopRule(item.children as RuleType[], value, callback, key)
+        }
+
+        if (item?.props?.rule) {
+            return loopRule(item.props.rule as RuleType[], value, callback, key)
         }
     })
 

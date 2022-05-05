@@ -1,7 +1,7 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName } from './config'
-import { isObject, loopRule, updateRule, deepCopy } from '../tool'
+import { isObject, loopRule, deepCopy } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
@@ -216,23 +216,16 @@ export default function factory() {
             const apiFn: ApiFnType = {
                 // 获取规则
                 getRule(field) {
-                    let result = null
+                    let result = null;
                     loopRule(nRule.value.children as Array<RuleType>, field, (item: RuleType) => {
                         result = item
                     })
                     return result
                 },
-                // 覆盖规则
-                updateRule(field, rule, isMerge) {
-                    if (rule && isObject(rule)) {
-                        const getRule = apiFn.getRule(field)
-                        updateRule(getRule, rule, isMerge)
-                    }
-                },
                 // 设置数据
                 setFieldValue(field, value, key) {
                     const getRule = apiFn.getRule(field);
-                    if (getRule) {
+                    if (getRule && getRule.vModelKey) {
                         if (Array.isArray(getRule.vModelKey)) {
                             model[field][key] = value
                             getRule.props[key] = value
@@ -256,6 +249,24 @@ export default function factory() {
                         const getRule = apiFn.getRule(field);
                         if (getRule) {
                             getRule.props.disabled = boolValue;
+                        }
+                    }
+                },
+                // 设置 children
+                children(field, children) {
+                    if (field) {
+                        const getRule = apiFn.getRule(field);
+                        if (getRule) {
+                            let ol = getRule.children.length,
+                                nl = children ? children.length : 0;
+                            if (Array.isArray(children)) {
+                                children.forEach((item, index) => {
+                                    getRule.children[index] = item;
+                                })
+                            }
+                            if (ol > nl) {
+                                getRule.children.splice(nl, ol)
+                            }
                         }
                     }
                 },
@@ -283,6 +294,15 @@ export default function factory() {
                     }
                     callback && callback(valid)
                 },
+                // 清除验证
+                clearValidate(fields) {
+                    clearFormValidate(vm.refs.form, fields);
+                    if (subFormVm.value && !fields) {
+                        subFormVm.value.forEach(item => {
+                            clearFormValidate(item.refs.form);
+                        })
+                    }
+                }
             }
 
             // modelValue变更的时候赋值
@@ -304,6 +324,10 @@ export default function factory() {
                     }
                 }
                 return true;
+            }, clearFormValidate = (formEvent: any, fields?: string | string[]) => {
+                if (formEvent) {
+                    formEvent.clearValidate(fields)
+                }
             }
 
             // 初始化

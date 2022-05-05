@@ -1,6 +1,6 @@
 
 <template>
-  <a-card class="content-card" :bordered="false" title="title是json的解析:和指令调试">
+  <a-card class="content-card" :bordered="false" title="title是json的解析 | 指令调试 | style | class | attrs ">
     <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
   </a-card>
@@ -25,6 +25,7 @@ export default defineComponent({
         },
       });
 
+    // 指令
     JsonLayout.directives = {
       test2: {
         mounted() {
