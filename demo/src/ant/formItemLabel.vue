@@ -1,59 +1,66 @@
 
 <template>
-  <a-card class="content-card" :bordered="false" title="title是json的解析">
+  <a-card class="content-card" :bordered="false" title="title是json的解析:和指令调试">
     <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
-    {{ value }}
+    <span v-test1>{{ value }}</span>
   </a-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref } from "vue";
 // import JsonLayout from 'json-layout'
-import JsonLayout from '../../../components'
-import type { RuleType } from '../../../components/types'
+import JsonLayout from "../../../components";
+import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
-      value = ref({ goods_name: '123', name: '123' }),
+      value = ref({ goods_name: "123", name: "123" }),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
           // wrapperCol: { span: 14 },
-          layout: 'vertical'
-        }
+          layout: "vertical",
+        },
       });
+
+    JsonLayout.directives = {
+      test2: {
+        mounted() {
+          console.log("directive:test2");
+        },
+      },
+    };
 
     rule.value = [
       {
         type: "a-input",
         title: {
-          type: 'span',
-          children: ["商品名称1"]
+          type: "span",
+          children: ["商品名称1"],
         },
         field: "name",
         value: "iphone 7",
         props: {
           type: "text",
         },
-        children: [{ type: 'span', slot: 'prefix', children: ['前面'] }],
-        validate: [
-          { required: true, message: '请输入name', trigger: 'blur' },
-        ],
+        children: [{ type: "span", slot: "prefix", children: ["前面"] }],
+        validate: [{ required: true, message: "请输入name", trigger: "blur" }],
       },
       {
         type: "a-input",
         title: {
-          type: 'span',
-          children: ["商品名称2"]
+          type: "span",
+          children: ["商品名称2"],
         },
         field: "name2",
         value: "good2",
         props: {
           type: "text",
         },
-        children: [{ type: 'span', slot: 'prefix', children: ['prefix'] }],
+        children: [{ type: "span", slot: "prefix", children: ["prefix"] }],
+        directives: [["test1"], ["test2"]],
       },
       {
         type: "a-form-item",
@@ -62,31 +69,29 @@ export default defineComponent({
             type: "a-space",
             children: [
               {
-                type: 'a-button',
+                type: "a-button",
                 props: {
-                  type: 'primary',
-                  htmlType: 'sbumit'
+                  type: "primary",
+                  htmlType: "sbumit",
                 },
-                children: ['提交']
+                children: ["提交"],
               },
               {
-                type: 'a-button',
-                children: ['重置']
-              }
-            ]
-          }
-        ]
-      }
-    ]
-
+                type: "a-button",
+                children: ["重置"],
+              },
+            ],
+          },
+        ],
+      },
+    ];
 
     return {
       jApi,
       value,
       rule,
       option,
-    }
-  }
-
-})
+    };
+  },
+});
 </script>

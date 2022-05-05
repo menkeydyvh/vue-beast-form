@@ -78,6 +78,10 @@ const render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
     let formItemVNode = null, vNode = h(resolveDynamicComponent(tag) as Component, props, slot)
 
     if (rule.native && rule.vModelKey) {
+        // TODO:ant的formItem在isForm=false的时候需要替换成a-form-item-rest
+        // 处理办法应该是rule.vModelKey有值rule.native=false  
+        // 更好的办法是判断当前处于子表单下在满足上面两个条件
+
         const formItemProps: any = {
             style: rule.display === 'show' ? "display: none" : undefined,
         }, formItemSlot = {

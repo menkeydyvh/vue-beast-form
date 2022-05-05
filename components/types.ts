@@ -18,9 +18,8 @@ export type RuleType = {
     children?: Array<RuleType | string>;
     slot?: string;
     display?: 'show' | 'if';
-    directives?: [
-        [string | Directive, ...any]
-    ]
+    // 指令
+    directives?: Array<[string | Directive, ...any]>
 }
 
 export interface RuleValidateType {

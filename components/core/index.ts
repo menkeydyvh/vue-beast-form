@@ -13,6 +13,7 @@ export default function factory() {
     return defineComponent({
         name,
         components: {},
+        directives: {},
         props: {
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
