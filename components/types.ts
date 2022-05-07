@@ -40,10 +40,10 @@ export type PropsOptionType = {
 }
 
 export type ApiFnType = {
-    getRule(field: string): RuleType
     setFieldValue(field: string, value: any, key?: string): void
     getFormData(field?: string): any
     isModelKey(field: string): boolean
+    setTitle(field: string, value: string | RuleType): void;
     display(field: string, display?: 'show' | 'if'): void
     disabled(field: string, isBool?: boolean): void
     children(field: string, children?: Array<RuleType | string>): void

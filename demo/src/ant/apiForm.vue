@@ -1,10 +1,16 @@
 <template>
   <a-card class="content-card" :bordered="false" title="tree组件 支持多个v-model处理">
-    <json-layout :rule="rule" v-model="value" v-model:api="jApi" :option="{
-            form: {
-                layout: 'vertical'
-            }
-        }" :disabled="disabled" />
+    <json-layout
+      :rule="rule"
+      v-model="value"
+      v-model:api="jApi"
+      :option="{
+        form: {
+          layout: 'vertical',
+        },
+      }"
+      :disabled="disabled"
+    />
     <br />
     <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
   </a-card>
@@ -48,6 +54,26 @@ export default defineComponent({
         type: "json-layout",
         title: "subForm",
         field: "subForm",
+        props: {
+          rule: [
+            {
+              type: "a-input",
+              title: "Group Input",
+              field: "groupInput",
+              validate: [{ required: true, message: "必须填写" }],
+            },
+            {
+              type: "a-input",
+              title: "Group Input2",
+              field: "groupInput2",
+            },
+          ],
+        },
+      },
+      {
+        type: "json-layout",
+        title: "subForm1",
+        field: "subForm1",
         props: {
           rule: [
             {
@@ -174,6 +200,15 @@ export default defineComponent({
               },
             },
             children: ["div内容变更"],
+          },
+          {
+            type: "a-button",
+            children: ["多个field的指向获取"],
+            on: {
+              click: (e, f: ApiFnType) => {
+                f.setTitle("subForm.groupInput", "123");
+              },
+            },
           },
           {
             type: "a-button",

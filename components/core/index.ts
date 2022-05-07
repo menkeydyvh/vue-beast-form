@@ -45,8 +45,11 @@ export default function factory() {
 
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
-                const rt = deepCopy(config);
-                rt.native = typeof rt.native !== 'boolean' ? isForm.value === true : rt.native;
+                const rt = {
+                    native: isForm.value === true,
+                    ...config
+                };
+
                 if (!rt.props) {
                     rt.props = {}
                 }
@@ -226,65 +229,63 @@ export default function factory() {
                 } else {
                     baseRule.type = 'div';
                 }
-                // console.log('用来检测是否全局重载打印:fillRule')
                 return baseRule;
             }
 
 
             // api
             const apiFn: ApiFnType = {
-                // 获取规则
-                getRule(field) {
-                    let result = null;
-                    loopRule(nRule.value.children as Array<RuleType>, field, (item: RuleType) => {
-                        result = item
-                    })
-                    return result
-                },
                 // 设置数据
                 setFieldValue(field, value, key) {
-                    const getRule = apiFn.getRule(field);
-                    if (getRule && getRule.vModelKey) {
-                        if (Array.isArray(getRule.vModelKey)) {
+                    const gRule = getRule(field);
+                    if (gRule && gRule.vModelKey) {
+                        if (Array.isArray(gRule.vModelKey)) {
                             model[field][key] = value
-                            getRule.props[key] = value
+                            gRule.props[key] = value
                         } else {
                             model[field] = value
-                            getRule.props[getRule.vModelKey] = value
+                            gRule.props[gRule.vModelKey] = value
                         }
+                    }
+                },
+                // 设置titiel
+                setTitle(field, value) {
+                    const gRule = getRule(field);
+                    if (gRule) {
+                        gRule.title = value
                     }
                 },
                 // 设置 display
                 display(field, display) {
-                    const getRule = apiFn.getRule(field);
-                    if (getRule) {
-                        getRule.display = display
+                    const gRule = getRule(field);
+                    if (gRule) {
+                        gRule.display = display
                     }
                 },
                 // 设置 disabled
                 disabled(field, isBool) {
                     let boolValue = isBool === true ? true : undefined
                     if (field) {
-                        const getRule = apiFn.getRule(field);
-                        if (getRule) {
-                            getRule.props.disabled = boolValue;
+                        const gRule = getRule(field);
+                        if (gRule) {
+                            gRule.props.disabled = boolValue;
                         }
                     }
                 },
                 // 设置 children
                 children(field, children) {
                     if (field) {
-                        const getRule = apiFn.getRule(field);
-                        if (getRule) {
-                            let ol = getRule.children.length,
+                        const gRule = getRule(field);
+                        if (gRule) {
+                            let ol = gRule.children.length,
                                 nl = children ? children.length : 0;
                             if (Array.isArray(children)) {
                                 children.forEach((item, index) => {
-                                    getRule.children[index] = item;
+                                    gRule.children[index] = item;
                                 })
                             }
                             if (ol > nl) {
-                                getRule.children.splice(nl, ol)
+                                gRule.children.splice(nl, ol)
                             }
                         }
                     }
@@ -324,17 +325,15 @@ export default function factory() {
                 }
             }
 
-            // modelValue变更的时候赋值
             const changeModelValue = (isForce?: boolean) => {
+                // modelValue变更的时候赋值
                 for (let key in model) {
                     if (isForce || model[key] !== modelValue.value?.[key]) {
                         apiFn.setFieldValue(key, modelValue.value?.[key])
                     }
                 }
-            }
-
-            // 表单验证表单字段验证
-            const formValidate = async (formEvent: any, fields?: string | string[]) => {
+            }, formValidate = async (formEvent: any, fields?: string | string[]) => {
+                // 表单验证表单字段验证
                 if (formEvent) {
                     try {
                         await formEvent.validate(fields)
@@ -344,9 +343,34 @@ export default function factory() {
                 }
                 return true;
             }, clearFormValidate = (formEvent: any, fields?: string | string[]) => {
+                // 清除表单验证
                 if (formEvent) {
                     formEvent.clearValidate(fields)
                 }
+            }, getRule = (field: string): RuleType => {
+                // 获取规则 支持xxx.xxx方式
+                let result = null, cacheAry = null;
+                field.split('.').forEach((f, index) => {
+                    if (index === 0) {
+                        loopRule(nRule.value.children as Array<RuleType>, f, (item: RuleType, itemIndex: number, ruleAry: Array<RuleType>) => {
+                            if (item) {
+                                result = item;
+                                cacheAry = ruleAry
+                            }
+                        })
+                    } else if (cacheAry) {
+                        loopRule(cacheAry, f, (item: RuleType, itemIndex: number, ruleAry: Array<RuleType>) => {
+                            if (item) {
+                                result = item;
+                                cacheAry = ruleAry
+                            } else {
+                                result = null;
+                                cacheAry = null;
+                            }
+                        })
+                    }
+                })
+                return result
             }
 
             // 初始化
