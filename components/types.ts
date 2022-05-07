@@ -25,6 +25,8 @@ export type RuleType = {
     display?: 'show' | 'if';
     // 指令
     directives?: Array<[Directive | string] | [Directive | string, any] | [Directive | string, any, string] | [Directive | string, any, string, Record<string, boolean>]>
+    // 事件会覆盖props内同名事件处理
+    on?: any
 }
 export interface RuleValidateType {
     type?: string;

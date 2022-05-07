@@ -1,7 +1,7 @@
 import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName } from './config'
-import { isObject, loopRule, deepCopy } from '../tool'
+import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
@@ -45,16 +45,26 @@ export default function factory() {
 
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
-                const rt = {
-                    native: isForm.value === true,
-                    ...config,
-                }
+                const rt = deepCopy(config);
+                rt.native = typeof rt.native !== 'boolean' ? isForm.value === true : rt.native;
                 if (!rt.props) {
                     rt.props = {}
                 }
                 if (typeof disabled.value === 'boolean') {
                     rt.props.disabled = disabled.value === true ? true : undefined;
                 }
+
+                if (rt.on) {
+                    for (let onName in rt.on) {
+                        rt.props[`on${firstToUpper(onName)}`] = function () {
+                            rt.on[onName](...arguments, apiFn)
+                        }
+                        rt.on[`on${firstToUpper(onName)}`] = function () {
+                            rt.on[onName](...arguments, apiFn)
+                        }
+                    }
+                }
+
                 return reactive(rt)
             }
 
@@ -150,8 +160,11 @@ export default function factory() {
                                         fieldValue[key] = rtItem.value?.[key] || defaultValue[keyIndex];
                                     }
                                     rtItem.props[key] = fieldValue[key];
-                                    rtItem.props[onUpdateModelKey[keyIndex]] = (value: any) => {
-                                        apiFn.setFieldValue(rtField, value, key);
+                                    rtItem.props[onUpdateModelKey[keyIndex]] = function () {
+                                        apiFn.setFieldValue(rtField, arguments[0], key);
+                                        if (rtItem.on?.[onUpdateModelKey[keyIndex]]) {
+                                            rtItem.on[onUpdateModelKey[keyIndex]](...arguments)
+                                        }
                                     }
 
                                     if (!Object.keys(model[rtField]).includes(key)) {
@@ -164,8 +177,12 @@ export default function factory() {
                                     fieldValue = rtItem.value || defaultValue;
                                 }
                                 rtItem.props[modelKey] = fieldValue;
-                                rtItem.props[onUpdateModelKey] = (value: any) => {
-                                    apiFn.setFieldValue(rtField, value);
+
+                                rtItem.props[onUpdateModelKey] = function () {
+                                    apiFn.setFieldValue(rtField, arguments[0]);
+                                    if (rtItem.on?.[onUpdateModelKey]) {
+                                        rtItem.on[onUpdateModelKey](...arguments)
+                                    }
                                 }
 
                                 if (!apiFn.isModelKey(rtField)) {
@@ -177,6 +194,8 @@ export default function factory() {
                     } else {
                         rtItem.vModelKey = undefined;
                     }
+
+                    // 处理事件
 
                     return rtItem;
                 });

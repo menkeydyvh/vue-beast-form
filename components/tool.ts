@@ -202,6 +202,15 @@ export const mergeClassName = (oData: any, nData: any): any => {
     return result.join(' ');
 }
 
+/**
+ * 首字母大写
+ * @param str 
+ * @returns 
+ */
+export const firstToUpper = (str: string): string => {
+    return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 
 export default {
     loopRule,

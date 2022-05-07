@@ -1,6 +1,9 @@
-
 <template>
-  <a-card class="content-card" :bordered="false" title="title是json的解析 | 指令调试 | style | class | attrs ">
+  <a-card
+    class="content-card"
+    :bordered="false"
+    title="title是json的解析 | 指令调试 | style | class | attrs "
+  >
     <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
   </a-card>
@@ -48,6 +51,14 @@ export default defineComponent({
         },
         children: [{ type: "span", slot: "prefix", children: ["前面"] }],
         validate: [{ required: true, message: "请输入name", trigger: "blur" }],
+        on: {
+          change: (e, f) => {
+            console.log("on:change", e, f);
+          },
+          "update:value": (v, f) => {
+            console.log("update:value:", v, f);
+          },
+        },
       },
       {
         type: "a-input",
@@ -100,6 +111,12 @@ export default defineComponent({
           color: "#0f0",
         },
         class: "test-div-class",
+        on: {
+          click: (e, f) => {
+            console.log(rule.value)
+            console.log("on:click");
+          },
+        },
       },
       {
         type: "a-form-item",

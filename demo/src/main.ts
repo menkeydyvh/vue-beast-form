@@ -1,8 +1,10 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import Antd from 'ant-design-vue';
+import Antd, { InputNumber, Input } from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+
+console.log(InputNumber, Input)
 
 createApp(App).use(Antd).directive('test1', {
     mounted() {

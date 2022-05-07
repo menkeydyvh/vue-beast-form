@@ -70,7 +70,7 @@ const formDataComponentChangeKeyEvent = {
     // 这个是给自定义组件用的
     // default: 'onUpdate:modelValue',
     // ant
-    ASelect: 'onChange',
+    AInputNumber: 'onChange',
 }
 
 /**
