@@ -4,8 +4,6 @@ import { defaultName } from './config'
 import type { Slot, Component, VNode } from 'vue'
 import type { RuleType } from '../types'
 
-
-
 /**
  * 使用指令
  * @param vNode 
@@ -58,7 +56,7 @@ const render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
     if (rule.native && rule.vModelKey) {
         // TODO:ant的formItem在isForm=false的时候需要替换成a-form-item-rest
         // 处理办法应该是rule.vModelKey有值rule.native=false  
-        // 更好的办法是判断当前处于子表单下在满足上面两个条件
+        // 更好的办法是判断当前处于子表单下在满足上面两个条件  比较麻烦占时补处理
 
         const formItemProps: any = {
             ...rule.attrs
@@ -132,9 +130,6 @@ const renderItem = (rule: RuleType) => {
 
     return render(rule.type, { ...rule.props }, slot, rule)
 }
-
-
-
 
 /**
  * 渲染 rules
