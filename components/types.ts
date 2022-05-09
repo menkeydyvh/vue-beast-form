@@ -1,31 +1,101 @@
 import type { Directive } from 'vue'
 
 export type RuleType = {
-    // 必须
+    /**
+     * 对应组件名称，div、a-input ......
+     * 
+     * 【必填】
+     */
     type: string;
-    // 与当前组件相关
+    /**
+     * 对应type的组件 props设置
+     */
     props?: any;
-    // form-item相关
-    //这个比较特殊,用来做规则对象查找的字段
+    /**
+     * 可用于api使用时候的检索功能
+     * 
+     * 诺为表单输入组件时为赋值的字段名称
+     */
     field?: string;
+    /**
+     * form-item对应的标题
+     */
     title?: string | RuleType;
-    value?: any;
+    /**
+     * 一个 v-model:key  值为key 
+     * 
+     * 多个 v-model:key时可用 [key,key1,key2]
+     * 
+     * 多个v-model时 也可只设置其一个来针对这个key获取
+     */
     vModelKey?: string | string[];
+    /**
+     * 默认值 null  主要为了处理默认值不为null的时候处理
+     * 
+     * 当vModelKey设置为数组时需要与其保持一致长度
+     */
     vModelKeyDefaultValue?: any;
+    /**
+     * 对应vModelKey的值
+     * 
+     * 当vModelKey为数组时候这个值会变为对象形式
+     * 
+     * 例: vModelKey = [key,key1,key2]
+     * 
+     * value = {
+     *    key:xxx,
+     *    key1:xxx,
+     *    key2:xxx,
+     * }
+     */
+    value?: any;
+    /**
+     * 验证规则
+     * 
+     * 只在form-item存在时有效
+     */
     validate?: Array<RuleValidateType>;
+    /**
+     * 只对表单输入组件有效，是否用form-item包住
+     */
     native?: Boolean;
-    // 如果是表单输入控件会设置在form-item 
-    // 如果非form-item则设置在props中层级大于props但不一样的时候会合并
+    /**
+     * 设置在type对应的class上
+     * 
+     * 诺为表单输入组件会设置在form-item的class上
+     */
     class?: any;
+    /**
+     * 设置在type对应的style上
+     * 
+     * 诺为表单输入组件会设置在form-item的style上
+     */
     style?: any;
+    /**
+     * 设置在type对应的attrs上
+     * 
+     * 诺为表单输入组件会设置在form-item的attrs上
+     */
     attrs?: any;
-    // 布局相关
+    /**
+     * 子规则或子文本内容
+     */
     children?: Array<RuleType | string>;
+    /**
+     * 插槽名称
+     */
     slot?: string;
+    /**
+     * v-if和v-show的作用
+     */
     display?: 'show' | 'if';
-    // 指令
+    /**
+     * 指令
+     */
     directives?: Array<[Directive | string] | [Directive | string, any] | [Directive | string, any, string] | [Directive | string, any, string, Record<string, boolean>]>
-    // 事件会覆盖props内同名事件处理
+    /**
+     * 事件会覆盖props内同名事件处理
+     */
     on?: any
 }
 export interface RuleValidateType {
@@ -40,14 +110,67 @@ export type PropsOptionType = {
 }
 
 export type ApiFnType = {
+    /**
+     * 设置数据
+     * @param field 
+     * @param value 
+     * @param key 
+     */
     setValue(field: string, value: any, key?: string): void
+    /**
+     *  设置titiel
+     * @param field 
+     * @param value 
+     */
     setTitle(field: string, value: string | RuleType): void
+    /**
+     * 设置Props
+     * @param field 
+     * @param props 
+     */
+    setProps(field: string, props?: any): void
+    /**
+     * 设置display
+     * @param field 
+     * @param display 
+     */
     setDisplay(field: string, display?: 'show' | 'if'): void
+    /**
+     * 设置disabled
+     * @param field 
+     * @param isBool 
+     */
     setDisabled(field: string, isBool?: boolean): void
+    /**
+     * 设置children
+     * @param field 
+     * @param children 
+     */
     setChildren(field: string, children?: Array<RuleType | string>): void
+    /**
+     * 获取输入组件的值
+     * @param field 
+     */
     getFormData(field?: string): any
+    /**
+     * 清除值
+     * @param field 
+     */
     clearValue(field?: string): void
+    /**
+     * 当前字段是否是model的key
+     * @param field 
+     */
     isModelKey(field: string): boolean
+    /**
+     * 表单验证，目前表单验证只负责主表单
+     * @param callback 
+     * @param fields 
+     */
     validate(callback: Function, fields?: string | string[]): void
+    /**
+     * 清除验证
+     * @param fields 
+     */
     clearValidate(fields?: [string] | string): void
 }

@@ -1,4 +1,4 @@
-import { ref, reactive, toRefs, markRaw, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
+import { ref, reactive, toRefs, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName } from './config'
 import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
@@ -6,7 +6,7 @@ import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
-const name: string = 'JsonLayout';
+const name = 'JsonLayout';
 
 export default function factory() {
 
@@ -27,9 +27,8 @@ export default function factory() {
         setup(props, { emit }) {
             const vm = getCurrentInstance(),
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
-                model = reactive<any>({ ...modelValue.value }),
-                oldModel = markRaw<any>({ ...deepCopy(modelValue.value) }),
-                nRule = computed(() => fillRule()),
+                model = reactive({ ...modelValue.value }),
+                oldModel = { ...deepCopy(modelValue.value) },
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 
@@ -235,7 +234,6 @@ export default function factory() {
 
             // api
             const apiFn: ApiFnType = {
-                // 设置数据
                 setValue(field, value, key) {
                     const gRule = getRule(field);
                     if (gRule && gRule.vModelKey) {
@@ -248,21 +246,30 @@ export default function factory() {
                         }
                     }
                 },
-                // 设置titiel
                 setTitle(field, value) {
                     const gRule = getRule(field);
                     if (gRule) {
                         gRule.title = value
                     }
                 },
-                // 设置 display
+                setProps(field, props) {
+                    const gRule = getRule(field);
+                    if (gRule) {
+                        if (props) {
+                            for (let key in props) {
+                                gRule.props[key] = props.key;
+                            }
+                        } else {
+                            gRule.props = {};
+                        }
+                    }
+                },
                 setDisplay(field, display) {
                     const gRule = getRule(field);
                     if (gRule) {
                         gRule.display = display
                     }
                 },
-                // 设置 disabled
                 setDisabled(field, isBool) {
                     let boolValue = isBool === true ? true : undefined
                     if (field) {
@@ -272,7 +279,6 @@ export default function factory() {
                         }
                     }
                 },
-                // 设置 children
                 setChildren(field, children) {
                     const gRule = getRule(field);
                     if (gRule) {
@@ -288,11 +294,9 @@ export default function factory() {
                         }
                     }
                 },
-                // 获取输入组件的值
                 getFormData(field) {
                     return field ? model[field] : model
                 },
-                // 清除值
                 clearValue(field) {
                     if (field) {
                         const gRule = getRule(field);
@@ -305,11 +309,9 @@ export default function factory() {
                         }
                     }
                 },
-                // 当前字段是否是model的key
                 isModelKey(field) {
                     return Object.keys(model).includes(field)
                 },
-                // 表单验证，目前表单验证只负责主表单
                 async validate(callback, fields) {
                     let valid = true
                     if (!await formValidate(vm.refs.form, fields)) {
@@ -325,7 +327,6 @@ export default function factory() {
                     }
                     callback && callback(valid)
                 },
-                // 清除验证
                 clearValidate(fields) {
                     clearFormValidate(vm.refs.form, fields);
                     if (subFormVm.value && !fields) {
@@ -387,6 +388,16 @@ export default function factory() {
                 emit('update:api', apiFn)
             }
 
+            onMounted(() => {
+                if (parentFrom) {
+                    parentFrom.push(vm)
+                }
+                init()
+            });
+
+            onUpdated(() => {
+                init()
+            })
 
             watch(model, () => {
                 emit('update:modelValue', model)
@@ -404,13 +415,6 @@ export default function factory() {
                 deep: true
             })
 
-            onMounted(() => {
-                if (parentFrom) {
-                    parentFrom.push(vm)
-                }
-                init()
-            });
-
             onBeforeUnmount(() => {
                 if (parentFrom) {
                     let idx = parentFrom.findIndex(item => item.uid === vm.uid)
@@ -420,9 +424,7 @@ export default function factory() {
                 }
             })
 
-            onUpdated(() => {
-                init()
-            })
+            const nRule = computed(() => fillRule());
 
             return () => renderRule(nRule.value)
         },
