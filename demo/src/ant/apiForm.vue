@@ -114,7 +114,7 @@ export default defineComponent({
             props: {
               onClick: () => {
                 display = display ? null : "if";
-                jApi.value.display("input1", display);
+                jApi.value.setDisplay("input1", display);
               },
             },
             children: ["隐藏显示input1"],
@@ -124,8 +124,8 @@ export default defineComponent({
             props: {
               onClick: () => {
                 disbaled = !disbaled;
-                jApi.value.disabled("input2", disbaled);
-                jApi.value.disabled("divBtn", disbaled);
+                jApi.value.setDisabled("input2", disbaled);
+                jApi.value.setDisabled("divBtn", disbaled);
               },
             },
             children: ["禁用启用按钮和input2"],
@@ -134,20 +134,11 @@ export default defineComponent({
             type: "a-button",
             props: {
               onClick: () => {
-                jApi.value.setFieldValue("input1", "123456");
-                console.log("api.setFieldValue()");
+                // value.value.input1 = '14141';
+                jApi.value.setValue("input1", "123456");
               },
             },
             children: ["设置input1值"],
-          },
-          {
-            type: "a-button",
-            props: {
-              onClick: () => {
-                console.log("api.getRule()", jApi.value.getRule("divtest"));
-              },
-            },
-            children: ["获取div的规则"],
           },
           {
             type: "a-button",
@@ -193,7 +184,7 @@ export default defineComponent({
             type: "a-button",
             props: {
               onClick: () => {
-                jApi.value.children("divtest", [
+                jApi.value.setChildren("divtest", [
                   "覆盖了",
                   { type: "span", children: ["ddd"] },
                 ]);
@@ -203,10 +194,11 @@ export default defineComponent({
           },
           {
             type: "a-button",
-            children: ["多个field的指向获取"],
+            children: ["设置subForm的titile"],
             on: {
-              click: (e, f: ApiFnType) => {
-                f.setTitle("subForm.groupInput", "123");
+              click: (e: any, f: ApiFnType) => {
+                f.setTitle("subForm", "123");
+                console.log(e);
               },
             },
           },
@@ -219,6 +211,15 @@ export default defineComponent({
               },
             },
             children: ["表单数据"],
+          },
+          {
+            type: "a-button",
+            props: {
+              onClick: () => {
+                jApi.value.clearValue();
+              },
+            },
+            children: ["清空表单数据"],
           },
         ],
       },

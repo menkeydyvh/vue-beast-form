@@ -40,13 +40,14 @@ export type PropsOptionType = {
 }
 
 export type ApiFnType = {
-    setFieldValue(field: string, value: any, key?: string): void
+    setValue(field: string, value: any, key?: string): void
+    setTitle(field: string, value: string | RuleType): void
+    setDisplay(field: string, display?: 'show' | 'if'): void
+    setDisabled(field: string, isBool?: boolean): void
+    setChildren(field: string, children?: Array<RuleType | string>): void
     getFormData(field?: string): any
+    clearValue(field?: string): void
     isModelKey(field: string): boolean
-    setTitle(field: string, value: string | RuleType): void;
-    display(field: string, display?: 'show' | 'if'): void
-    disabled(field: string, isBool?: boolean): void
-    children(field: string, children?: Array<RuleType | string>): void
     validate(callback: Function, fields?: string | string[]): void
-    clearValidate(fields?: [string] | string): void;
+    clearValidate(fields?: [string] | string): void
 }

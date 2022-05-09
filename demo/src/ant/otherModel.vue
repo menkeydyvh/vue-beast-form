@@ -158,7 +158,7 @@ export default defineComponent({
                 type: 'a-button',
                 props: {
                     onClick: () => {
-                        jApi.value.setFieldValue('drawer', true)
+                        jApi.value.setValue('drawer', true)
                     }
                 },
                 children: ['显示抽屉']

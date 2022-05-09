@@ -164,7 +164,7 @@ export default function factory() {
                                     }
                                     rtItem.props[key] = fieldValue[key];
                                     rtItem.props[onUpdateModelKey[keyIndex]] = function () {
-                                        apiFn.setFieldValue(rtField, arguments[0], key);
+                                        apiFn.setValue(rtField, arguments[0], key);
                                         if (rtItem.on?.[onUpdateModelKey[keyIndex]]) {
                                             rtItem.on[onUpdateModelKey[keyIndex]](...arguments)
                                         }
@@ -182,7 +182,7 @@ export default function factory() {
                                 rtItem.props[modelKey] = fieldValue;
 
                                 rtItem.props[onUpdateModelKey] = function () {
-                                    apiFn.setFieldValue(rtField, arguments[0]);
+                                    apiFn.setValue(rtField, arguments[0]);
                                     if (rtItem.on?.[onUpdateModelKey]) {
                                         rtItem.on[onUpdateModelKey](...arguments)
                                     }
@@ -236,7 +236,7 @@ export default function factory() {
             // api
             const apiFn: ApiFnType = {
                 // 设置数据
-                setFieldValue(field, value, key) {
+                setValue(field, value, key) {
                     const gRule = getRule(field);
                     if (gRule && gRule.vModelKey) {
                         if (Array.isArray(gRule.vModelKey)) {
@@ -256,14 +256,14 @@ export default function factory() {
                     }
                 },
                 // 设置 display
-                display(field, display) {
+                setDisplay(field, display) {
                     const gRule = getRule(field);
                     if (gRule) {
                         gRule.display = display
                     }
                 },
                 // 设置 disabled
-                disabled(field, isBool) {
+                setDisabled(field, isBool) {
                     let boolValue = isBool === true ? true : undefined
                     if (field) {
                         const gRule = getRule(field);
@@ -273,26 +273,37 @@ export default function factory() {
                     }
                 },
                 // 设置 children
-                children(field, children) {
-                    if (field) {
-                        const gRule = getRule(field);
-                        if (gRule) {
-                            let ol = gRule.children.length,
-                                nl = children ? children.length : 0;
-                            if (Array.isArray(children)) {
-                                children.forEach((item, index) => {
-                                    gRule.children[index] = item;
-                                })
-                            }
-                            if (ol > nl) {
-                                gRule.children.splice(nl, ol)
-                            }
+                setChildren(field, children) {
+                    const gRule = getRule(field);
+                    if (gRule) {
+                        let ol = gRule.children.length,
+                            nl = children ? children.length : 0;
+                        if (Array.isArray(children)) {
+                            children.forEach((item, index) => {
+                                gRule.children[index] = item;
+                            })
+                        }
+                        if (ol > nl) {
+                            gRule.children.splice(nl, ol)
                         }
                     }
                 },
                 // 获取输入组件的值
                 getFormData(field) {
                     return field ? model[field] : model
+                },
+                // 清除值
+                clearValue(field) {
+                    if (field) {
+                        const gRule = getRule(field);
+                        if (gRule) {
+                            apiFn.setValue(field, gRule.vModelKeyDefaultValue);
+                        }
+                    } else {
+                        for (let key in model) {
+                            apiFn.clearValue(key)
+                        }
+                    }
                 },
                 // 当前字段是否是model的key
                 isModelKey(field) {
@@ -325,14 +336,7 @@ export default function factory() {
                 }
             }
 
-            const changeModelValue = (isForce?: boolean) => {
-                // modelValue变更的时候赋值
-                for (let key in model) {
-                    if (isForce || model[key] !== modelValue.value?.[key]) {
-                        apiFn.setFieldValue(key, modelValue.value?.[key])
-                    }
-                }
-            }, formValidate = async (formEvent: any, fields?: string | string[]) => {
+            const formValidate = async (formEvent: any, fields?: string | string[]) => {
                 // 表单验证表单字段验证
                 if (formEvent) {
                     try {
@@ -350,26 +354,31 @@ export default function factory() {
             }, getRule = (field: string): RuleType => {
                 // 获取规则 支持xxx.xxx方式
                 let result = null, cacheAry = null;
-                field.split('.').forEach((f, index) => {
-                    if (index === 0) {
-                        loopRule(nRule.value.children as Array<RuleType>, f, (item: RuleType, itemIndex: number, ruleAry: Array<RuleType>) => {
-                            if (item) {
-                                result = item;
-                                cacheAry = ruleAry
-                            }
-                        })
-                    } else if (cacheAry) {
-                        loopRule(cacheAry, f, (item: RuleType, itemIndex: number, ruleAry: Array<RuleType>) => {
-                            if (item) {
-                                result = item;
-                                cacheAry = ruleAry
-                            } else {
-                                result = null;
-                                cacheAry = null;
-                            }
-                        })
-                    }
-                })
+                if (field) {
+                    field.split('.').forEach((f, index) => {
+                        if (index === 0) {
+                            loopRule(nRule.value.children as Array<RuleType>, f, ({ item, ruleAry }) => {
+                                if (item) {
+                                    result = item;
+                                    cacheAry = ruleAry
+                                }
+                            })
+                        } else if (cacheAry) {
+                            loopRule(cacheAry, f, ({ item, ruleAry }) => {
+                                if (item) {
+                                    result = item;
+                                    cacheAry = ruleAry
+                                } else {
+                                    result = null;
+                                    cacheAry = null;
+                                }
+                            })
+                        } else {
+                            result = null;
+                            cacheAry = null;
+                        }
+                    })
+                }
                 return result
             }
 
@@ -385,8 +394,12 @@ export default function factory() {
                 deep: true
             })
 
-            watch(modelValue, () => {
-                changeModelValue();
+            watch(() => modelValue.value, () => {
+                for (let key in model) {
+                    if (model[key] !== modelValue.value?.[key]) {
+                        apiFn.setValue(key, modelValue.value?.[key])
+                    }
+                }
             }, {
                 deep: true
             })
