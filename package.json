@@ -1,6 +1,6 @@
 {
   "name": "json-layout",
-  "version": "0.1.0-alpha.7",
+  "version": "0.1.1",
   "description": "通过json解析生成页面布局和表单布局",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
