@@ -10,9 +10,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "escape-html": "^1.0.3",
     "vuepress": "^2.0.0-beta.43"
   },
   "dependencies": {
-    "json-layout": "^0.1.1"
+    "ant-design-vue": "^3.2.3",
+    "json-layout": "^0.1.1",
+    "less": "^4.1.2"
   }
 }

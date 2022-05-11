@@ -3,6 +3,8 @@
 
 ## 简单用例
 
-@[code vue](./demo/easy.vue)
+<easy />
 
-    
+<script setup>
+    import easy from './demo/easy.vue'
+</script>

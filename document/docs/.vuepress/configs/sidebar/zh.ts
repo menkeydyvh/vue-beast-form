@@ -8,5 +8,11 @@ export const zh: SidebarConfig = {
         '/zh/guide/install.md',
       ],
     },
+    {
+      text: 'Props',
+      children: [
+        '/zh/guide/rule.md',
+      ],
+    },
   ],
 }

@@ -1,18 +1,16 @@
 import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { navbar, sidebar } from './configs'
+import { path } from '@vuepress/utils'
+import { demoContainer } from '../plugins/demo-container'
 
-console.log(navbar)
+
+
 export default defineUserConfig({
     lang: 'zh-CN',
     title: 'JsonLayout',
     description: '一个通过JSON快速生成 VUE UI 的框架',
     locales: {
-        // '/en/': {
-        //     lang: 'en-US',
-        //     title: 'JsonLayout',
-        //     description: 'A framework for quickly generating VUE UI from JSON',
-        // },
         '/zh/': {
             lang: 'zh-CN',
             title: 'JsonLayout',
@@ -26,5 +24,10 @@ export default defineUserConfig({
                 sidebar: sidebar.zh,
             }
         }
-    })
+    }),
+    plugins: [
+        demoContainer({
+            componentsDir: path.resolve(__dirname, '../examples')
+        })
+    ]
 })

@@ -30,17 +30,17 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import JsonLayout from "json-layout";
-import type { RuleType } from "json-layout/lib/types";
+import type { RuleType, ApiFnType, PropsOptionType } from "json-layout/lib/types";
 
 export default defineComponent({
   components: { JsonLayout },
   setup() {
-    const jApi = ref(),
+    const jApi = ref<ApiFnType>(),
       disabled = ref(false),
       isForm = ref(true),
       value = ref({}),
       rule = ref<RuleType[]>([]),
-      option = ref({
+      option = ref<PropsOptionType>({
         form: {
           wrapperCol: { span: 14 },
           layout: "vertical",
