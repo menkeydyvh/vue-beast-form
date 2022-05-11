@@ -1,5 +1,5 @@
 <template>
-  <json-layout v-model="value" :rule="rule" />
+  <json-layout :rule="rule" />
 </template>
 
 <script>
@@ -10,16 +10,19 @@ export default {
   components: { JsonLayout },
   setup() {
     const rule = ref([
-        {
-          type: "div",
-          children: ["hello word"],
+      {
+        type: "div",
+        children: ["hello word"],
+        style: "color:#00f;border:1px solid #000",
+        on: {
+          click: () => {
+            alert("点击了！");
+          },
         },
-      ]),
-      value = ref();
-
+      },
+    ]);
     return {
       rule,
-      value,
     };
   },
 };

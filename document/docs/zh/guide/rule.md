@@ -6,7 +6,7 @@
 
 ## 代码示例
 
-:::demo 引用Antd组件
+:::demo 
 ant/easyRule
 :::
 
