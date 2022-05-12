@@ -1,11 +1,11 @@
 import type { App } from 'vue';
 import factory from './core';
 
-const component = factory();
+export const JsonLayout = factory();
 
-component.install = (app: App) => {
-  app.component(component.name, component);
-  return app;
-};
-
-export default component
+export default {
+  install: (app: App) => {
+    app.component(JsonLayout.name, JsonLayout);
+    return app;
+  }
+}

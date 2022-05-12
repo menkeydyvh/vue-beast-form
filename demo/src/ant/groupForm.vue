@@ -1,17 +1,20 @@
 <template>
   <a-card class="content-card" :bordered="false" title="数组的处理，引入Group组件">
-    <json-layout :rule="rule" v-model:api="jApi" :option="{
-            form: {
-                layout: 'vertical'
-            }
-        }" />
+    <json-layout
+      :rule="rule"
+      v-model:api="jApi"
+      :option="{
+        form: {
+          layout: 'vertical',
+        },
+      }"
+    />
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-// import JsonLayout from 'json-layout'
 import Group from "./components/group.vue";
-import JsonLayout from "../../../components";
+import { JsonLayout } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
@@ -47,7 +50,7 @@ export default defineComponent({
               type: "group",
               title: "group1-1",
               field: "group1-1",
-            //   value: ["1", "2"],
+              //   value: ["1", "2"],
               props: {
                 field: "input1",
                 rule: [

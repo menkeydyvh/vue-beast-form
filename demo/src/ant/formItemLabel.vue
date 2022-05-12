@@ -11,8 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-// import JsonLayout from 'json-layout'
-import JsonLayout from "../../../components";
+import { JsonLayout } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
@@ -113,7 +112,7 @@ export default defineComponent({
         class: "test-div-class",
         on: {
           click: (e, f) => {
-            console.log(rule.value)
+            console.log(rule.value);
             console.log("on:click");
           },
         },

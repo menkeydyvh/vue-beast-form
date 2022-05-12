@@ -17,9 +17,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-// import JsonLayout from 'json-layout'
-// import { RuleType } from 'json-layout/lib/types'
-import JsonLayout from "../../../components";
+import { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
 export default defineComponent({
