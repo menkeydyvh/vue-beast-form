@@ -125,7 +125,7 @@ export default defineComponent({
               onClick: () => {
                 disbaled = !disbaled;
                 jApi.value.setDisabled("input2", disbaled);
-                jApi.value.setDisabled("divBtn", disbaled);
+                jApi.value.getProps("divBtn").loading = disbaled;
               },
             },
             children: ["禁用启用按钮和input2"],

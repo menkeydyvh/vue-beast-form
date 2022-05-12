@@ -124,12 +124,6 @@ export type ApiFnType = {
      */
     setTitle(field: string, value: string | RuleType): void
     /**
-     * 设置Props
-     * @param field 
-     * @param props 
-     */
-    setProps(field: string, props?: any): void
-    /**
      * 设置display
      * @param field 
      * @param display 
@@ -152,6 +146,11 @@ export type ApiFnType = {
      * @param field 
      */
     getFormData(field?: string): any
+    /**
+     * 获取输入组件的值
+     * @param field 
+     */
+    getProps(field: string): any
     /**
      * 清除值
      * @param field 

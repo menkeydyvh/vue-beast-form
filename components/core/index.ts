@@ -252,18 +252,6 @@ export default function factory() {
                         gRule.title = value
                     }
                 },
-                setProps(field, props) {
-                    const gRule = getRule(field);
-                    if (gRule) {
-                        if (props) {
-                            for (let key in props) {
-                                gRule.props[key] = props.key;
-                            }
-                        } else {
-                            gRule.props = {};
-                        }
-                    }
-                },
                 setDisplay(field, display) {
                     const gRule = getRule(field);
                     if (gRule) {
@@ -296,6 +284,12 @@ export default function factory() {
                 },
                 getFormData(field) {
                     return field ? model[field] : model
+                },
+                getProps(field) {
+                    const gRule = getRule(field);
+                    if (gRule) {
+                        return gRule.props
+                    }
                 },
                 clearValue(field) {
                     if (field) {
