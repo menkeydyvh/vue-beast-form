@@ -17,10 +17,10 @@
   </a-row>
 </template>
 <script lang="ts">
-import { defineComponent, ref, toRefs, getCurrentInstance, watch } from "vue";
+import { defineComponent, ref, toRefs, watch } from "vue";
 import type { PropType } from "vue";
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue";
-import { deepCopy, getParentCompnent } from "json-layout/lib/tool";
+import { deepCopy } from "json-layout/lib/tool";
 import { JsonLayout } from "../../../../components";
 import type { RuleType, PropsOptionType } from "../../../../components/types";
 
@@ -41,8 +41,7 @@ export default defineComponent({
     "onUpdate:modelValue": { type: Function },
   },
   setup(props, { emit }) {
-    const vm = getCurrentInstance(),
-      { rule, option, modelValue, field } = toRefs(props),
+    const { rule, option, modelValue, field } = toRefs(props),
       groupRule = ref<GroupRule[]>([]),
       value = ref<Array<any>>([]),
       jApi = ref();
@@ -74,14 +73,6 @@ export default defineComponent({
           optionItem = null;
         if (option.value) {
           optionItem = deepCopy(option.value);
-        } else {
-          const parent = getParentCompnent(vm.parent, JsonLayout.name);
-          if (parent) {
-            const parentOption = parent.props.option as PropsOptionType;
-            if (parentOption) {
-              optionItem = deepCopy(parentOption);
-            }
-          }
         }
         groupRule.value.push({
           rule: ruleItem,

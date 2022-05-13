@@ -1,10 +1,12 @@
 import type { App } from 'vue';
 import type { FactoryOptionType } from './types';
 import factory from './core';
+import pkg from '../package.json';
 
 export const JsonLayout = factory();
 
-const config = {
+const useComponent = {
+  version: pkg.version,
   setOption: (option: FactoryOptionType) => {
     JsonLayout.setOption(option)
   },
@@ -14,4 +16,4 @@ const config = {
   }
 }
 
-export default config
+export default useComponent

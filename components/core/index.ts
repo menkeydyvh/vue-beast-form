@@ -1,27 +1,21 @@
 import { ref, reactive, toRefs, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
-import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName, updateDefaultName, setFormDataComponent } from './config'
 import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
-import { renderRule } from './render'
+import config from './config'
+import render from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType, FactoryOptionType } from '../types'
 
-const name = 'JsonLayout';
-
 export default function factory() {
-    return defineComponent({
+
+    const name = 'JsonLayout';
+
+    const baseConfig = new config()
+
+    const { renderRule } = new render(baseConfig)
+
+    const component = defineComponent({
         name,
-        setOption: (option?: FactoryOptionType) => {
-            debugger;
-            if (option) {
-                option.defaultName || updateDefaultName(option.defaultName)
-                if (option.formComponents) {
-                    option.formComponents.forEach(item => {
-                        setFormDataComponent(item.name, item.keys, item.events, item.defaultValues)
-                    })
-                }
-            }
-        },
         components: {},
         directives: {},
         props: {
@@ -62,9 +56,8 @@ export default function factory() {
                 if (!rt.props) {
                     rt.props = {}
                 }
-                if (typeof disabled.value === 'boolean') {
-                    rt.props.disabled = disabled.value === true ? true : undefined;
-                }
+
+                rt.props.disabled = disabled.value;
 
                 if (rt.on) {
                     for (let onName in rt.on) {
@@ -89,18 +82,18 @@ export default function factory() {
                 const rdcTag = cacheResolveDynamicComponent[type];
 
                 if (isObject(rdcTag)) {
-                    let defaultModelKey: string | string[] = vModelKey || formDataComponentKey[rdcTag.name] || formDataComponentKey['default'],
+                    let defaultModelKey: string | string[] = vModelKey || baseConfig.formDataComponentKey[rdcTag.name] || baseConfig.formDataComponentKey['default'],
                         defaultEvents: any = null,
                         defaultValue: any = vModelKeyDefaultValue || null,
                         propsKeys = rdcTag.props ? Object.keys(rdcTag.props || {}) : [],
                         isBool = true;
 
                     // 默认先从配置中取
-                    if (formDataComponentChangeKeyEvent[rdcTag.name]) {
-                        defaultEvents = formDataComponentChangeKeyEvent[rdcTag.name]
+                    if (baseConfig.formDataComponentChangeKeyEvent[rdcTag.name]) {
+                        defaultEvents = baseConfig.formDataComponentChangeKeyEvent[rdcTag.name]
                     }
-                    if (formDataComponentDefaultValue[rdcTag.name]) {
-                        defaultValue = formDataComponentDefaultValue[rdcTag.name]
+                    if (baseConfig.formDataComponentDefaultValue[rdcTag.name]) {
+                        defaultValue = baseConfig.formDataComponentDefaultValue[rdcTag.name]
                     }
 
                     if (Array.isArray(defaultModelKey)) {
@@ -232,7 +225,7 @@ export default function factory() {
                     const formProps = option.value ? deepCopy(option.value.form) : defaultOption;
                     formProps.model = model;
                     formProps.ref = 'form';
-                    baseRule.type = defaultName.form
+                    baseRule.type = baseConfig.defaultName.form
                     baseRule.props = formProps
 
                 } else {
@@ -436,6 +429,23 @@ export default function factory() {
 
     });
 
+    /**
+     * 对外添加配置
+     * @param option 
+     */
+    component.setOption = (option?: FactoryOptionType) => {
+        if (option) {
+            if (option.defaultName) {
+                baseConfig.updateDefaultName(option.defaultName)
+            }
 
+            if (option.formComponents) {
+                option.formComponents.forEach(item => {
+                    baseConfig.setFormDataComponent(item.name, item.keys, item.events, item.defaultValues)
+                })
+            }
+        }
+    }
 
+    return component
 }
