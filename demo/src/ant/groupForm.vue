@@ -15,7 +15,9 @@
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
 import { JsonLayout } from "../../../components";
-import type { RuleType } from "../../../components/types";
+import type { RuleType, FactoryOptionType } from "../../../components/types";
+
+console.log(JsonLayout);
 
 export default defineComponent({
   components: { JsonLayout },
@@ -25,6 +27,13 @@ export default defineComponent({
 
     // 导入组件 用法和当前组件的按需引入一样
     JsonLayout.components = { Group };
+    const opt: FactoryOptionType = {
+      defaultName: {
+        form: "div",
+      },
+    };
+
+    JsonLayout.setOption(opt);
 
     rule.value = [
       {

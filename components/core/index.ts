@@ -1,17 +1,27 @@
 import { ref, reactive, toRefs, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
-import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName } from './config'
+import { formDataComponentKey, formDataComponentDefaultValue, formDataComponentChangeKeyEvent, defaultName, updateDefaultName, setFormDataComponent } from './config'
 import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
 import { renderRule } from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
-import type { RuleType, PropsOptionType, ApiFnType } from '../types'
+import type { RuleType, PropsOptionType, ApiFnType, FactoryOptionType } from '../types'
 
 const name = 'JsonLayout';
 
 export default function factory() {
-
     return defineComponent({
         name,
+        setOption: (option?: FactoryOptionType) => {
+            debugger;
+            if (option) {
+                option.defaultName || updateDefaultName(option.defaultName)
+                if (option.formComponents) {
+                    option.formComponents.forEach(item => {
+                        setFormDataComponent(item.name, item.keys, item.events, item.defaultValues)
+                    })
+                }
+            }
+        },
         components: {},
         directives: {},
         props: {

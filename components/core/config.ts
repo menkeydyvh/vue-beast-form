@@ -1,10 +1,4 @@
-interface DefaultName {
-    form: string;
-    formItem: string;
-    formItemPropName: string;
-    formItemPropLabel: string;
-    formItemSlotTitle: string;
-}
+import type { DefaultName } from '../types'
 
 /**
  * form 组件名称
@@ -77,7 +71,7 @@ const formDataComponentChangeKeyEvent = {
  * 替换defaultName值
  * @param config 
  */
-const updateDefaultName = (config: DefaultName) => {
+export const updateDefaultName = (config: DefaultName) => {
     for (let key in config) {
         defaultName[key] = config[key]
     }
@@ -90,17 +84,19 @@ const updateDefaultName = (config: DefaultName) => {
  * @param events 
  * @param defaultValues 
  */
-const setFormDataComponent = (name: string, keys: string | string[], events: string | string[], defaultValues?: any) => {
-    formDataComponentChangeKeyEvent[name] = keys
-    if (typeof keys === typeof events) {
-        if (Array.isArray(keys)) {
-            if (keys.length != events.length) {
-                throw new Error('keys and events different lengths')
+export const setFormDataComponent = (name: string, keys: string | string[], events?: string | string[], defaultValues?: any) => {
+    formDataComponentKey[name] = keys;
+    if (defaultValues !== null && defaultValues !== undefined) {
+        if (typeof keys === typeof events) {
+            if (Array.isArray(keys)) {
+                if (keys.length != events.length) {
+                    throw new Error('keys and events different lengths')
+                }
             }
+            formDataComponentChangeKeyEvent[name] = events;
+        } else {
+            throw new Error('keys and events different typeof')
         }
-        formDataComponentChangeKeyEvent[name] = events;
-    } else {
-        throw new Error('keys and events different typeof')
     }
     if (defaultValues !== null && defaultValues !== undefined) {
         if (typeof keys === typeof defaultValues) {
@@ -121,8 +117,6 @@ export {
     formDataComponentKey,
     formDataComponentChangeKeyEvent,
     formDataComponentDefaultValue,
-    updateDefaultName,
-    setFormDataComponent,
 }
 
 

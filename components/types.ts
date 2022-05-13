@@ -109,6 +109,29 @@ export type PropsOptionType = {
     form: any
 }
 
+export interface DefaultName {
+    /**
+     * 框架form组件的名称：例如'a-form'
+     */
+    form?: string;
+    /**
+    * 框架form组件的formItem名称：例如'a-form-item'
+    */
+    formItem?: string;
+    /**
+     * formItem对应model上的key：例如'name'
+     */
+    formItemPropName?: string;
+    /**
+     * formItem对应标题label的key：例如'label'
+     */
+    formItemPropLabel?: string;
+    /**
+     * formItem对应标题label的插槽key：例如'label'
+     */
+    formItemSlotTitle?: string;
+}
+
 export type ApiFnType = {
     /**
      * 设置数据
@@ -172,4 +195,16 @@ export type ApiFnType = {
      * @param fields 
      */
     clearValidate(fields?: [string] | string): void
+}
+
+interface FactoryOptionTypeFormComponents {
+    name: string
+    keys: string | string[]
+    events?: string | string[]
+    defaultValues?: any
+}
+
+export interface FactoryOptionType {
+    defaultName?: DefaultName;
+    formComponents?: [FactoryOptionTypeFormComponents]
 }
