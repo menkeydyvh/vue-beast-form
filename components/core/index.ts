@@ -1,18 +1,14 @@
 import { ref, reactive, toRefs, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
-import config from './config'
+import config from '../config'
 import render from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
-import type { RuleType, PropsOptionType, ApiFnType, FactoryOptionType } from '../types'
+import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
 export default function factory() {
 
     const name = 'JsonLayout';
-
-    const baseConfig = new config()
-
-    const { renderRule } = new render(baseConfig)
 
     const component = defineComponent({
         name,
@@ -35,6 +31,15 @@ export default function factory() {
                 oldModel = { ...deepCopy(modelValue.value) },
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
+
+            if (!vm.appContext.config.globalProperties.$formBeast) {
+                console.error("You need set app.config.globalProperties.$formBeast")
+                return () => []
+            }
+
+            const baseConfig = new config(vm.appContext.config.globalProperties.$formBeast)
+
+            const { renderRule } = new render(baseConfig)
 
             // 获取注入的父级信息
             const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null),
@@ -222,7 +227,7 @@ export default function factory() {
                             defaultOption = deepCopy(baseOption.form)
                         }
                     }
-                    const formProps = option.value ? deepCopy(option.value.form) : defaultOption;
+                    const formProps = option.value && option.value.form ? deepCopy(option.value.form) : defaultOption;
                     formProps.model = model;
                     formProps.ref = 'form';
                     baseRule.type = baseConfig.defaultName.form
@@ -428,24 +433,6 @@ export default function factory() {
 
 
     });
-
-    /**
-     * 对外添加配置
-     * @param option 
-     */
-    component.setOption = (option?: FactoryOptionType) => {
-        if (option) {
-            if (option.defaultName) {
-                baseConfig.updateDefaultName(option.defaultName)
-            }
-
-            if (option.formComponents) {
-                option.formComponents.forEach(item => {
-                    baseConfig.setFormDataComponent(item.name, item.keys, item.events, item.defaultValues)
-                })
-            }
-        }
-    }
 
     return component
 }

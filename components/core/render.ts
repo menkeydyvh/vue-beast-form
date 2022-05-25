@@ -1,6 +1,6 @@
 import { h, resolveDynamicComponent, withDirectives, resolveDirective } from 'vue'
 import { mergeStyle, mergeClassName } from '../tool'
-import type config from './config'
+import type config from '../config'
 import type { Slot, Component, VNode } from 'vue'
 import type { RuleType, DefaultName } from '../types'
 
