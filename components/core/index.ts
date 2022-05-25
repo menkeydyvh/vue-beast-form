@@ -8,9 +8,10 @@ import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
 export default function factory() {
 
-    const name = 'JsonLayout';
+    const name = 'JsonLayout',
+        baseFormRefs = 'form';
 
-    const component = defineComponent({
+    return defineComponent({
         name,
         components: {},
         directives: {},
@@ -229,7 +230,7 @@ export default function factory() {
                     }
                     const formProps = option.value && option.value.form ? deepCopy(option.value.form) : defaultOption;
                     formProps.model = model;
-                    formProps.ref = 'form';
+                    formProps.ref = baseFormRefs;
                     baseRule.type = baseConfig.defaultName.form
                     baseRule.props = formProps
 
@@ -316,13 +317,13 @@ export default function factory() {
                 },
                 async validate(callback, fields) {
                     let valid = true
-                    if (!await formValidate(vm.refs.form, fields)) {
+                    if (!await formValidate(vm.refs[baseFormRefs], fields)) {
                         valid = false
                     }
                     if (subFormVm.value && !fields) {
                         let i = 0, subFormLength = subFormVm.value.length;
                         for (i; i < subFormLength; i++) {
-                            if (!await formValidate(subFormVm.value[i].refs.form)) {
+                            if (!await formValidate(subFormVm.value[i].refs[baseFormRefs])) {
                                 valid = false
                             }
                         }
@@ -330,10 +331,10 @@ export default function factory() {
                     callback && callback(valid)
                 },
                 clearValidate(fields) {
-                    clearFormValidate(vm.refs.form, fields);
+                    clearFormValidate(vm.refs[baseFormRefs], fields);
                     if (subFormVm.value && !fields) {
                         subFormVm.value.forEach(item => {
-                            clearFormValidate(item.refs.form);
+                            clearFormValidate(item.refs[baseFormRefs]);
                         })
                     }
                 }
@@ -434,5 +435,4 @@ export default function factory() {
 
     });
 
-    return component
 }
