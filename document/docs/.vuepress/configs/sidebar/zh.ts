@@ -9,6 +9,12 @@ export const zh: SidebarConfig = {
       ],
     },
     {
+      text: '全局配置',
+      children: [
+        '/zh/guide/config.md',
+      ],
+    },
+    {
       text: 'Props',
       children: [
         '/zh/guide/rule.md',

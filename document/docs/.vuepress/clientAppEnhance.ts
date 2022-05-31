@@ -5,6 +5,6 @@ import antd from 'ant-design-vue'
 export default defineClientAppEnhance(({ app }) => {
     app.use(antd);
     app.config.globalProperties.$jsonLayout = {
-        baseUi: "ant-design-vue",
+        base: "ant-design-vue",
     }
 })

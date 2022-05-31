@@ -6,6 +6,10 @@ import render from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
+// TODO: 规则对象内置方法时候提供一个 JSON.stringify 和 JSON.parse 方法来处理对象是函数的处理
+// TODO：补充element ui 和 iview ui的支持配置
+// TODO：props.disabled 的修改不重绘整个组件？
+
 export default function factory() {
 
     const errorConfig = "You need set app.config.globalProperties.$jsonLayout"

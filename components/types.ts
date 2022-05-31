@@ -212,11 +212,11 @@ export interface ConfigOptionsType {
     /**
      * 框架会内置一些ui库的配置 可以直接使用 或自定义一套新ui库进来
      */
-    baseUi: string
+    base: string
 
     defaultName?: DefaultName;
     formDataComponentKey?: {
-        [componentName: string]: string
+        [componentName: string]: string | string[]
     }
     formDataComponentDefaultValue?: {
         [key: string]: any;

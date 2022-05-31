@@ -36,12 +36,12 @@ export default class config {
     } = {}
 
     constructor(options: ConfigOptionsType) {
-        if (options.baseUi) {
-            if (framework[options.baseUi]) {
-                this.setKeyValue("defaultName", framework[options.baseUi].defaultName)
-                this.setKeyValue("formDataComponentKey", framework[options.baseUi].formDataComponentKey)
-                this.setKeyValue("formDataComponentDefaultValue", framework[options.baseUi].formDataComponentDefaultValue)
-                this.setKeyValue("formDataComponentChangeKeyEvent", framework[options.baseUi].formDataComponentChangeKeyEvent)
+        if (options.base) {
+            if (framework[options.base]) {
+                this.setKeyValue("defaultName", framework[options.base].defaultName)
+                this.setKeyValue("formDataComponentKey", framework[options.base].formDataComponentKey)
+                this.setKeyValue("formDataComponentDefaultValue", framework[options.base].formDataComponentDefaultValue)
+                this.setKeyValue("formDataComponentChangeKeyEvent", framework[options.base].formDataComponentChangeKeyEvent)
             }
         }
         if (options.defaultName) {

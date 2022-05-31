@@ -9,7 +9,7 @@ import 'ant-design-vue/dist/antd.css';
 const app = createApp(App)
 
 const jsonLayout: ConfigOptionsType = {
-    baseUi: 'ant-design-vue'
+    base: 'ant-design-vue'
 }
 
 app.config.globalProperties.$jsonLayout = jsonLayout

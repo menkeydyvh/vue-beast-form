@@ -12,18 +12,23 @@ npm install --S json-layout
   </CodeGroupItem>
 </CodeGroup>
 
-## 配置
-main.js
-```js
+## 全局配置
+main.js 确认使用的ui组件  [详细说明](./config.md)
+
+```js{6-8}
+import { createApp } from 'vue'
+import App from './App.vue'
+
+const app = createApp(App)
+
 app.config.globalProperties.$jsonLayout = {
-    baseUi: 'ant-design-vue'
+    base: 'ant-design-vue'
 }
+...
 ```
 
 ## 使用
-
-
-
+xxx.vue
 <CodeGroup>
   <CodeGroupItem title="TS" active>
 
