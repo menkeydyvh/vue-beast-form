@@ -1,4 +1,4 @@
-import { ref, reactive, toRefs, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
+import { ref, reactive, toRefs, unref, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
 import config from '../config'
@@ -7,6 +7,8 @@ import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
 export default function factory() {
+
+    const errorConfig = "You need set app.config.globalProperties.$jsonLayout"
 
     const name = 'JsonLayout',
         baseFormRefs = 'form';
@@ -33,12 +35,14 @@ export default function factory() {
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 
-            if (!vm.appContext.config.globalProperties.$formBeast) {
-                console.error("You need set app.config.globalProperties.$formBeast")
+            const conf = vm.appContext.config.globalProperties.$jsonLayout
+
+            if (!conf) {
+                console.error(errorConfig)
                 return () => []
             }
 
-            const baseConfig = new config(vm.appContext.config.globalProperties.$formBeast)
+            const baseConfig = new config(conf)
 
             const { renderRule } = new render(baseConfig)
 
@@ -216,9 +220,9 @@ export default function factory() {
             const fillRule = () => {
                 const baseRule = ruleTemplate({
                     type: '',
-                }), rules = computed(() => deepCopy(rule.value));
+                });
 
-                baseRule.children = fillRuleChildren(rules.value);
+                baseRule.children = fillRuleChildren(unref(rule));
 
                 if (isForm.value) {
                     let defaultOption = {};
@@ -237,6 +241,7 @@ export default function factory() {
                 } else {
                     baseRule.type = 'div';
                 }
+
                 return baseRule;
             }
 
@@ -344,7 +349,7 @@ export default function factory() {
                 // 表单验证表单字段验证
                 if (formEvent) {
                     try {
-                        await formEvent.validate(fields)
+                        await formEvent[baseConfig.defaultName.formEventValidate](fields)
                     } catch (error) {
                         return false;
                     }
@@ -353,7 +358,7 @@ export default function factory() {
             }, clearFormValidate = (formEvent: any, fields?: string | string[]) => {
                 // 清除表单验证
                 if (formEvent) {
-                    formEvent.clearValidate(fields)
+                    formEvent[baseConfig.defaultName.formEventClearValidate](fields)
                 }
             }, getRule = (field: string): RuleType => {
                 // 获取规则 支持xxx.xxx方式

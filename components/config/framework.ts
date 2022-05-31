@@ -7,6 +7,8 @@ export const framework = {
             formItemPropName: 'name',
             formItemPropLabel: 'label',
             formItemSlotTitle: 'label',
+            formEventValidate: 'validate',
+            formEventClearValidate: 'clearValidate',
         },
         formDataComponentKey: {
             AAutoComplete: 'value',

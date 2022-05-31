@@ -198,6 +198,14 @@ export interface DefaultName {
      * formItem对应标题label的插槽key：例如'label'
      */
     formItemSlotTitle?: string;
+    /**
+     * form表单验证事件名称
+     */
+    formEventValidate?: string;
+    /**
+     * form表单清除验证事件名称
+     */
+    formEventClearValidate?: string;
 }
 
 export interface ConfigOptionsType {

@@ -17,7 +17,7 @@ export default class render {
      * @param rule 
      * @returns 
      */
-    directivesRender = (vNode: VNode, rule: RuleType) => {
+    _directivesRender = (vNode: VNode, rule: RuleType) => {
         if (rule.directives) {
             const directives = rule.directives.map(item => {
                 if (Array.isArray(item)) {
@@ -33,27 +33,22 @@ export default class render {
         }
     }
 
-
     /**
-     * 
      * 渲染
      * @param {String} tag 
      * @param {Object} props 
      * @param {Object|Array} slot 
      * @returns 
      */
-    render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
+    _render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
         if (rule.display === 'if') {
             return undefined;
         }
         const ragComponent: any = resolveDynamicComponent(tag)
 
         if (!rule.vModelKey) {
-            // 处理attrs
             props = { ...props, ...rule.attrs };
-            // 处理style
             props.style = mergeStyle(props.style || {}, rule.style)
-            // 处理class
             props.class = mergeClassName(props.class || '', rule.class)
 
             if (!props.class) {
@@ -94,13 +89,13 @@ export default class render {
             if (typeof rule.title === 'string') {
                 formItemProps[this.defaultName.formItemPropLabel] = rule.title
             } else {
-                formItemSlot[this.defaultName.formItemSlotTitle] = () => this.renderItem(rule.title as RuleType)
+                formItemSlot[this.defaultName.formItemSlotTitle] = () => this._renderItem(rule.title as RuleType)
             }
 
             formItemVNode = h(resolveDynamicComponent(this.defaultName.formItem) as Component, formItemProps, formItemSlot)
         }
 
-        return this.directivesRender(formItemVNode ? formItemVNode : vNode, rule)
+        return this._directivesRender(formItemVNode ? formItemVNode : vNode, rule)
     }
 
     /**
@@ -108,7 +103,7 @@ export default class render {
      * @param {Array} children 
      * @returns 
      */
-    renderChildren = (children: Array<RuleType | string>): any => {
+    _renderChildren = (children: Array<RuleType | string>): any => {
         const slots: any = {}, slotAry: any = {};
         children.forEach(child => {
             let slotsKey = 'default', isObj = false;
@@ -120,7 +115,7 @@ export default class render {
             if (!slotAry[slotsKey]) {
                 slotAry[slotsKey] = []
             }
-            slotAry[slotsKey].push(isObj ? this.renderItem(child as RuleType) : child)
+            slotAry[slotsKey].push(isObj ? this._renderItem(child as RuleType) : child)
         })
         for (let key in slotAry) {
             slots[key] = () => slotAry[key]
@@ -133,14 +128,14 @@ export default class render {
      * @param {Object} rule 
      * @returns 
      */
-    renderItem = (rule: RuleType) => {
+    _renderItem = (rule: RuleType) => {
         let slot = undefined;
 
         if (rule.children && rule.children.length) {
-            slot = this.renderChildren(rule.children)
+            slot = this._renderChildren(rule.children)
         }
 
-        return this.render(rule.type, { ...rule.props }, slot, rule)
+        return this._render(rule.type, { ...rule.props }, slot, rule)
     }
 
     /**
@@ -148,6 +143,6 @@ export default class render {
      * @param {Array} ruleBase
      * @returns 
      */
-    renderRule = (ruleBase: RuleType) => this.renderItem(ruleBase)
+    renderRule = (ruleBase: RuleType) => this._renderItem(ruleBase)
 
 }

@@ -43,26 +43,22 @@ export default class config {
                 this.setKeyValue("formDataComponentDefaultValue", framework[options.baseUi].formDataComponentDefaultValue)
                 this.setKeyValue("formDataComponentChangeKeyEvent", framework[options.baseUi].formDataComponentChangeKeyEvent)
             }
-
-            if (options.defaultName) {
-                this.setKeyValue("defaultName", options.defaultName)
-            }
-
-            if (options.formDataComponentKey) {
-                this.setKeyValue("formDataComponentKey", options.formDataComponentKey)
-            }
-
-            if (options.formDataComponentDefaultValue) {
-                this.setKeyValue("formDataComponentDefaultValue", options.formDataComponentDefaultValue)
-            }
-
-            if (options.formDataComponentChangeKeyEvent) {
-                this.setKeyValue("formDataComponentChangeKeyEvent", options.formDataComponentChangeKeyEvent)
-            }
-        } else {
-            console.error("app.config.globalProperties.$formBeast 'baseUi' required")
+        }
+        if (options.defaultName) {
+            this.setKeyValue("defaultName", options.defaultName)
         }
 
+        if (options.formDataComponentKey) {
+            this.setKeyValue("formDataComponentKey", options.formDataComponentKey)
+        }
+
+        if (options.formDataComponentDefaultValue) {
+            this.setKeyValue("formDataComponentDefaultValue", options.formDataComponentDefaultValue)
+        }
+
+        if (options.formDataComponentChangeKeyEvent) {
+            this.setKeyValue("formDataComponentChangeKeyEvent", options.formDataComponentChangeKeyEvent)
+        }
     }
 
     /**
