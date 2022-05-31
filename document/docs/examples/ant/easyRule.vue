@@ -4,7 +4,7 @@
 
 <script>
 import { ref } from "vue";
-import JsonLayout from "json-layout";
+import { JsonLayout } from "json-layout";
 
 export default {
   components: { JsonLayout },

@@ -12,6 +12,14 @@ npm install --S json-layout
   </CodeGroupItem>
 </CodeGroup>
 
+## 配置
+main.js
+```js
+app.config.globalProperties.$jsonLayout = {
+    baseUi: 'ant-design-vue'
+}
+```
+
 ## 使用
 
 

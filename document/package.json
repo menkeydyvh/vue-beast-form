@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "ant-design-vue": "^3.2.3",
-    "json-layout": "^0.1.1",
+    "json-layout": "^0.1.2-alpha.4",
     "less": "^4.1.2"
   }
 }
