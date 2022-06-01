@@ -1,27 +1,28 @@
 const path = require('path');
 
-// the path(s) that should be cleaned
-let pathsToClean = ['dist'];
-
-// the clean options to use
-let cleanOptions = {
-    root: path.resolve(__dirname),
-    // exclude: ['shared.js'],
-    verbose: true,
-    dry: false,
-};
-
 module.exports = {
     resolve: {
         extensions: ['.js', '.ts', '.json'],
     },
-    devtool: 'source-map',// 打包出的js文件是否生成map文件（方便浏览器调试）
+    devtool: 'inline-source-map',
     mode: 'production',
     entry: {
-        'index': './lib/index.js',
+        index: "./components/index.ts"
     },
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
+        library: "JsonLayout",
+        libraryTarget: "umd"
     },
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                use: 'ts-loader',
+                exclude: /node-modules/,
+            }
+        ]
+    }
+
 };
