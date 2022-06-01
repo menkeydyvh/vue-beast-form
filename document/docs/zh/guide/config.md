@@ -53,7 +53,7 @@ app.config.globalProperties.$jsonLayout =  {
 
 #### frameworks
 - 类型: []string 
-- 说明：填入使用的框架名称
+- 说明：填入使用的框架名称，方便导入默认配置
 - 例如：["element-ui","ant-design-vue"]
 
 #### defaultName
@@ -113,4 +113,4 @@ app.config.globalProperties.$jsonLayout =  {
 }
 ```
 
-注意：如果formDataComponentKey配置的是数组 [formDataComponentDefaultValue、formDataComponentChangeKeyEvent] **必定也是数组**
+注意：如果formDataComponentKey配置的是数组 [formDataComponentDefaultValue、formDataComponentChangeKeyEvent] **必定也是数组** ,同时顺序是绑定的

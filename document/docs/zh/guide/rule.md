@@ -44,6 +44,7 @@ ant/easyRule
 ### validate
 - 类型：Array <Badge text="表单组件时使用" />
 - 说明：组件验证规则
+- 例如：[{required: true, message: '请输入内容'}]
 ### native
 - 类型：Boolean <Badge text="表单组件时使用" />
 - 说明：是否渲染formItem
@@ -63,8 +64,9 @@ ant/easyRule
 - 类型：String <Badge text="渲染在插槽时使用" />
 - 说明：如果需要渲染在指定插槽下请指定配置
 ### display
-- 类型："if" | "show"
-- 说明：对应v-if和v-show的值为true的效果隐藏效果
+- 类型：Boolean
+- 默认值：true
+- 说明：是否显示
 ### directives
 - 类型：Array
 - 说明：指令配置
