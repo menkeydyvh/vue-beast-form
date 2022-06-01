@@ -34,8 +34,8 @@ export default function factory() {
         setup(props, { emit }) {
             const vm = getCurrentInstance(),
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
-                model = reactive({ ...modelValue.value }),
-                oldModel = { ...deepCopy(modelValue.value) },
+                model = reactive(modelValue.value),
+                oldModel = deepCopy(modelValue.value),
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 

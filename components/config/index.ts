@@ -44,6 +44,20 @@ export default class config {
                 this.setKeyValue("formDataComponentChangeKeyEvent", framework[options.base].formDataComponentChangeKeyEvent)
             }
         }
+        if (options.frameworks) {
+            options.frameworks.forEach((item) => {
+                if (item != options.base && framework[item]) {
+                    if (!options.base) {
+                        options.base = item
+                        this.setKeyValue("defaultName", framework[item].defaultName)
+                    }
+                    this.setKeyValue("formDataComponentKey", framework[item].formDataComponentKey)
+                    this.setKeyValue("formDataComponentDefaultValue", framework[item].formDataComponentDefaultValue)
+                    this.setKeyValue("formDataComponentChangeKeyEvent", framework[item].formDataComponentChangeKeyEvent)
+                }
+            })
+        }
+
         if (options.defaultName) {
             this.setKeyValue("defaultName", options.defaultName)
         }

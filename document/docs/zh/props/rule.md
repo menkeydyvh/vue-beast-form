@@ -4,15 +4,27 @@
 
 利用这个JSON规则来生成对应布局和相关层级结构，同时可针对style设置className设置
 
-## 代码示例
-
-:::demo 
-ant/easyRule
-:::
-
 
 ## 字段介绍
-下列为规则字段
+
+TS开发中便捷提示
+
+<CodeGroup>
+  <CodeGroupItem title="TS" active>
+
+```ts
+import type { RuleType } from "json-layout/lib/types";
+
+const rule = ref<[RuleType]> = [
+  {
+    // 引入type方便书写
+  }
+]
+```
+
+  </CodeGroupItem>
+</CodeGroup>
+
 ### type 
 - 类型：String <Badge text="必填" />
 - 说明：用于生成对应组件的名称。 
