@@ -6,11 +6,7 @@ export const zh: SidebarConfig = {
       text: '指南',
       children: [
         '/zh/guide/install.md',
-      ],
-    },
-    {
-      text: '全局配置',
-      children: [
+        '/zh/guide/started.md',
         '/zh/guide/config.md',
       ],
     },

@@ -8,11 +8,10 @@ import 'ant-design-vue/dist/antd.css';
 
 const app = createApp(App)
 
-const jsonLayout: ConfigOptionsType = {
-    base: 'ant-design-vue'
-}
 
-app.config.globalProperties.$jsonLayout = jsonLayout
+app.config.globalProperties.$jsonLayout = {
+    base: 'ant-design-vue',
+} as ConfigOptionsType
 
 app.use(Antd).directive('test1', {
     mounted() {
