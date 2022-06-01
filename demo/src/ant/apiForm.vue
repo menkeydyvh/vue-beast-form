@@ -29,7 +29,7 @@ export default defineComponent({
       jApi = ref<ApiFnType>();
 
     let disbaled = false,
-      display: any = null;
+      display = true;
 
     rule.value = [
       {
@@ -111,7 +111,7 @@ export default defineComponent({
             type: "a-button",
             props: {
               onClick: () => {
-                display = display ? null : "if";
+                display = !display;
                 jApi.value.setDisplay("input1", display);
               },
             },

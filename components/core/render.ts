@@ -41,7 +41,7 @@ export default class render {
      * @returns 
      */
     _render = (tag: string, props: any, slot: Slot, rule: RuleType) => {
-        if (rule.display === 'if') {
+        if (rule.display === false) {
             return undefined;
         }
         const ragComponent: any = resolveDynamicComponent(tag)
@@ -53,9 +53,6 @@ export default class render {
 
             if (!props.class) {
                 delete props.class
-            }
-            if (rule.display === 'show') {
-                props.style.display = "none"
             }
             if (Object.keys(props.style).length === 0) {
                 delete props.style;
@@ -74,7 +71,6 @@ export default class render {
                 formItemProps.class = rule.class;
             }
             formItemProps.style = mergeStyle({}, rule.style);
-            formItemProps.style.display = rule.display === 'show' ? "none" : undefined;
             formItemProps[this.defaultName.formItemPropName] = rule.field;
             if (rule.props.disabled !== true) {
                 if (rule.validate) {

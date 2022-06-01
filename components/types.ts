@@ -88,7 +88,7 @@ export type RuleType = {
     /**
      * v-if和v-show的作用
      */
-    display?: 'show' | 'if';
+    display?: boolean;
     /**
      * 指令
      */
@@ -130,7 +130,7 @@ export type ApiFnType = {
      * @param field 
      * @param display 
      */
-    setDisplay(field: string, display?: 'show' | 'if'): void
+    setDisplay(field: string, display?: boolean): void
     /**
      * 设置disabled
      * @param field 

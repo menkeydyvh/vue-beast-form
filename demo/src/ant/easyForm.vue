@@ -266,7 +266,7 @@ export default defineComponent({
             props: {
               type: "password",
             },
-            display: "show",
+            display: false,
           },
           "input下方",
         ],
