@@ -58,9 +58,6 @@ const rule = ref<[RuleType]> = [
 - 类型：Array <Badge text="表单组件时使用" />
 - 说明：组件验证规则
 - 例如：[{required: true, message: '请输入内容'}]
-### native
-- 类型：Boolean <Badge text="表单组件时使用" />
-- 说明：是否渲染formItem
 ### class
 - 类型：String | Array
 - 说明：针对组件设置className
@@ -85,4 +82,5 @@ const rule = ref<[RuleType]> = [
 - 说明：指令配置
 ### on
 - 类型：Object
-- 说明：组件事件监听
+- 说明：组件事件监听，on事件监听的事件会默认在最后一个参数绑定一个api对象方便使用api
+  

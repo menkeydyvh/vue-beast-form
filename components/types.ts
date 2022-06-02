@@ -120,7 +120,7 @@ export type ApiFnType = {
      * @param field 
      * @param value 
      */
-    setTitle(field: string, value: string | RuleType): void
+    setTitle(field: string, value: string | RuleType | false): void
     /**
      * 设置display
      * @param field 
@@ -150,20 +150,10 @@ export type ApiFnType = {
      */
     resetFormData(field?: string): void
     /**
-     * 获取输入组件的props
-     * @param field 
-     */
-    getProps(field: string): any
-    /**
      * 清除值
      * @param field 
      */
     clearValue(field?: string): void
-    /**
-     * 当前字段是否是model的key
-     * @param field 
-     */
-    isModelKey(field: string): boolean
     /**
      * 表单验证，目前表单验证只负责主表单
      * @param callback 
@@ -175,6 +165,16 @@ export type ApiFnType = {
      * @param fields 
      */
     clearValidate(fields?: [string] | string): void
+    /**
+   * 当前字段是否是model的key
+   * @param field 
+   */
+    isModelKey(field: string): boolean
+    /**
+     * 获取输入组件的props
+     * @param field 
+     */
+    getProps(field: string): any
 }
 
 

@@ -4,9 +4,7 @@ import 'ant-design-vue/dist/antd.css'
 
 export default defineClientAppEnhance(({ app }) => {
     app.config.globalProperties.$jsonLayout = {
-        baseUi: "ant-design-vue",
-        // TODO:后续版本更新替换成base
-        // base: "ant-design-vue",
+        base: "ant-design-vue",
     }
     app.use(antd);
 })

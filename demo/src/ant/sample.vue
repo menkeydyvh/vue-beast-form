@@ -15,7 +15,7 @@ export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
-      value = ref(),
+      value = ref({ name: "name" }),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
@@ -73,6 +73,22 @@ export default defineComponent({
             on: {
               click: (e, api) => {
                 api.resetFormData();
+              },
+            },
+          },
+          {
+            type: "a-space",
+            children: [
+              {
+                type: "a-button",
+                field: "btn",
+                props: {},
+                children: ["清空"],
+              },
+            ],
+            on: {
+              click: (e, api) => {
+                api.clearValue("name");
               },
             },
           },

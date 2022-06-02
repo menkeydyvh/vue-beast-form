@@ -62,7 +62,7 @@ export default defineComponent({
 
  </CodeGroupItem>
 
- <CodeGroupItem title="JS" active>
+ <CodeGroupItem title="JS">
   
 ```vue
 <template>

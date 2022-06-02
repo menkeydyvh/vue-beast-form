@@ -2,7 +2,6 @@
 
 $jsonLayout 用来告诉框架使用哪个框架的form和表单组件对应的一些配置项,同时也支持自定义配置form相关的配置项
 
-
 <CodeGroup>
   <CodeGroupItem title="JS" active>
 
@@ -18,7 +17,7 @@ app.config.globalProperties.$jsonLayout = {
 ```
 
   </CodeGroupItem>
-  <CodeGroupItem title="TS" active>
+  <CodeGroupItem title="TS">
 
 ```ts{3,6-8}
 import { createApp } from 'vue'

@@ -33,13 +33,18 @@ export default {
               style: "margin-right:10px",
               on: {
                 click: (e, api) => {
-                  console.log(api.getData());
+                  alert(JSON.stringify(api.getFormData()));
                 },
               },
             },
             {
               type: "a-button",
               children: ["取消"],
+              on: {
+                click: (e, api) => {
+                  api.resetFormData();
+                },
+              },
             },
           ],
         },
