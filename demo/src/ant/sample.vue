@@ -14,7 +14,7 @@ export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
-      value = ref({ goods_name: "123", name: "123" }),
+      value = ref({ goods_name: "goods_name", name: "123" }),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
@@ -28,6 +28,14 @@ export default defineComponent({
         title: "商品名称1",
         field: "name",
         value: "iphone 7",
+        props: {
+          type: "text",
+        },
+      },
+      {
+        type: "a-input",
+        title: "商品名称2",
+        field: "goods_name",
         props: {
           type: "text",
         },
@@ -56,7 +64,7 @@ export default defineComponent({
     ];
 
     const btnClick = (api) => {
-      api.setValue("name", "dsf");
+      
     };
 
     return {

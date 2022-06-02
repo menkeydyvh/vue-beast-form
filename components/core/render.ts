@@ -5,10 +5,17 @@ import type { Slot, Component, VNode } from 'vue'
 import type { RuleType, DefaultName } from '../types'
 
 export default class render {
-    public defaultName: DefaultName;
+
+    public defaultName: DefaultName = {};
+
+    public isForm: boolean = true;
 
     constructor(config: config) {
         this.defaultName = config.defaultName;
+    }
+
+    setIsForm(isForm: boolean) {
+        this.isForm = isForm;
     }
 
     /**
@@ -61,7 +68,7 @@ export default class render {
 
         let formItemVNode = null, vNode = h(ragComponent, props, slot)
 
-        if (rule.native && rule.vModelKey) {
+        if (this.isForm && rule.title !== false && rule.vModelKey) {
             const formItemProps: any = {
                 ...rule.attrs
             }, formItemSlot = {
@@ -82,10 +89,10 @@ export default class render {
                     formItemProps['rules'] = rule.validate
                 }
             }
-            if (typeof rule.title === 'string') {
-                formItemProps[this.defaultName.formItemPropLabel] = rule.title
-            } else {
+            if (typeof rule.title === 'object') {
                 formItemSlot[this.defaultName.formItemSlotTitle] = () => this._renderItem(rule.title as RuleType)
+            } else {
+                formItemProps[this.defaultName.formItemPropLabel] = rule.title
             }
 
             formItemVNode = h(resolveDynamicComponent(this.defaultName.formItem) as Component, formItemProps, formItemSlot)

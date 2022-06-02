@@ -256,13 +256,8 @@ export default defineComponent({
         type: "div",
         children: [
           {
-            type: "span",
-            children: ["native=false"],
-          },
-          {
             type: "a-input",
             field: "inputPassword",
-            native: false,
             props: {
               type: "password",
             },

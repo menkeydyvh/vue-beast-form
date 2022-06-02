@@ -38,10 +38,11 @@ const rule = ref<[RuleType]> = [
   - 在api中用来做搜索的key
   - 表单组件时用来记录值得key
 ### title
-- 类型：String | rule <Badge text="表单组件时使用" />
+- 类型：String | rule | false <Badge text="表单组件时使用" />
 - 说明：为formItem的label值
   - string ： 直接展示
   - rule ：渲染成插槽展示
+  - false: 不包裹在form-item内
 ### vModelKey
 - 类型：String | []String <Badge text="表单组件时使用" />
 - 默认值：modelValue

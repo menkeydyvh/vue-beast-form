@@ -1,11 +1,12 @@
 import { defineClientAppEnhance } from '@vuepress/client'
-import JsonLayout from 'json-layout'
 import antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
 
 export default defineClientAppEnhance(({ app }) => {
     app.config.globalProperties.$jsonLayout = {
-        base: "ant-design-vue",
+        baseUi: "ant-design-vue",
+        // TODO:后续版本更新替换成base
+        // base: "ant-design-vue",
     }
     app.use(antd);
-    // app.use(JsonLayout)
 })

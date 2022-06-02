@@ -10,10 +10,12 @@ import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 // TODO：补充element ui 和 iview ui的支持配置
 // TODO：props.disabled 的修改不重绘整个组件？
 // TODO：支持国际化
+// TODO：根据oldModel实现重置  
+// TODO：注意设置值的时候，如果是对象，需要处理
 
 export default function factory() {
 
-    const errorConfig = "You need set app.config.globalProperties.$jsonLayout",
+    const errorConfig = "error: You need set app.config.globalProperties.$jsonLayout",
         name = 'JsonLayout',
         baseFormRefs = 'form';
 
@@ -42,13 +44,14 @@ export default function factory() {
             const conf = vm.appContext.config.globalProperties.$jsonLayout
 
             if (!conf) {
-                console.error(errorConfig)
-                return () => []
+                return () => [errorConfig]
             }
 
             const baseConfig = new config(conf)
 
-            const { renderRule } = new render(baseConfig)
+            const r = new render(baseConfig)
+
+            r.setIsForm(isForm.value)
 
             // 获取注入的父级信息
             const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null),
@@ -62,8 +65,7 @@ export default function factory() {
 
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
-                const rt = {
-                    native: isForm.value === true,
+                const rt: RuleType = {
                     ...config
                 };
 
@@ -303,6 +305,17 @@ export default function factory() {
                 getFormData(field) {
                     return field ? model[field] : model
                 },
+                resetFormData(field) {
+                    if (field) {
+
+                    } else {
+                        if (oldModel) {
+                            for (let key in oldModel) {
+                                apiFn.setValue(key, oldModel[key])
+                            }
+                        }
+                    }
+                },
                 getProps(field) {
                     const gRule = getRule(field);
                     if (gRule) {
@@ -438,7 +451,7 @@ export default function factory() {
 
             const nRule = computed(() => fillRule());
 
-            return () => renderRule(nRule.value)
+            return () => r.renderRule(nRule.value)
         },
 
 

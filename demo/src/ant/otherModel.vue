@@ -165,13 +165,11 @@ export default defineComponent({
       },
       {
         type: "a-drawer",
-        title: "抽屉组件",
         field: "drawer",
         props: {
           title: "抽屉组件Title",
         },
         children: ["抽屉组件内容"],
-        native: false,
         vModelKey: "visible",
       },
       {

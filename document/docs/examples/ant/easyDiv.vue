@@ -1,9 +1,9 @@
 <template>
-  <json-layout :rule="rule" />
+  <json-layout :rule="rule" :isForm="false" />
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, getCurrentInstance } from "vue";
 import { JsonLayout } from "json-layout";
 
 export default {

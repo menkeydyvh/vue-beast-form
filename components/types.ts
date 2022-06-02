@@ -20,7 +20,7 @@ export type RuleType = {
     /**
      * form-item对应的标题
      */
-    title?: string | RuleType;
+    title?: string | RuleType | false;
     /**
      * 一个 v-model:key  值为key 
      * 
@@ -55,10 +55,6 @@ export type RuleType = {
      * 只在form-item存在时有效
      */
     validate?: Array<RuleValidateType>;
-    /**
-     * 只对表单输入组件有效，是否用form-item包住
-     */
-    native?: Boolean;
     /**
      * 设置在type对应的class上
      * 
@@ -149,7 +145,12 @@ export type ApiFnType = {
      */
     getFormData(field?: string): any
     /**
-     * 获取输入组件的值
+     * 重置FormData
+     * @param field 
+     */
+    resetFormData(field?: string): void
+    /**
+     * 获取输入组件的props
      * @param field 
      */
     getProps(field: string): any
