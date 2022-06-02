@@ -206,11 +206,36 @@ export const firstToUpper = (str: string): string => {
     return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+/**
+ * 定义处理方法的前缀
+ */
+const ruleFunTag = "~~RFTAG-START~";
 
-export default {
-    loopRule,
-    updateRule,
-    deepCopy,
-    newValue,
-    mergeStyle,
+/**
+ * 字符串规则转换成对象
+ * @param str 
+ * @returns 
+ */
+export const ruleParse = (str: string) => {
+    return JSON.parse(str, function (_k, v) {
+        if (typeof v === 'string' && v.indexOf(ruleFunTag) === 0) {
+            return eval(v.slice(ruleFunTag.length));
+        }
+        return v
+    })
+
+}
+/**
+ * 对象规则转化成字符串
+ * @param rules 
+ * @param space 
+ * @returns 
+ */
+export const ruleStringify = (rules: RuleType | [RuleType], space?: number) => {
+    return JSON.stringify(rules, function (_k, v) {
+        if (typeof v === 'function') {
+            return ruleFunTag + v.toString();
+        }
+        return v;
+    }, space)
 }

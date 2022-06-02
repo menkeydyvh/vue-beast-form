@@ -8,13 +8,14 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { JsonLayout } from "../../../components";
+import { ruleStringify, ruleParse } from "../../../components/tool";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
   components: { JsonLayout },
   setup() {
     const jApi = ref(),
-      value = ref({ goods_name: "goods_name", name: "123" }),
+      value = ref(),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
@@ -22,7 +23,7 @@ export default defineComponent({
         },
       });
 
-    rule.value = [
+    const testRule = [
       {
         type: "a-input",
         title: "商品名称1",
@@ -55,7 +56,23 @@ export default defineComponent({
             ],
             on: {
               click: (e, api) => {
-                btnClick(api);
+                console.log(api.getFormData());
+              },
+            },
+          },
+          {
+            type: "a-space",
+            children: [
+              {
+                type: "a-button",
+                field: "btn",
+                props: {},
+                children: ["重置"],
+              },
+            ],
+            on: {
+              click: (e, api) => {
+                api.resetFormData();
               },
             },
           },
@@ -63,9 +80,12 @@ export default defineComponent({
       },
     ];
 
-    const btnClick = (api) => {
-      
-    };
+    // rule.value = testRule;
+
+    const str = ruleStringify(testRule);
+    // console.log(str);
+    // console.log(ruleParse(str));
+    rule.value = ruleParse(str);
 
     return {
       jApi,

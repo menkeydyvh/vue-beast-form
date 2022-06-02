@@ -6,11 +6,9 @@ import render from './render'
 import type { PropType, ComponentInternalInstance } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
-// TODO: 规则对象内置方法时候提供一个 JSON.stringify 和 JSON.parse 方法来处理对象是函数的处理
 // TODO：补充element ui 和 iview ui的支持配置
 // TODO：props.disabled 的修改不重绘整个组件？
 // TODO：支持国际化
-// TODO：根据oldModel实现重置  
 // TODO：注意设置值的时候，如果是对象，需要处理
 
 export default function factory() {
@@ -36,8 +34,8 @@ export default function factory() {
         setup(props, { emit }) {
             const vm = getCurrentInstance(),
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
-                model = reactive(modelValue.value),
-                oldModel = deepCopy(modelValue.value),
+                model = reactive({ ...modelValue.value }),
+                oldModel = deepCopy({ ...modelValue.value }),
                 cacheResolveDynamicComponent = {},
                 subFormVm = ref<ComponentInternalInstance[]>([]);
 
@@ -307,12 +305,12 @@ export default function factory() {
                 },
                 resetFormData(field) {
                     if (field) {
-
+                        if (apiFn.isModelKey(field)) {
+                            apiFn.setValue(field, oldModel[field])
+                        }
                     } else {
-                        if (oldModel) {
-                            for (let key in oldModel) {
-                                apiFn.setValue(key, oldModel[key])
-                            }
+                        for (let key in model) {
+                            apiFn.setValue(key, oldModel?.[key])
                         }
                     }
                 },
