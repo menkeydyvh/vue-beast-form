@@ -4,23 +4,11 @@
 
 下方api方法的参数field支持"field.subfield"形式检索，但上级field必须是唯一的
 
-例如：
-```js
-const rule = [
-    {
-        "field": "name1",
-        "children": [{ "field": "one"},{ "field": "two" },{ "field": "three" }]
-    },{
-        "field": "name2",
-        "children": [{ "field": "one" },{ "field": "two" }]
-    }
-]
+## field示例
 
-// 如果field的值是唯一的可用如下方式
-api.setTitle("three", "three title")
-// 如果要获取name2下的one可用如下方式
-api.setTitle("name2.one", "name2.one title")
-```
+:::demo 
+subField
+:::
 
 
 ## 规则相关

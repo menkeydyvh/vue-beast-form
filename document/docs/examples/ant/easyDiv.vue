@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { ref, getCurrentInstance } from "vue";
+import { ref } from "vue";
 import { JsonLayout } from "json-layout";
 
 export default {
