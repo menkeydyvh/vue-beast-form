@@ -377,31 +377,31 @@ export default function factory() {
                 }
             }, getRule = (field: string): RuleType => {
                 // 获取规则 支持xxx.xxx方式
-                let result = null, cacheAry = null;
+                let result = null;
                 if (field) {
-                    field.split('.').forEach((f, index) => {
-                        if (index === 0) {
-                            loopRule(nRule.value.children as Array<RuleType>, f, ({ item, ruleAry }) => {
+                    let fields = field.split('.'), len = fields.length;
+                    for (let idx = 0; idx < len; idx++) {
+                        if (idx === 0) {
+                            loopRule(nRule.value.children as Array<RuleType>, fields[idx], ({ item }) => {
                                 if (item) {
                                     result = item;
-                                    cacheAry = ruleAry
                                 }
                             })
-                        } else if (cacheAry) {
-                            loopRule(cacheAry, f, ({ item, ruleAry }) => {
+                        } else if (result) {
+                            loopRule(result.children as Array<RuleType>, fields[idx], ({ item }) => {
                                 if (item) {
                                     result = item;
-                                    cacheAry = ruleAry
                                 } else {
                                     result = null;
-                                    cacheAry = null;
                                 }
                             })
                         } else {
                             result = null;
-                            cacheAry = null;
                         }
-                    })
+                        if (!result) {
+                            break;
+                        }
+                    }
                 }
                 return result
             }
