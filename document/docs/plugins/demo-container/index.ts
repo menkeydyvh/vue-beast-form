@@ -11,14 +11,13 @@ import chokidar from 'chokidar'
 interface OptionsType {
   componentsDir: string
   components?: any
-  componentsPatterns?: [string]
+  componentsPatterns?: string[]
   getComponentName?: any
 }
 
 export const demoContainer = (options: OptionsType): Plugin => {
   options = {
     components: {},
-    componentsDir: '',
     componentsPatterns: ['**/*.vue'],
     getComponentName: (filename: string) => path.trimExt(filename.replace(/\/|\\/g, '-')),
     ...options,
@@ -37,7 +36,7 @@ export const demoContainer = (options: OptionsType): Plugin => {
 
     onWatched: (app, watchers) => {
       if (componentsDir) {
-        const componentsWatcher = chokidar.watch(componentsPatterns, {
+        const componentsWatcher = chokidar.watch(componentsPatterns as string[], {
           cwd: componentsDir,
           ignoreInitial: true,
         })

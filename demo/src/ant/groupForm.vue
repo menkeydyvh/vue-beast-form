@@ -29,12 +29,6 @@ export default defineComponent({
     // 导入组件 用法和当前组件的按需引入一样
     JsonLayout.components = { Group };
     
-    const opt: FactoryOptionType = {
-      defaultName: {},
-    };
-
-    JsonLayout.setOption(opt);
-
     rule.value = [
       {
         type: "group",

@@ -15,7 +15,7 @@ TS开发中便捷提示
 ```ts
 import type { RuleType } from "json-layout/lib/types";
 
-const rule = ref<[RuleType]> = [
+const rule = ref<RuleType[]> = [
   {
     // 引入type方便书写
   }

@@ -14,9 +14,14 @@ export default class render {
         this.defaultName = config.defaultName;
     }
 
+    /**
+     * isForm处理
+     * @param isForm 
+     */
     setIsForm(isForm: boolean) {
         this.isForm = isForm;
     }
+
 
     /**
      * 使用指令
@@ -51,6 +56,7 @@ export default class render {
         if (rule.display === false) {
             return undefined;
         }
+
         const ragComponent: any = resolveDynamicComponent(tag)
 
         if (!rule.vModelKey) {
@@ -64,6 +70,11 @@ export default class render {
             if (Object.keys(props.style).length === 0) {
                 delete props.style;
             }
+        }
+
+        if (typeof ragComponent === "string") {
+            // 避免一些元素上出现disabled
+            delete props.disabled
         }
 
         let formItemVNode = null, vNode = h(ragComponent, props, slot)

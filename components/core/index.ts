@@ -1,15 +1,18 @@
-import { ref, reactive, toRefs, unref, resolveDynamicComponent, getCurrentInstance, provide, inject } from 'vue'
-import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
-import { isObject, loopRule, deepCopy, firstToUpper } from '../tool'
+import { reactive, toRefs, unref, resolveDynamicComponent, getCurrentInstance } from 'vue'
+import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, watchEffect } from 'vue'
+import { isObject, deepCopy, firstToUpper } from '../tool'
 import config from '../config'
+import privateApi from './privateApi'
 import render from './render'
-import type { PropType, ComponentInternalInstance } from 'vue'
+import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
 // TODO：补充element ui 和 iview ui的支持配置
 // TODO：props.disabled 的修改不重绘整个组件？
 // TODO：支持国际化
 // TODO：注意设置值的时候，如果是对象，需要处理
+// TODO：支持class、style、attrs、等其他可修改的ruleType进行修改
+// TODO：支持自定义emit
 
 export default function factory() {
 
@@ -36,8 +39,7 @@ export default function factory() {
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
                 model = reactive({ ...modelValue.value }),
                 oldModel = deepCopy({ ...modelValue.value }),
-                cacheResolveDynamicComponent = {},
-                subFormVm = ref<ComponentInternalInstance[]>([]);
+                cacheResolveDynamicComponent = {};
 
             const conf = vm.appContext.config.globalProperties.$jsonLayout
 
@@ -45,21 +47,11 @@ export default function factory() {
                 return () => [errorConfig]
             }
 
-            const baseConfig = new config(conf)
-
-            const r = new render(baseConfig)
+            const baseConfig = new config(conf),
+                r = new render(baseConfig),
+                pApi = new privateApi(vm, baseConfig);
 
             r.setIsForm(isForm.value)
-
-            // 获取注入的父级信息
-            const parentFrom = inject<ComponentInternalInstance[]>('subFormVm', null),
-                baseFormVm = inject<ComponentInternalInstance>('baseFormVm', null)
-
-            // 基础表单记录子表单或传递给子表单信息
-            if (baseFormVm === null) {
-                provide('baseFormVm', vm)
-                provide('subFormVm', subFormVm.value)
-            }
 
             // 规范化规则的模板
             const ruleTemplate = (config: RuleType): RuleType => {
@@ -230,13 +222,13 @@ export default function factory() {
 
                 if (isForm.value) {
                     let defaultOption = {};
-                    if (baseFormVm) {
-                        const baseOption = baseFormVm?.props?.option as PropsOptionType;
+                    if (pApi.baseFormVm) {
+                        const baseOption = pApi.baseFormVm?.props?.option as PropsOptionType;
                         if (baseOption) {
-                            defaultOption = deepCopy(baseOption.form)
+                            defaultOption = baseOption.form
                         }
                     }
-                    const formProps = option.value && option.value.form ? deepCopy(option.value.form) : defaultOption;
+                    const formProps = option.value && option.value.form ? deepCopy(option.value.form) : deepCopy(defaultOption);
                     formProps.model = model;
                     formProps.ref = baseFormRefs;
                     baseRule.type = baseConfig.defaultName.form
@@ -253,7 +245,7 @@ export default function factory() {
             // api
             const apiFn: ApiFnType = {
                 setValue(field, value, key) {
-                    const gRule = getRule(field);
+                    const gRule = pApi.getRule(field);
                     if (gRule && gRule.vModelKey) {
                         if (Array.isArray(gRule.vModelKey)) {
                             model[field][key] = value
@@ -265,28 +257,28 @@ export default function factory() {
                     }
                 },
                 setTitle(field, value) {
-                    const gRule = getRule(field);
+                    const gRule = pApi.getRule(field);
                     if (gRule) {
                         gRule.title = value
                     }
                 },
                 setDisplay(field, display) {
-                    const gRule = getRule(field);
+                    const gRule = pApi.getRule(field);
                     if (gRule) {
-                        gRule.display = display === true ? true : null
+                        gRule.display = display === true
                     }
                 },
                 setDisabled(field, isBool) {
                     let boolValue = isBool === true ? true : undefined
                     if (field) {
-                        const gRule = getRule(field);
+                        const gRule = pApi.getRule(field);
                         if (gRule) {
                             gRule.props.disabled = boolValue;
                         }
                     }
                 },
                 setChildren(field, children) {
-                    const gRule = getRule(field);
+                    const gRule = pApi.getRule(field);
                     if (gRule) {
                         let ol = gRule.children.length,
                             nl = children ? children.length : 0;
@@ -315,14 +307,14 @@ export default function factory() {
                     }
                 },
                 getProps(field) {
-                    const gRule = getRule(field);
+                    const gRule = pApi.getRule(field);
                     if (gRule) {
                         return gRule.props
                     }
                 },
                 clearValue(field) {
                     if (field) {
-                        const gRule = getRule(field);
+                        const gRule = pApi.getRule(field);
                         if (gRule) {
                             apiFn.setValue(field, gRule.vModelKeyDefaultValue);
                         }
@@ -337,13 +329,13 @@ export default function factory() {
                 },
                 async validate(callback, fields) {
                     let valid = true
-                    if (!await formValidate(vm.refs[baseFormRefs], fields)) {
+                    if (!await pApi.formValidate(vm.refs[baseFormRefs], fields)) {
                         valid = false
                     }
-                    if (subFormVm.value && !fields) {
-                        let i = 0, subFormLength = subFormVm.value.length;
+                    if (pApi.subFormVms && !fields) {
+                        let i = 0, subFormLength = pApi.subFormVms.length;
                         for (i; i < subFormLength; i++) {
-                            if (!await formValidate(subFormVm.value[i].refs[baseFormRefs])) {
+                            if (!await pApi.formValidate(pApi.subFormVms[i].refs[baseFormRefs])) {
                                 valid = false
                             }
                         }
@@ -351,60 +343,15 @@ export default function factory() {
                     callback && callback(valid)
                 },
                 clearValidate(fields) {
-                    clearFormValidate(vm.refs[baseFormRefs], fields);
-                    if (subFormVm.value && !fields) {
-                        subFormVm.value.forEach(item => {
-                            clearFormValidate(item.refs[baseFormRefs]);
+                    pApi.clearFormValidate(vm.refs[baseFormRefs], fields);
+                    if (pApi.subFormVms && !fields) {
+                        pApi.subFormVms.forEach(item => {
+                            pApi.clearFormValidate(item.refs[baseFormRefs]);
                         })
                     }
                 }
             }
 
-            const formValidate = async (formEvent: any, fields?: string | string[]) => {
-                // 表单验证表单字段验证
-                if (formEvent) {
-                    try {
-                        await formEvent[baseConfig.defaultName.formEventValidate](fields)
-                    } catch (error) {
-                        return false;
-                    }
-                }
-                return true;
-            }, clearFormValidate = (formEvent: any, fields?: string | string[]) => {
-                // 清除表单验证
-                if (formEvent) {
-                    formEvent[baseConfig.defaultName.formEventClearValidate](fields)
-                }
-            }, getRule = (field: string): RuleType => {
-                // 获取规则 支持xxx.xxx方式
-                let result = null;
-                if (field) {
-                    let fields = field.split('.'), len = fields.length;
-                    for (let idx = 0; idx < len; idx++) {
-                        if (idx === 0) {
-                            loopRule(nRule.value.children as Array<RuleType>, fields[idx], ({ item }) => {
-                                if (item) {
-                                    result = item;
-                                }
-                            })
-                        } else if (result) {
-                            loopRule(result.children as Array<RuleType>, fields[idx], ({ item }) => {
-                                if (item) {
-                                    result = item;
-                                } else {
-                                    result = null;
-                                }
-                            })
-                        } else {
-                            result = null;
-                        }
-                        if (!result) {
-                            break;
-                        }
-                    }
-                }
-                return result
-            }
 
             // 初始化
             const init = () => {
@@ -412,9 +359,7 @@ export default function factory() {
             }
 
             onMounted(() => {
-                if (parentFrom) {
-                    parentFrom.push(vm)
-                }
+                pApi.addParentFormVm(vm)
                 init()
             });
 
@@ -439,17 +384,15 @@ export default function factory() {
             })
 
             onBeforeUnmount(() => {
-                if (parentFrom) {
-                    let idx = parentFrom.findIndex(item => item.uid === vm.uid)
-                    if (idx > -1) {
-                        parentFrom.splice(idx, 1)
-                    }
-                }
+                pApi.delParentFormVm(vm)
             })
 
-            const nRule = computed(() => fillRule());
 
-            return () => r.renderRule(nRule.value)
+            watchEffect(() => {
+                pApi.setRules(fillRule())
+
+            })
+            return () => r.renderRule(pApi.rules)
         },
 
 

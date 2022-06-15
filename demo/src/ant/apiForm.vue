@@ -115,7 +115,7 @@ export default defineComponent({
                 jApi.value.setDisplay("input1", display);
               },
             },
-            children: ["隐藏显示input1"],
+            children: [`${display ? "隐藏" : "显示"}显示input1`],
           },
           {
             type: "a-button",
@@ -126,7 +126,7 @@ export default defineComponent({
                 jApi.value.getProps("divBtn").loading = disbaled;
               },
             },
-            children: ["禁用启用按钮和input2"],
+            children: [`${disbaled ? "启用" : "禁用"}按钮和input2`],
           },
           {
             type: "a-button",

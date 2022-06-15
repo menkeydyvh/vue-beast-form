@@ -82,7 +82,7 @@ export type RuleType = {
      */
     slot?: string;
     /**
-     * v-if和v-show的作用
+     * 显示组件
      */
     display?: boolean;
     /**
@@ -164,7 +164,7 @@ export type ApiFnType = {
      * 清除验证
      * @param fields 
      */
-    clearValidate(fields?: [string] | string): void
+    clearValidate(fields?: string[] | string): void
     /**
    * 当前字段是否是model的key
    * @param field 

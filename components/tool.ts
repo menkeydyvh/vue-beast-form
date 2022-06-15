@@ -231,7 +231,7 @@ export const ruleParse = (str: string) => {
  * @param space 
  * @returns 
  */
-export const ruleStringify = (rules: RuleType | [RuleType], space?: number) => {
+export const ruleStringify = (rules: RuleType | RuleType[], space?: number) => {
     return JSON.stringify(rules, function (_k, v) {
         if (typeof v === 'function') {
             return ruleFunTag + v.toString();

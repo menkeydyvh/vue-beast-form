@@ -52,7 +52,7 @@ api.setValue("name",obj,"name")
 | 参数  | 必填 | 类型                                       | 说明          |
 | ----- | ---- | ------------------------------------------ | ------------- |
 | field | 是   | string                                     | rule中的filed |
-| value | 是   | string,objcet<[RuleType](./rule.md)>,false | 值            |
+| value | 是   | string,objcet<RuleType[](./rule.md)>,false | 值            |
 
 
 <CodeGroup>
@@ -112,7 +112,7 @@ api.setDisabled("name",false)
 | 参数     | 必填 | 类型                                     | 说明          |
 | -------- | ---- | ---------------------------------------- | ------------- |
 | field    | 是   | string                                   | rule中的filed |
-| children | 是   | []string,[]objcet<[RuleType](./rule.md)> | 值            |
+| children | 是   | []string,[]objcet<RuleType[](./rule.md)> | 值            |
 
 <CodeGroup>
   <CodeGroupItem title="children:string" active>
