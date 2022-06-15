@@ -1,5 +1,4 @@
 import { h, resolveDynamicComponent, withDirectives, resolveDirective } from 'vue'
-import { mergeStyle, mergeClassName } from '../tool'
 import type config from '../config'
 import type { Slot, Component, VNode } from 'vue'
 import type { RuleType, DefaultName } from '../types'
@@ -61,14 +60,11 @@ export default class render {
 
         if (!rule.vModelKey) {
             props = { ...props, ...rule.attrs };
-            props.style = mergeStyle(props.style || {}, rule.style)
-            props.class = mergeClassName(props.class || '', rule.class)
-
-            if (!props.class) {
-                delete props.class
+            if (rule.style) {
+                props.style = rule.style
             }
-            if (Object.keys(props.style).length === 0) {
-                delete props.style;
+            if (rule.class) {
+                props.class = rule.class
             }
         }
 
@@ -88,7 +84,9 @@ export default class render {
             if (rule.class) {
                 formItemProps.class = rule.class;
             }
-            formItemProps.style = mergeStyle({}, rule.style);
+            if (rule.style) {
+                formItemProps.style = rule.style;
+            }
             formItemProps[this.defaultName.formItemPropName] = rule.field;
             if (rule.props.disabled !== true) {
                 if (rule.validate) {
