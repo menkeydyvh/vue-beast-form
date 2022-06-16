@@ -203,7 +203,33 @@ export const mergeClassName = (oData: any, nData: any): any => {
  * @returns 
  */
 export const firstToUpper = (str: string): string => {
-    return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
+    return str.slice(0, 1).toUpperCase() + str.slice(1);
+}
+/**
+ * 首字母小写
+ * @param str 
+ * @returns 
+ */
+export const firstToLower = (str: string): string => {
+    return str.slice(0, 1).toLowerCase() + str.slice(1);
+}
+
+/**
+ * on上的事件名称转换为props上的事件名称
+ * @param str 
+ * @returns 
+ */
+export const onToPropsName = (str: string): string => {
+    return `on${firstToUpper(str)}`;
+}
+
+/**
+ * props上的事件名称转换为on上的事件名称
+ * @param str 
+ * @returns 
+ */
+export const propsToOnName = (str: string): string => {
+    return firstToLower(str.slice(2));
 }
 
 /**

@@ -10,6 +10,7 @@
         },
       }"
       :disabled="disabled"
+      @divBtnClick="divBtnClick"
     />
     <br />
     <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
@@ -19,6 +20,8 @@
 import { defineComponent, ref } from "vue";
 import { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
+
+console.log(JsonLayout)
 
 export default defineComponent({
   components: { JsonLayout },
@@ -90,6 +93,7 @@ export default defineComponent({
       },
       {
         type: "div",
+        field: "divbtns",
         props: {
           style: "padding:16px 0",
         },
@@ -100,7 +104,13 @@ export default defineComponent({
             props: {
               type: "primary",
             },
-            children: ["展示用的按钮"],
+            children: ["测试emits"],
+            emits: [
+              {
+                alias: "divBtnClick",
+                event: "click",
+              },
+            ],
           },
         ],
       },
@@ -116,6 +126,18 @@ export default defineComponent({
               },
             },
             children: [`${display ? "隐藏" : "显示"}显示input1`],
+          },
+          {
+            type: "a-button",
+            props: {
+              onClick: () => {
+                jApi.value.setStyle("input1", {
+                  border: "1px solid red",
+                });
+                jApi.value.setClass("input1", ["testClass", "red"]);
+              },
+            },
+            children: [`设置input1 style和class`],
           },
           {
             type: "a-button",
@@ -182,13 +204,30 @@ export default defineComponent({
             type: "a-button",
             props: {
               onClick: () => {
-                jApi.value.setChildren("divtest", [
-                  "覆盖了",
-                  { type: "span", children: ["ddd"] },
-                ]);
+                jApi.value.pushChildren(
+                  "divbtns",
+                  {
+                    type: "a-button",
+                    field: "nBtn",
+                    children: ["新按钮"],
+                  },
+                  0
+                );
+                jApi.value.addOn("nBtn", "click", (e, api) => {
+                  console.log("新按钮被点击", e, api);
+                });
               },
             },
-            children: ["div内容变更"],
+            children: ["展示按钮添加新按钮"],
+          },
+          {
+            type: "a-button",
+            children: ["展示按钮清除新按钮"],
+            on: {
+              click: (e, api) => {
+                api.clearChildren("divbtns", 0);
+              },
+            },
           },
           {
             type: "a-button",
@@ -222,12 +261,16 @@ export default defineComponent({
         ],
       },
     ];
+    const divBtnClick = (e, api) => {
+      console.log("divBtnClick", e, api);
+    };
 
     return {
       jApi,
       value,
       rule,
       disabled,
+      divBtnClick,
     };
   },
 });

@@ -1,24 +1,23 @@
 import { reactive, toRefs, unref, resolveDynamicComponent, getCurrentInstance } from 'vue'
 import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, watchEffect } from 'vue'
-import { isObject, deepCopy, firstToUpper } from '../tool'
+import { isObject, deepCopy, onToPropsName, propsToOnName } from '../tool'
 import config from '../config'
 import privateApi from './privateApi'
 import render from './render'
-import type { PropType } from 'vue'
+import type { PropType, EmitsOptions } from 'vue'
 import type { RuleType, PropsOptionType, ApiFnType } from '../types'
 
 // TODO：补充element ui 和 iview ui的支持配置
 // TODO：props.disabled 的修改不重绘整个组件？
 // TODO：支持国际化
 // TODO：注意设置值的时候，如果是对象，需要处理
-// TODO：支持class、style、attrs、等其他可修改的ruleType进行修改
-// TODO：支持自定义emit
 
 export default function factory() {
 
     const errorConfig = "error: You need set app.config.globalProperties.$jsonLayout",
         name = 'JsonLayout',
         baseFormRefs = 'form';
+
 
     return defineComponent({
         name,
@@ -35,7 +34,7 @@ export default function factory() {
             "onUpdate:modelValue": { type: Function },
         },
         setup(props, { emit }) {
-            const vm = getCurrentInstance(),
+            const vm = getCurrentInstance() as any,
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
                 model = reactive({ ...modelValue.value }),
                 oldModel = deepCopy({ ...modelValue.value }),
@@ -65,15 +64,37 @@ export default function factory() {
 
                 rt.props.disabled = disabled.value;
 
+                if (rt.emits) {
+                    let emits: EmitsOptions = {}
+                    rt.emits.forEach(item => {
+                        emits[item.alias] = null
+                    })
+                    vm.emitsOptions = emits
+                }
+
                 if (rt.on) {
                     for (let onName in rt.on) {
-                        rt.props[`on${firstToUpper(onName)}`] = function () {
+                        rt.props[onToPropsName(onName)] = function () {
                             rt.on[onName](...arguments, apiFn)
-                        }
-                        rt.on[`on${firstToUpper(onName)}`] = function () {
-                            rt.on[onName](...arguments, apiFn)
+                            if (rt.emits) {
+                                let emitItem = rt.emits.find(item => item.event === onName)
+                                if (emitItem) {
+                                    emit(emitItem.alias, ...arguments, apiFn)
+                                }
+                            }
                         }
                     }
+                }
+
+                if (rt.emits) {
+                    rt.emits.forEach(item => {
+                        let propsName = onToPropsName(item.event)
+                        if (!rt.props[propsName]) {
+                            rt.props[propsName] = function () {
+                                emit(item.alias, ...arguments, apiFn)
+                            }
+                        }
+                    })
                 }
 
                 return reactive(rt)
@@ -173,8 +194,15 @@ export default function factory() {
                                     rtItem.props[key] = fieldValue[key];
                                     rtItem.props[onUpdateModelKey[keyIndex]] = function () {
                                         apiFn.setValue(rtField, arguments[0], key);
-                                        if (rtItem.on?.[onUpdateModelKey[keyIndex]]) {
-                                            rtItem.on[onUpdateModelKey[keyIndex]](...arguments)
+                                        let onName = propsToOnName(onUpdateModelKey[keyIndex]);
+                                        if (rtItem.on?.[onName]) {
+                                            rtItem.on[onName](...arguments, apiFn)
+                                        }
+                                        if (rtItem.emits) {
+                                            let emitItem = rtItem.emits.find(item => item.event === onName)
+                                            if (emitItem) {
+                                                emit(emitItem.alias, ...arguments, apiFn)
+                                            }
                                         }
                                     }
 
@@ -191,8 +219,15 @@ export default function factory() {
 
                                 rtItem.props[onUpdateModelKey] = function () {
                                     apiFn.setValue(rtField, arguments[0]);
-                                    if (rtItem.on?.[onUpdateModelKey]) {
-                                        rtItem.on[onUpdateModelKey](...arguments)
+                                    let onName = propsToOnName(onUpdateModelKey);
+                                    if (rtItem.on?.[onName]) {
+                                        rtItem.on[onName](...arguments, apiFn)
+                                    }
+                                    if (rtItem.emits) {
+                                        let emitItem = rtItem.emits.find(item => item.event === onName)
+                                        if (emitItem) {
+                                            emit(emitItem.alias, ...arguments, apiFn)
+                                        }
                                     }
                                 }
 
@@ -262,6 +297,24 @@ export default function factory() {
                         gRule.title = value
                     }
                 },
+                setClass(field, value) {
+                    const gRule = pApi.getRule(field);
+                    if (gRule) {
+                        gRule.class = value
+                    }
+                },
+                setAttrs(field, value) {
+                    const gRule = pApi.getRule(field);
+                    if (gRule) {
+                        gRule.attrs = value
+                    }
+                },
+                setStyle(field, value) {
+                    const gRule = pApi.getRule(field);
+                    if (gRule) {
+                        gRule.style = value
+                    }
+                },
                 setDisplay(field, display) {
                     const gRule = pApi.getRule(field);
                     if (gRule) {
@@ -277,19 +330,19 @@ export default function factory() {
                         }
                     }
                 },
-                setChildren(field, children) {
+                pushChildren(field, children, index) {
                     const gRule = pApi.getRule(field);
                     if (gRule) {
-                        let ol = gRule.children.length,
-                            nl = children ? children.length : 0;
-                        if (Array.isArray(children)) {
-                            children.forEach((item, index) => {
-                                gRule.children[index] = item;
-                            })
-                        }
-                        if (ol > nl) {
-                            gRule.children.splice(nl, ol)
-                        }
+                        gRule.children.splice(
+                            index === undefined || index === null ? gRule.children.length : index, 0,
+                            typeof children === "object" ? ruleTemplate(children) : children
+                        )
+                    }
+                },
+                clearChildren(field, index) {
+                    const gRule = pApi.getRule(field);
+                    if (gRule) {
+                        gRule.children.splice(index, index === undefined || index === null ? gRule.children.length : 1)
                     }
                 },
                 getFormData(field) {
@@ -321,6 +374,18 @@ export default function factory() {
                     } else {
                         for (let key in model) {
                             apiFn.clearValue(key)
+                        }
+                    }
+                },
+                addOn(field, eventName, callback) {
+                    const gRule = pApi.getRule(field);
+                    if (gRule) {
+                        if (!gRule.on) {
+                            gRule.on = {}
+                        }
+                        gRule.on[eventName] = callback
+                        gRule.props[onToPropsName(eventName)] = function () {
+                            gRule.on[eventName](...arguments, apiFn)
                         }
                     }
                 },

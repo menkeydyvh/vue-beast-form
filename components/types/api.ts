@@ -15,6 +15,24 @@ export type ApiFnType = {
      */
     setTitle(field: string, value: string | RuleType | false): void
     /**
+     * 设置class
+     * @param field 
+     * @param value 
+     */
+    setClass(field: string, value: any): void
+    /**
+     * 设置attrs
+     * @param field 
+     * @param value 
+     */
+    setAttrs(field: string, value: any): void
+    /**
+     * 设置style
+     * @param field 
+     * @param value 
+     */
+    setStyle(field: string, value: any): void
+    /**
      * 设置display
      * @param field 
      * @param display 
@@ -27,11 +45,18 @@ export type ApiFnType = {
      */
     setDisabled(field: string, isBool?: boolean): void
     /**
-     * 设置children
+     * 插入children 不指定index就在最后
      * @param field 
      * @param children 
+     * @param index 
      */
-    setChildren(field: string, children?: Array<RuleType | string>): void
+    pushChildren(field: string, children: RuleType | string, index?: number): void
+    /**
+     * 清理children 不指定index就清理所有
+     * @param field 
+     * @param index 
+     */
+    clearChildren(field: string, index?: number): void
     /**
      * 获取输入组件的值
      * @param field 
@@ -68,4 +93,11 @@ export type ApiFnType = {
      * @param field 
      */
     getProps(field: string): any
+    /**
+     * 添加事件
+     * @param field 
+     * @param eventName 
+     * @param callback 
+     */
+    addOn(field: string, eventName: string, callback: Function): void
 }

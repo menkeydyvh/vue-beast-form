@@ -93,6 +93,10 @@ export type RuleType = {
      * 事件会覆盖props内同名事件处理
      */
     on?: any
+    /**
+     * 会抛出事件
+     */
+    emits?: Array<emitType>
 }
 
 
@@ -101,4 +105,8 @@ interface RuleValidateType {
     required?: boolean;
     message?: string;
     trigger?: string;
+}
+interface emitType {
+    event: string;
+    alias: string;
 }
