@@ -75,7 +75,7 @@ export default function factory() {
                 if (rt.on) {
                     for (let onName in rt.on) {
                         rt.props[onToPropsName(onName)] = function () {
-                            rt.on[onName](...arguments, apiFn)
+                            eval(`${rt.on[onName](...arguments, apiFn)}`)
                             if (rt.emits) {
                                 let emitItem = rt.emits.find(item => item.event === onName)
                                 if (emitItem) {
@@ -452,10 +452,10 @@ export default function factory() {
                 pApi.delParentFormVm(vm)
             })
 
+            const nRule = computed(() => fillRule())
+            pApi.setRules(unref(nRule))
 
-            pApi.setRules(unref(computed(() => fillRule())))
-
-            return () => r.renderRule(pApi.rules)
+            return () => r.renderRule(nRule.value)
         },
 
 

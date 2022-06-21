@@ -2,11 +2,12 @@
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
     <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
+    <a-button @click="onAdd">add</a-button>
   </a-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { JsonLayout } from "../../../components";
 import { ruleStringify, ruleParse } from "../../../components/tool";
 import type { RuleType } from "../../../components/types";
@@ -95,6 +96,12 @@ export default defineComponent({
         ],
       },
     ];
+    const onAdd = () => {
+      rule.value.push({
+        type: "div",
+        children: ["onAdd设置"],
+      });
+    };
 
     // rule.value = testRule;
 
@@ -103,11 +110,19 @@ export default defineComponent({
     // console.log(ruleParse(str));
     rule.value = ruleParse(str);
 
+    onMounted(() => {
+      rule.value.push({
+        type: "div",
+        children: ["onMounted后设置"],
+      });
+    });
+
     return {
       jApi,
       value,
       rule,
       option,
+      onAdd,
     };
   },
 });

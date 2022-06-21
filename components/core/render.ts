@@ -146,7 +146,7 @@ export default class render {
         if (rule.children && rule.children.length) {
             slot = this._renderChildren(rule.children)
         }
-
+        
         return this._render(rule.type, { ...rule.props }, slot, rule)
     }
 

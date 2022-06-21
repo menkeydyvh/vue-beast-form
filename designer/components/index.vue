@@ -44,7 +44,7 @@
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, provide } from "vue";
 import { JsonLayout } from "../../components/index";
-import Drag from "./drag";
+import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";
 import draggable from "vuedraggable";
 import Menu from "../config/menu";
@@ -98,7 +98,7 @@ export default defineComponent({
                 group: group === true ? "default" : group,
                 ghostClass: "ghost",
                 animation: 150,
-                handle: ".drag-btn",
+                handle: ".dragBtn",
                 emptyInsertThreshold: 0,
                 direction: "vertical",
                 itemKey: "type",
@@ -116,22 +116,37 @@ export default defineComponent({
           makeDrag(
             children,
             {
-              add: (e, api) => dragAdd(e, children, api),
-              // end: (e, api) => dragEnd(e, children, api),
-              // start: (e, api) => dragStart(e, children, api),
-              // unchoose: (e, api) => dragUnchoose(e, children, api),
+              add: (e) => dragAdd(e, children),
+              end: (e) => dragEnd(e, children),
+              start: (e) => dragStart(e, children),
+              unchoose: (e) => dragUnchoose(e, children),
             },
             "draggable",
             true
           ),
         ];
       },
-      dragAdd = (e, children, api) => {
+      dragAdd = (e, children) => {
         const newIndex = e.newIndex,
           curItem = e.item._underlying_vm_;
         if (curItem && curItem.name) {
           children.splice(newIndex, 0, makeRule(curItem));
         }
+        console.log("dragAdd");
+      },
+      dragEnd = (e, children) => {
+        const { oldIndex, newIndex } = e,
+          cacheRule = children[oldIndex];
+        children.splice(oldIndex, 1);
+        children.splice(newIndex, 0, cacheRule);
+        console.log("dragEnd");
+        // recordAcitve.value.active = cacheRule
+      },
+      dragStart = (e, children) => {
+        console.log("dragStart");
+      },
+      dragUnchoose = (e, children) => {
+        console.log("dragUnchoose");
       },
       makeRule = (config) => {
         const confRule = config.rule();
@@ -142,10 +157,10 @@ export default defineComponent({
           drag = makeDrag(
             curChild,
             {
-              add: (e, api) => dragAdd(e, curChild, api),
-              // end: (e, api) => dragEnd(e, curChild, api),
-              // start: (e, api) => dragStart(e, curChild, api),
-              // unchoose: (e, api) => dragUnchoose(e, curChild, api),
+              add: (e) => dragAdd(e, curChild),
+              end: (e) => dragEnd(e, curChild),
+              start: (e) => dragStart(e, curChild),
+              unchoose: (e) => dragUnchoose(e, curChild),
             },
             confRule.type,
             config.drag
@@ -179,7 +194,7 @@ export default defineComponent({
         console.log(coreForm.value);
       };
 
-    coreForm.value.rule = makeDragRule([]);
+    coreForm.value.rule = makeDragRule(coreForm.value.rule);
 
     onMounted(() => {
       document.body.ondrop = (e) => {
