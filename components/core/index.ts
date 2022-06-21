@@ -1,5 +1,5 @@
 import { reactive, toRefs, unref, resolveDynamicComponent, getCurrentInstance } from 'vue'
-import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, watchEffect } from 'vue'
+import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
 import { isObject, deepCopy, onToPropsName, propsToOnName } from '../tool'
 import config from '../config'
 import privateApi from './privateApi'
@@ -453,10 +453,8 @@ export default function factory() {
             })
 
 
-            watchEffect(() => {
-                pApi.setRules(fillRule())
+            pApi.setRules(unref(computed(() => fillRule())))
 
-            })
             return () => r.renderRule(pApi.rules)
         },
 

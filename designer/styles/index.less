@@ -14,12 +14,12 @@
         }
 
         .menuItem {
-            display: inline-block;
-            margin-right : 6px ;
-            margin-bottom : 6px ;
-            border : solid 1px #e1e1e1;
-            cursor : pointer;
-            padding: 2px 8px;
+            display      : inline-block;
+            margin-right : 6px;
+            margin-bottom: 6px;
+            border       : solid 1px #e1e1e1;
+            cursor       : pointer;
+            padding      : 2px 8px;
 
             &:hover {
                 background-color: @SelectColor;
@@ -36,11 +36,38 @@
         &>form {
             background-color: #ffffff;
             height          : 100%;
+
+            &>.draggable-drag {
+                height: 100%;
+            }
         }
     }
 
     .designer-right {
         width       : 200px;
         padding-left: 16px;
+    }
+}
+
+.dragTool {
+    position  : relative;
+    min-height: 40px;
+    padding   : 2px;
+    outline   : 1px dashed @SelectColor;
+    overflow  : hidden;
+    box-sizing: border-box;
+
+    .dragTool-left {
+        position: absolute;
+        top     : 0;
+        left    : 0;
+        z-index : 10;
+    }
+
+    .dragTool-right {
+        position: absolute;
+        right   : 2px;
+        bottom  : 2px;
+        z-index : 10;
     }
 }

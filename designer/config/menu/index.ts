@@ -1,5 +1,6 @@
 import rules from '../rule/index';
 import type { MenuType } from '../../types/menu';
+import type { RuleType } from '../../types/rule';
 
 export default class Menu {
     public menus: MenuType[] = [
@@ -33,5 +34,15 @@ export default class Menu {
                 }
             }
         })
+    }
+
+    getRule(name: string): RuleType {
+        let data;
+        this.menus.forEach(menu => {
+            if (!data) {
+                data = menu.list.find(item => item.name === name)
+            }
+        })
+        return data
     }
 }
