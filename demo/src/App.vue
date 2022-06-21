@@ -50,7 +50,7 @@ interface MenuItem {
 }
 
 export default defineComponent({
-  components: {}, 
+  components: {},
   setup() {
     const menu = ref<MenuItem[]>([
         {
@@ -88,6 +88,16 @@ export default defineComponent({
             {
               title: "ApiTest",
               component: "apiForm.vue",
+            },
+          ],
+        },
+        {
+          title: "designer",
+          base: "designer",
+          children: [
+            {
+              title: "设计器",
+              component: "index.vue",
             },
           ],
         },

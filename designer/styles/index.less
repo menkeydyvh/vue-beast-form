@@ -1,0 +1,46 @@
+@SelectColor : #2e73ff;
+
+.designerBody {
+    display: flex;
+    height : 70vh;
+
+    .designer-left {
+        width        : 200px;
+        overflow     : auto;
+        padding-right: 16px;
+
+        .ant-collapse {
+            background-color: #ffffff;
+        }
+
+        .menuItem {
+            display: inline-block;
+            margin-right : 6px ;
+            margin-bottom : 6px ;
+            border : solid 1px #e1e1e1;
+            cursor : pointer;
+            padding: 2px 8px;
+
+            &:hover {
+                background-color: @SelectColor;
+                color           : #ffffff;
+            }
+        }
+    }
+
+    .designer-content {
+        flex            : auto;
+        background-color: #e1e1e1;
+        padding         : 10px;
+
+        &>form {
+            background-color: #ffffff;
+            height          : 100%;
+        }
+    }
+
+    .designer-right {
+        width       : 200px;
+        padding-left: 16px;
+    }
+}
