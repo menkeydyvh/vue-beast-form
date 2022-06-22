@@ -27,6 +27,7 @@
       </div>
       <div class="dragTool-btn" @click.stop="$emit('dragToolDel')" title="删除">D</div>
     </div>
+    <div class="dragTool-mask" v-if="isMask"></div>
     <slot></slot>
   </div>
 </template>
@@ -37,7 +38,11 @@ import { randomId } from "../../components/tool";
 
 export default defineComponent({
   name: "DragTool",
-  props: ["isDrag", "isChild"],
+  props: {
+    isDrag: { type: Boolean },
+    isChild: { type: Boolean },
+    isMask: { type: Boolean },
+  },
   components: {},
   setup(props, { emit }) {
     const id = ref(randomId()),

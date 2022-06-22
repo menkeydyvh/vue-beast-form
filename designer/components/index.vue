@@ -101,7 +101,7 @@ export default defineComponent({
                 handle: ".dragBtn",
                 emptyInsertThreshold: 0,
                 direction: "vertical",
-                itemKey: "type",
+                itemKey: "slot",
                 modelValue: children,
               },
             },
@@ -118,8 +118,6 @@ export default defineComponent({
             {
               add: (e) => dragAdd(e, children),
               end: (e) => dragEnd(e, children),
-              start: (e) => dragStart(e, children),
-              unchoose: (e) => dragUnchoose(e, children),
             },
             "draggable",
             true
@@ -127,29 +125,25 @@ export default defineComponent({
         ];
       },
       dragAdd = (e, children) => {
+        // 从菜单添加进来
         const newIndex = e.newIndex,
           curItem = e.item._underlying_vm_;
         if (curItem && curItem.name) {
-          children.splice(newIndex, 0, makeRule(curItem));
+          children.splice(newIndex, 0, makeRule(curItem, children));
         }
         console.log("dragAdd");
       },
       dragEnd = (e, children) => {
+        // 拖动换位结束
         const { oldIndex, newIndex } = e,
           cacheRule = children[oldIndex];
         children.splice(oldIndex, 1);
         children.splice(newIndex, 0, cacheRule);
         console.log("dragEnd");
-        // recordAcitve.value.active = cacheRule
       },
-      dragStart = (e, children) => {
-        console.log("dragStart");
-      },
-      dragUnchoose = (e, children) => {
-        console.log("dragUnchoose");
-      },
-      makeRule = (config) => {
-        const confRule = config.rule();
+      makeRule = (config, parentChildren) => {
+        const confRule = config.rule(),
+          dragToolId = `DragTool${++slotNotation}`;
         let drag;
 
         if (config.drag) {
@@ -159,8 +153,6 @@ export default defineComponent({
             {
               add: (e) => dragAdd(e, curChild),
               end: (e) => dragEnd(e, curChild),
-              start: (e) => dragStart(e, curChild),
-              unchoose: (e) => dragUnchoose(e, curChild),
             },
             confRule.type,
             config.drag
@@ -169,7 +161,10 @@ export default defineComponent({
         }
 
         if (config.children) {
-          const child = makeRule(siderMenu.getRule(config.children));
+          const child = makeRule(
+            siderMenu.getRule(config.children),
+            (drag || confRule).children
+          );
           (drag || confRule).children.push(child);
         }
 
@@ -178,14 +173,25 @@ export default defineComponent({
           type: "DragTool",
           props: {
             isDrag: config.isDrag !== false,
-            isChild: config.children,
+            isChild: !!config.children,
+            isMask: config.isMask,
           },
-          slot: `slot-${++slotNotation}`,
+          slot: dragToolId,
           on: {
-            dragToolAdd: (e) => {},
-            dragToolDel: (e) => {},
-            dragToolAddChild: (e) => {},
-            dragToolCopy: (e) => {},
+            dragToolAdd: () => {
+              let idx = parentChildren.findIndex((item) => item.slot === dragToolId);
+              if (idx > -1) {
+                parentChildren.splice(idx, 0, makeRule(config, parentChildren));
+              }
+            },
+            dragToolDel: () => {
+              let idx = parentChildren.findIndex((item) => item.slot === dragToolId);
+              if (idx > -1) {
+                parentChildren.splice(idx, 1);
+              }
+            },
+            dragToolAddChild: () => {},
+            dragToolCopy: () => {},
           },
           children: [confRule],
         };

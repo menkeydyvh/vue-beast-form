@@ -2,6 +2,10 @@ export type RuleType = {
     label: string
     name: string
     /**
+     * 蒙板开启后不可操作组件内容
+     */
+    isMask?: boolean
+    /**
      * 菜单上的表示位置
      */
     tag: string
