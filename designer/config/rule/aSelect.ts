@@ -8,6 +8,7 @@ const config: RuleType = {
     label,
     name,
     tag,
+    isMask: true,
     rule() {
         return {
             type: name,

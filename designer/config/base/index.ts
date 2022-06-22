@@ -2,6 +2,8 @@ import type { RuleType } from "../../../components/types/rule"
 
 export default class Base {
 
+    public ruleFieldPrefix = "ruleKey-"
+
     constructor() {
     }
     /**
@@ -11,23 +13,25 @@ export default class Base {
     baseRules() {
         return [
             {
+                type: "a-divider",
+                children: ["基础Rule配置"],
+            }, {
                 type: 'a-input',
-                field: 'field',
+                field: `${this.ruleFieldPrefix}field`,
                 title: 'field',
             }, {
                 type: 'a-input',
-                field: 'title',
+                field: `${this.ruleFieldPrefix}title`,
                 title: 'title',
             }, {
                 type: 'a-input',
-                field: 'info',
+                field: `${this.ruleFieldPrefix}info`,
                 title: 'info',
             }, {
                 type: 'a-input',
-                field: 'class',
+                field: `${this.ruleFieldPrefix}class`,
                 title: 'class',
             },
-
         ]
     }
     /**

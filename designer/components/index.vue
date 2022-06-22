@@ -26,9 +26,14 @@
     </div>
     <div class="designer-right">
       <a-tabs v-model:activeKey="activeKey" type="card">
-        <a-tab-pane key="other" tab="组件" :disabled="!recordAcitve.active"
-          >Content of Tab Pane 2</a-tab-pane
-        >
+        <a-tab-pane key="props" tab="组件" :disabled="!recordAcitve.active">
+          <json-layout
+            v-model="propsForm.value"
+            :rule="propsForm.rule"
+            :option="propsForm.option"
+            @changeField="propsChangeField"
+          />
+        </a-tab-pane>
         <a-tab-pane key="form" tab="表单">
           <json-layout
             v-model="coreForm.option.form"
@@ -42,8 +47,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, nextTick, onMounted, provide } from "vue";
+import { defineComponent, ref, nextTick, onMounted, provide, watch } from "vue";
 import { JsonLayout } from "../../components/index";
+import { deepCopy } from "../../components/tool";
 import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";
 import draggable from "vuedraggable";
@@ -61,11 +67,21 @@ export default defineComponent({
     const recordAcitve = ref({
         active: null,
       }),
+      activeRule = ref(),
       baseConfig = new Base(),
       siderMenu = new Menu(),
       activeKey = ref("form"),
       menus = ref([]),
       coreForm = ref({
+        rule: [],
+        option: {
+          form: {
+            layout: "vertical",
+          },
+        },
+      }),
+      propsForm = ref({
+        value: {},
         rule: [],
         option: {
           form: {
@@ -144,6 +160,9 @@ export default defineComponent({
       makeRule = (config, parentChildren) => {
         const confRule = config.rule(),
           dragToolId = `DragTool${++slotNotation}`;
+
+        confRule._config = config;
+
         let drag;
 
         if (config.drag) {
@@ -175,26 +194,67 @@ export default defineComponent({
             isDrag: config.isDrag !== false,
             isChild: !!config.children,
             isMask: config.isMask,
+            onlyId: dragToolId,
           },
           slot: dragToolId,
           on: {
-            dragToolAdd: () => {
-              let idx = parentChildren.findIndex((item) => item.slot === dragToolId);
+            dragToolAdd: (onlyId) => {
+              let idx = parentChildren.findIndex((item) => item.slot === onlyId);
               if (idx > -1) {
-                parentChildren.splice(idx, 0, makeRule(config, parentChildren));
+                const copyRule = deepCopy(parentChildren[idx]),
+                  copyOnlyId = `DragTool${++slotNotation}`;
+                copyRule.props.onlyId = copyOnlyId;
+                copyRule.slot = copyOnlyId;
+                parentChildren.splice(idx, 0, copyRule);
               }
             },
-            dragToolDel: () => {
-              let idx = parentChildren.findIndex((item) => item.slot === dragToolId);
+            dragToolDel: (onlyId) => {
+              let idx = parentChildren.findIndex((item) => item.slot === onlyId);
               if (idx > -1) {
                 parentChildren.splice(idx, 1);
               }
             },
-            dragToolAddChild: () => {},
-            dragToolCopy: () => {},
+            dragToolAddChild: (onlyId) => {},
+            dragToolActive: (onlyId) => {
+              selectDragTool(parentChildren.find((item) => item.slot === onlyId));
+            },
           },
           children: [confRule],
         };
+      },
+      selectDragTool = (dragToolRule) => {
+        if (dragToolRule) {
+          activeKey.value = "props";
+          activeRule.value = dragToolRule.children[0];
+          const baseRules = baseConfig.baseRules();
+          // 获取定义好的props
+          propsForm.value.rule = [...baseRules, ...activeRule.value._config.props()];
+          // 赋值处理
+          const propsValue = {
+            ...activeRule.value.props,
+          };
+          baseRules.forEach((item) => {
+            if (item.field) {
+              propsValue[item.field] =
+                activeRule.value[item.field.replace(baseConfig.ruleFieldPrefix, "")];
+            }
+          });
+
+          propsForm.value.value = deepCopy(propsValue);
+        } else {
+          activeRule.value = null;
+        }
+      },
+      propsChangeField = (field, value, key) => {
+        if (activeRule.value) {
+          if (field.indexOf(baseConfig.ruleFieldPrefix) === 0) {
+            activeRule.value[field.replace(baseConfig.ruleFieldPrefix, "")] = key
+              ? value?.[key]
+              : value;
+          } else {
+            activeRule.value[field] = key ? value?.[key] : value;
+          }
+        }
       },
       onClick = () => {
         console.log(coreForm.value);
@@ -214,8 +274,10 @@ export default defineComponent({
       activeKey,
       menus,
       coreForm,
+      propsForm,
       formProps,
       onClick,
+      propsChangeField,
     };
   },
 });

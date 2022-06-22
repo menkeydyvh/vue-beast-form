@@ -8,6 +8,7 @@ const config: RuleType = {
     label,
     name,
     tag,
+    isMask: true,
     rule() {
         return {
             type: name,
@@ -16,6 +17,10 @@ const config: RuleType = {
     },
     props() {
         return [
+            {
+                type: "a-divider",
+                children: ["Props配置"],
+            },
             { type: 'a-input', field: 'placeholder', title: '输入框占位文本' },
             { type: 'a-switch', field: 'allowClear', title: '是否可清空' },
         ];

@@ -1,5 +1,5 @@
 import { reactive, toRefs, unref, resolveDynamicComponent, getCurrentInstance } from 'vue'
-import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed } from 'vue'
+import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed, nextTick } from 'vue'
 import { isObject, deepCopy, onToPropsName, propsToOnName } from '../tool'
 import config from '../config'
 import privateApi from './privateApi'
@@ -16,7 +16,8 @@ export default function factory() {
 
     const errorConfig = "error: You need set app.config.globalProperties.$jsonLayout",
         name = 'JsonLayout',
-        baseFormRefs = 'form';
+        baseFormRefs = 'form',
+        emits = ["changeField"];
 
 
     return defineComponent({
@@ -33,12 +34,16 @@ export default function factory() {
             "onUpdate:api": { type: Function },
             "onUpdate:modelValue": { type: Function },
         },
+        emits,
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
                 { rule, option, modelValue, isForm, disabled } = toRefs(props),
-                model = reactive({ ...modelValue.value }),
-                oldModel = deepCopy({ ...modelValue.value }),
+                formModel = {
+                    model: {},
+                    oldModel: {},
+                },
                 cacheResolveDynamicComponent = {};
+            let isInit = false
 
             const conf = vm.appContext.config.globalProperties.$jsonLayout
 
@@ -179,10 +184,10 @@ export default function factory() {
                         }
                         // 赋值处理
                         if (rtField) {
-                            let fieldValue: any = oldModel[rtField];
+                            let fieldValue: any = formModel.oldModel[rtField];
                             if (Array.isArray(modelKey)) {
                                 if (!apiFn.isModelKey(rtField)) {
-                                    model[rtField] = {}
+                                    formModel.model[rtField] = {}
                                 }
                                 if (!fieldValue) {
                                     fieldValue = {}
@@ -206,8 +211,8 @@ export default function factory() {
                                         }
                                     }
 
-                                    if (!Object.keys(model[rtField]).includes(key)) {
-                                        model[rtField][key] = fieldValue[key]
+                                    if (!Object.keys(formModel.model[rtField]).includes(key)) {
+                                        formModel.model[rtField][key] = fieldValue[key]
                                     }
                                 })
 
@@ -232,7 +237,7 @@ export default function factory() {
                                 }
 
                                 if (!apiFn.isModelKey(rtField)) {
-                                    model[rtField] = fieldValue
+                                    formModel.model[rtField] = fieldValue
                                 }
                             }
                         }
@@ -249,6 +254,10 @@ export default function factory() {
 
             // 补足规则方便渲染处理
             const fillRule = () => {
+                isInit = false;
+                formModel.model = reactive({ ...modelValue.value })
+                formModel.oldModel = deepCopy({ ...modelValue.value })
+                console.log('fillRule')
                 const baseRule = ruleTemplate({
                     type: '',
                 });
@@ -264,7 +273,7 @@ export default function factory() {
                         }
                     }
                     const formProps = option.value && option.value.form ? deepCopy(option.value.form) : deepCopy(defaultOption);
-                    formProps.model = model;
+                    formProps.model = formModel.model;
                     formProps.ref = baseFormRefs;
                     baseRule.type = baseConfig.defaultName.form
                     baseRule.props = formProps
@@ -273,6 +282,9 @@ export default function factory() {
                     baseRule.type = 'div';
                 }
 
+                nextTick(() => {
+                    isInit = true
+                })
                 return baseRule;
             }
 
@@ -283,11 +295,14 @@ export default function factory() {
                     const gRule = pApi.getRule(field);
                     if (gRule && gRule.vModelKey) {
                         if (Array.isArray(gRule.vModelKey)) {
-                            model[field][key] = value
+                            formModel.model[field][key] = value
                             gRule.props[key] = value
                         } else {
-                            model[field] = value
+                            formModel.model[field] = value
                             gRule.props[gRule.vModelKey] = value
+                        }
+                        if (isInit === true) {
+                            emit('changeField', field, value, key)
                         }
                     }
                 },
@@ -346,16 +361,16 @@ export default function factory() {
                     }
                 },
                 getFormData(field) {
-                    return field ? model[field] : model
+                    return field ? formModel.model[field] : formModel.model
                 },
                 resetFormData(field) {
                     if (field) {
                         if (apiFn.isModelKey(field)) {
-                            apiFn.setValue(field, oldModel[field])
+                            apiFn.setValue(field, formModel.oldModel[field])
                         }
                     } else {
-                        for (let key in model) {
-                            apiFn.setValue(key, oldModel?.[key])
+                        for (let key in formModel.model) {
+                            apiFn.setValue(key, formModel.oldModel?.[key])
                         }
                     }
                 },
@@ -372,7 +387,7 @@ export default function factory() {
                             apiFn.setValue(field, gRule.vModelKeyDefaultValue);
                         }
                     } else {
-                        for (let key in model) {
+                        for (let key in formModel.model) {
                             apiFn.clearValue(key)
                         }
                     }
@@ -390,7 +405,7 @@ export default function factory() {
                     }
                 },
                 isModelKey(field) {
-                    return Object.keys(model).includes(field)
+                    return Object.keys(formModel.model).includes(field)
                 },
                 async validate(callback, fields) {
                     let valid = true
@@ -432,15 +447,15 @@ export default function factory() {
                 init()
             })
 
-            watch(model, () => {
-                emit('update:modelValue', model)
+            watch(() => formModel.model, () => {
+                emit('update:modelValue', formModel.model)
             }, {
                 deep: true
             })
 
             watch(() => modelValue.value, () => {
-                for (let key in model) {
-                    if (model[key] !== modelValue.value?.[key]) {
+                for (let key in formModel.model) {
+                    if (formModel.model[key] !== modelValue.value?.[key]) {
                         apiFn.setValue(key, modelValue.value?.[key])
                     }
                 }
