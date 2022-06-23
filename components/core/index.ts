@@ -257,7 +257,6 @@ export default function factory() {
                 isInit = false;
                 formModel.model = reactive({ ...modelValue.value })
                 formModel.oldModel = deepCopy({ ...modelValue.value })
-                console.log('fillRule')
                 const baseRule = ruleTemplate({
                     type: '',
                 });

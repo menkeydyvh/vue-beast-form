@@ -1,6 +1,7 @@
 <template>
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
     <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
+    <test-json-layout :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
     <a-button @click="onAdd">add</a-button>
   </a-card>
@@ -8,12 +9,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { JsonLayout } from "../../../components";
+import { JsonLayout, TestJsonLayout } from "../../../components";
 import { ruleStringify, ruleParse } from "../../../components/tool";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { JsonLayout, TestJsonLayout },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),

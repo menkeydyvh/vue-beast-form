@@ -1,3 +1,4 @@
+import { getCurrentInstance } from 'vue'
 import type { DefaultName, ConfigOptionsType } from '../types'
 import { framework } from './framework'
 
@@ -35,20 +36,49 @@ export default class config {
         [ComponentName: string]: string | string[];
     } = {}
 
-    constructor(options: ConfigOptionsType) {
-        if (options.base) {
-            if (framework[options.base]) {
-                this.setKeyValue("defaultName", framework[options.base].defaultName)
-                this.setKeyValue("formDataComponentKey", framework[options.base].formDataComponentKey)
-                this.setKeyValue("formDataComponentDefaultValue", framework[options.base].formDataComponentDefaultValue)
-                this.setKeyValue("formDataComponentChangeKeyEvent", framework[options.base].formDataComponentChangeKeyEvent)
+    constructor(option?: ConfigOptionsType) {
+        if (option) {
+            this.initConfig(option)
+        } else {
+            this.initGlobalConfig()
+        }
+    }
+
+    /**
+     * 初始化全局配置
+     */
+    initGlobalConfig() {
+        const globalConfig = getCurrentInstance().appContext.config.globalProperties.$jsonLayout as ConfigOptionsType
+        if (!globalConfig) {
+            console.error("error: You need set app.config.globalProperties.$jsonLayout")
+            return
+        }
+        this.initConfig(globalConfig)
+    }
+
+    /**
+     * 初始化配置方法
+     * @param option 
+     * @returns 
+     */
+    initConfig(option: ConfigOptionsType) {
+        if (!option) {
+            return
+        }
+
+        if (option.base) {
+            if (framework[option.base]) {
+                this.setKeyValue("defaultName", framework[option.base].defaultName)
+                this.setKeyValue("formDataComponentKey", framework[option.base].formDataComponentKey)
+                this.setKeyValue("formDataComponentDefaultValue", framework[option.base].formDataComponentDefaultValue)
+                this.setKeyValue("formDataComponentChangeKeyEvent", framework[option.base].formDataComponentChangeKeyEvent)
             }
         }
-        if (options.frameworks) {
-            options.frameworks.forEach((item) => {
-                if (item != options.base && framework[item]) {
-                    if (!options.base) {
-                        options.base = item
+        if (option.frameworks) {
+            option.frameworks.forEach((item) => {
+                if (item != option.base && framework[item]) {
+                    if (!option.base) {
+                        option.base = item
                         this.setKeyValue("defaultName", framework[item].defaultName)
                     }
                     this.setKeyValue("formDataComponentKey", framework[item].formDataComponentKey)
@@ -58,20 +88,20 @@ export default class config {
             })
         }
 
-        if (options.defaultName) {
-            this.setKeyValue("defaultName", options.defaultName)
+        if (option.defaultName) {
+            this.setKeyValue("defaultName", option.defaultName)
         }
 
-        if (options.formDataComponentKey) {
-            this.setKeyValue("formDataComponentKey", options.formDataComponentKey)
+        if (option.formDataComponentKey) {
+            this.setKeyValue("formDataComponentKey", option.formDataComponentKey)
         }
 
-        if (options.formDataComponentDefaultValue) {
-            this.setKeyValue("formDataComponentDefaultValue", options.formDataComponentDefaultValue)
+        if (option.formDataComponentDefaultValue) {
+            this.setKeyValue("formDataComponentDefaultValue", option.formDataComponentDefaultValue)
         }
 
-        if (options.formDataComponentChangeKeyEvent) {
-            this.setKeyValue("formDataComponentChangeKeyEvent", options.formDataComponentChangeKeyEvent)
+        if (option.formDataComponentChangeKeyEvent) {
+            this.setKeyValue("formDataComponentChangeKeyEvent", option.formDataComponentChangeKeyEvent)
         }
     }
 

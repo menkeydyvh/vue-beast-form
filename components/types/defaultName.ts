@@ -11,6 +11,10 @@ export interface DefaultName {
      * formItem对应model上的key：例如'name'
      */
     formItemPropName?: string;
+    /*
+     * formItem对应model上的key：例如'name'
+     */
+    formItemPropRules?: string;
     /**
      * formItem对应标题label的key：例如'label'
      */

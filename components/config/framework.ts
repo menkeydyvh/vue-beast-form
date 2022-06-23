@@ -6,6 +6,7 @@ export const framework = {
             formItem: 'a-form-item',
             formItemPropName: 'name',
             formItemPropLabel: 'label',
+            formItemPropRules: 'rules',
             formItemSlotTitle: 'label',
             formEventValidate: 'validate',
             formEventClearValidate: 'clearValidate',

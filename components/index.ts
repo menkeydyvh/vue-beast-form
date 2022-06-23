@@ -1,5 +1,8 @@
 import type { App } from 'vue';
 import factory from './core';
+import testFactory from './test';
+
+export const TestJsonLayout = testFactory();
 
 export const JsonLayout = factory();
 
