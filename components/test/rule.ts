@@ -1,4 +1,4 @@
-import { unref, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
+import { unref, reactive, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
 import renderFactory from './render'
 import config from '../config'
 import type ConfigType from '../config'
@@ -25,43 +25,41 @@ export interface BaseInjectType {
     config: ConfigType
 }
 
+export var vm: ComponentInternalInstance
 export var baseInject: BaseInjectType
 export var model = {}
 export var formRefsName = "form"
 
 export default class RuleFactory {
-    public vm: ComponentInternalInstance
     public config = new config()
-    public rule: RuleType[]
+    public rules: RuleType[]
     public option: PropsOptionType
     // 顶层管理
 
     constructor() {
-        this.vm = getCurrentInstance();
+        vm = getCurrentInstance()
         baseInject = inject<BaseInjectType>('baseInject', null)
 
         if (!baseInject) {
             baseInject = {
-                baseVm: this.vm,
+                baseVm: vm,
                 allVms: [],
                 tagCacheComponents: {},
                 config: new config()
             }
-
             provide('baseInject', baseInject)
             this.initTagCacheComponents()
-
         }
 
-        model = unref(this.vm.props.modelValue as any)
+        model = unref(vm.props.modelValue as any) || reactive({})
 
-        this.rule = unref(this.vm.props.rule as RuleType[])
-        this.option = unref(this.vm.props.option as PropsOptionType)
+        this.rules = unref(vm.props.rule as RuleType[])
+        this.option = unref(vm.props.option as PropsOptionType)
         if (!this.option?.form) {
             const baseVmOption = baseInject.baseVm.props.option as PropsOptionType
             this.option = {
-                isForm: baseVmOption.isForm,
-                form: baseVmOption.form
+                isForm: baseVmOption?.isForm,
+                form: baseVmOption?.form
             }
         }
     }
@@ -85,10 +83,9 @@ export default class RuleFactory {
      */
     addVm() {
         if (baseInject && baseInject.allVms) {
-
-            let idx = baseInject.allVms.findIndex(item => item.uid === this.vm.uid)
+            let idx = baseInject.allVms.findIndex(item => item.uid === vm.uid)
             if (idx === -1) {
-                baseInject.allVms.push(this.vm)
+                baseInject.allVms.push(vm)
             }
         }
     }
@@ -98,20 +95,29 @@ export default class RuleFactory {
      */
     delVm() {
         if (baseInject && baseInject.allVms) {
-            let idx = baseInject.allVms.findIndex(item => item.uid === this.vm.uid)
+            let idx = baseInject.allVms.findIndex(item => item.uid === vm.uid)
             if (idx > -1) {
                 baseInject.allVms.splice(idx, 1)
             }
         }
     }
 
+    /**
+     * 渲染规则
+     * @returns 
+     */
     renderRule() {
-        const rr = this.rule.map(item => {
+        const rr = this.rules.map(item => {
             return new renderFactory(item)
         })
+        // TODO:执行了两次渲染
         return rr.map(item => item.render())
     }
 
+    /**
+     * 渲染form
+     * @returns 
+     */
     renderForm() {
         const { config, tagCacheComponents } = baseInject;
         return [

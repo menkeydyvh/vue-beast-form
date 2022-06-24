@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
-    <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" />
+    <!-- <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" /> -->
     <test-json-layout :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
     <a-button @click="onAdd">add</a-button>
@@ -58,6 +58,7 @@ export default defineComponent({
             ],
             on: {
               click: (e, api) => {
+                debugger;
                 console.log(api.getFormData());
               },
             },

@@ -1,7 +1,8 @@
-import { h, resolveDynamicComponent } from 'vue'
-import { baseInject } from './rule'
-import type { VNodeTypes, DefineComponent } from 'vue'
+import { h, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
+import { baseInject, model, vm } from './rule'
+import type { VNodeTypes } from 'vue'
 import type { RuleType } from '../types'
+import { onToPropsName, propsToOnName } from '../tool'
 
 export default class renderFactory {
 
@@ -12,6 +13,9 @@ export default class renderFactory {
         this.initCache();
     }
 
+    /**
+     * 初始化的时候处理缓存
+     */
     initCache() {
         if (!baseInject.tagCacheComponents[this.rule.type]) {
             const rdc: any = resolveDynamicComponent(this.rule.type)
@@ -65,7 +69,7 @@ export default class renderFactory {
                         }
                     }
                     if (modelKeyDefaultValues.length === 0) {
-                        modelKeyEvents = modelKeys.map(() => null)
+                        modelKeyDefaultValues = modelKeys.map(() => null)
                     }
 
                     baseInject.tagCacheComponents[this.rule.type].config = {
@@ -79,7 +83,113 @@ export default class renderFactory {
         }
     }
 
-    renderSolt() {
+    /**
+     * 处理规则on和emits上的事件
+     * @returns 
+     */
+    listenRuleOnAndEmits() {
+        const self = this, props = {}, listens: {
+            source: "on" | "emits"
+            event: string
+        }[] = [];
+
+        if (this.rule?.emits) {
+            this.rule.emits.forEach(item => {
+                listens.push({
+                    source: "emits",
+                    event: item.event
+                });
+            })
+        }
+
+        if (this.rule?.on) {
+            for (let onName in this.rule.on) {
+                if (!listens.find(item => item.event === onName)) {
+                    listens.push(
+                        {
+                            source: "on",
+                            event: onName,
+                        }
+                    )
+                }
+            }
+        }
+
+        listens.forEach(item => {
+            props[onToPropsName(item.event)] = function () {
+                if (item.source === "on") {
+                    self.rule.on[item.event](...arguments, "api")
+                } else if (item.source === "emits") {
+                    const emitItem = self.rule.emits.find(emit => emit.event === item.event)
+                    vm.emit(emitItem.alias, ...arguments, "api")
+                }
+            }
+        })
+        if (Object.keys(props).length) {
+            return props
+        }
+    }
+
+    /**
+     * 处理 v-model 的事件
+     * @returns 
+     */
+    listenModelEvent() {
+        const self = this;
+        const tagConfig = baseInject.tagCacheComponents[this.rule.type]?.config
+
+        // 组件赋值事件处理
+        if (tagConfig) {
+            const props = {}
+            // todo:记得处理当值存在 对象和数组的情况需要检测一下是否正确
+            tagConfig.modelKeys.forEach((key, index) => {
+                props[key] = tagConfig.modelKeyDefaultValues[index]
+                if (self.rule.props[key]) {
+                    props[key] = self.rule.props[key]
+                }
+                if (self.rule.value != undefined) {
+                    props[key] = self.rule.value
+                }
+                if (model[self.rule.field] != undefined) {
+                    props[key] = model[self.rule.field]
+                }
+                props[tagConfig.modelKeyEvents[index]] = function () {
+                    model[self.rule.field] = arguments[0]
+                    const onName = propsToOnName(tagConfig.modelKeyEvents[index]);
+                    if (self.rule?.on?.[onName]) {
+                        self.rule.on[onName](...arguments, "api")
+                    }
+                    if (self.rule?.emits) {
+                        const emitItem = self.rule.emits.find(item => item.event === onName)
+                        if (emitItem) {
+                            vm.emit(emitItem.alias, ...arguments, "api")
+                        }
+                    }
+                }
+            })
+            if (Object.keys(props).length) {
+                return props
+            }
+        }
+        return;
+    }
+
+    /**
+     * 事件处理集合
+     * @returns 
+     */
+    listenEvent() {
+        return {
+            ...this.listenRuleOnAndEmits(),
+            ...this.listenModelEvent()
+        }
+    }
+
+    /**
+     * 插槽渲染children
+     * @returns 
+     */
+    renderChildrenSolt() {
         const rcs = this.renderChildren()
         if (rcs) {
             const solt: {
@@ -112,6 +222,10 @@ export default class renderFactory {
         }
     }
 
+    /**
+     * children实例化成当前对象
+     * @returns 
+     */
     renderChildren() {
         if (this.rule.children) {
             return this.rule.children.map(rule => {
@@ -124,20 +238,89 @@ export default class renderFactory {
         return;
     }
 
-    renderRuleType() {
-        return h(baseInject.tagCacheComponents[this.rule.type].component as DefineComponent, this.rule.props, this.renderSolt())
+    /**
+     * 渲染指令
+     * @param vNode 
+     * @returns 
+     */
+    renderDirectives(vNode: VNodeTypes) {
+        if (this.rule.directives) {
+            const directives = this.rule.directives.map(item => {
+                if (Array.isArray(item)) {
+                    if (typeof item[0] === 'string') {
+                        item[0] = resolveDirective(item[0])
+                    }
+                    return item
+                }
+            }).filter(item => item)
+            return withDirectives(vNode as any, directives as any)
+        } else {
+            return vNode
+        }
     }
 
+    /**
+     * 渲染type
+     * @returns 
+     */
+    renderType() {
+        const tag: any = baseInject.tagCacheComponents[this.rule.type].component,
+            tagConfig = baseInject.tagCacheComponents[this.rule.type]?.config,
+            props = { ...this.rule.props, ...this.listenEvent() }
+
+        if (typeof tag === "string") {
+            delete props.disabled
+        } else {
+            if (!Object.keys(tag.props).includes("disabled")) {
+                delete props.disabled
+            }
+        }
+
+        if (!(this.rule.title === false || !tagConfig)) {
+            if (this.rule.attrs) {
+                for (let key in this.rule.attrs) {
+                    props[key] = this.rule.attrs[key]
+                }
+            }
+            if (this.rule.style) {
+                props.style = this.rule.style
+            }
+            if (this.rule.class) {
+                props.class = this.rule.class
+            }
+        }
+
+        return this.renderDirectives(h(tag, props, this.renderChildrenSolt()))
+    }
+
+    /**
+     * 渲染title
+     * @returns 
+     */
+    renderTitle() {
+        if (this.rule.title === false) {
+            return;
+        }
+        if (typeof this.rule.title === "string") {
+            return;
+        }
+        const titleRender = new renderFactory(this.rule.title)
+        return titleRender.render()
+    }
+
+    /**
+     * 渲染formItem
+     * @returns 
+     */
     renderFormItem() {
+        if (!baseInject.tagCacheComponents[this.rule.type]?.config) {
+            return
+        }
         if (this.rule.title === false) {
             return
         }
-        const tagConfig = baseInject.tagCacheComponents[this.rule.type]?.config
-        if (!tagConfig) {
-            return
-        }
         const config = baseInject.config, props = { ...this.rule.attrs }, slot = {
-            default: () => this.renderRuleType()
+            default: () => this.renderType()
         };
         if (this.rule.class) {
             props.class = this.rule.class;
@@ -156,16 +339,18 @@ export default class renderFactory {
         if (typeof this.rule.title === 'string') {
             props[config.defaultName.formItemPropLabel] = this.rule.title;
         } else {
-            const titleRender = new renderFactory(this.rule.title)
-            slot[config.defaultName.formItemSlotTitle] = () => titleRender.render()
+            slot[config.defaultName.formItemSlotTitle] = () => this.renderTitle()
         }
 
-        return h(baseInject.tagCacheComponents[config.defaultName.formItem].component as DefineComponent, props, slot)
+        return h(baseInject.tagCacheComponents[config.defaultName.formItem].component as any, props, slot)
     }
 
+    /**
+     * 渲染
+     * @returns 
+     */
     render() {
         if (this.rule.display) return;
-
-        return this.renderFormItem() || this.renderRuleType()
+        return this.renderFormItem() || this.renderType()
     }
 }
