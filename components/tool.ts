@@ -90,6 +90,25 @@ export const loopRule = (rules: RuleType[], value: any, callback: Function, key 
 }
 
 /**
+ * 动态循环遍历
+ * @param ary 
+ * @param value 
+ * @param callback 
+ * @param search 
+ */
+export const searchLoop = <T>(ary: T[], value: any, callback: Function, search = { key: "field", children: "children" }) => {
+    ary.forEach((item, index) => {
+        if (item[search.key] === value) {
+            return callback({ item, index, ary })
+        }
+
+        if (item?.[search.children]) {
+            return searchLoop(item[search.children] as T[], value, callback, search)
+        }
+    })
+}
+
+/**
  * 简单的处理一下 后续在复杂处理
  * @param od 
  * @param nd 

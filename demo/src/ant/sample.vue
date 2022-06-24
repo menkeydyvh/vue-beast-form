@@ -58,7 +58,6 @@ export default defineComponent({
             ],
             on: {
               click: (e, api) => {
-                debugger;
                 console.log(api.getFormData());
               },
             },
@@ -98,6 +97,7 @@ export default defineComponent({
         ],
       },
     ];
+    
     const onAdd = () => {
       rule.value.push({
         type: "div",
@@ -110,14 +110,9 @@ export default defineComponent({
     const str = ruleStringify(testRule);
     // console.log(str);
     // console.log(ruleParse(str));
-    rule.value = ruleParse(str);
 
-    onMounted(() => {
-      rule.value.push({
-        type: "div",
-        children: ["onMounted后设置"],
-      });
-    });
+    rule.value = ruleParse(str);
+    onMounted(() => {});
 
     return {
       jApi,

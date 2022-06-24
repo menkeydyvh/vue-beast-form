@@ -1,13 +1,12 @@
-import { defineComponent, watch, onMounted, onBeforeUnmount, onUpdated, computed, nextTick } from 'vue'
+import { defineComponent, onMounted, onBeforeUnmount, } from 'vue'
 import RuleFactory from './rule'
 import type { PropType } from 'vue'
-import type { RuleType, PropsOptionType, ApiFnType } from '../types'
+import type { RuleType, PropsOptionType } from '../types'
 
 
 export default function factory() {
 
     const name = 'JsonLayout',
-        baseFormRefs = 'form',
         emits = ["changeField", "update:modelValue"];
 
 
@@ -22,16 +21,14 @@ export default function factory() {
             disabled: { type: Boolean },
         },
         emits,
-        setup(props, { emit }) {
-            
+        setup() {
             const rf = new RuleFactory()
-
-            onMounted(() => { });
-
-            onUpdated(() => { })
-
-            onBeforeUnmount(() => { })
-
+            onMounted(() => {
+                rf.addVm()
+            });
+            onBeforeUnmount(() => {
+                rf.delVm()
+            })
             return () => rf.render();
         },
 

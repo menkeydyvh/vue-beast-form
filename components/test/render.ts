@@ -8,14 +8,18 @@ export default class renderFactory {
 
     public rule: RuleType
 
+    public props: any
+
+    public children: Array<renderFactory | string>
+
     constructor(rule: RuleType) {
         this.rule = rule;
-        this.initCache();
+
+        this.initCache()
+        this.initProps()
+        this.initChildre()
     }
 
-    /**
-     * 初始化的时候处理缓存
-     */
     initCache() {
         if (!baseInject.tagCacheComponents[this.rule.type]) {
             const rdc: any = resolveDynamicComponent(this.rule.type)
@@ -83,6 +87,47 @@ export default class renderFactory {
         }
     }
 
+    initProps() {
+        const tag: any = baseInject.tagCacheComponents[this.rule.type].component,
+            tagConfig = baseInject.tagCacheComponents[this.rule.type]?.config,
+            props = { ...this.rule.props, ...this.listenEvent() }
+
+        if (typeof tag === "string") {
+            delete props.disabled
+        } else {
+            if (!Object.keys(tag.props).includes("disabled")) {
+                delete props.disabled
+            }
+        }
+
+        if (!(this.rule.title === false || !tagConfig)) {
+            if (this.rule.attrs) {
+                for (let key in this.rule.attrs) {
+                    props[key] = this.rule.attrs[key]
+                }
+            }
+            if (this.rule.style) {
+                props.style = this.rule.style
+            }
+            if (this.rule.class) {
+                props.class = this.rule.class
+            }
+        }
+
+        this.props = props
+    }
+
+    initChildre() {
+        if (this.rule.children) {
+            this.children = this.rule.children.map(rule => {
+                if (typeof rule === "string") {
+                    return rule;
+                }
+                return new renderFactory(rule)
+            })
+        }
+    }
+
     /**
      * 处理规则on和emits上的事件
      * @returns 
@@ -118,10 +163,10 @@ export default class renderFactory {
         listens.forEach(item => {
             props[onToPropsName(item.event)] = function () {
                 if (item.source === "on") {
-                    self.rule.on[item.event](...arguments, "api")
+                    self.rule.on[item.event](...arguments, baseInject.api)
                 } else if (item.source === "emits") {
                     const emitItem = self.rule.emits.find(emit => emit.event === item.event)
-                    vm.emit(emitItem.alias, ...arguments, "api")
+                    vm.emit(emitItem.alias, ...arguments, baseInject.api)
                 }
             }
         })
@@ -140,7 +185,7 @@ export default class renderFactory {
 
         // 组件赋值事件处理
         if (tagConfig) {
-            const props = {}
+            const props = {}, isOne = tagConfig.modelKeys.length === 1
             // todo:记得处理当值存在 对象和数组的情况需要检测一下是否正确
             tagConfig.modelKeys.forEach((key, index) => {
                 props[key] = tagConfig.modelKeyDefaultValues[index]
@@ -150,22 +195,44 @@ export default class renderFactory {
                 if (self.rule.value != undefined) {
                     props[key] = self.rule.value
                 }
-                if (model[self.rule.field] != undefined) {
-                    props[key] = model[self.rule.field]
+                if (isOne) {
+                    if (model[self.rule.field] != undefined) {
+                        props[key] = model[self.rule.field]
+                    }
+                } else {
+                    if (model[self.rule.field]?.[key] != undefined) {
+                        props[key] = model[self.rule.field][key]
+                    }
                 }
                 props[tagConfig.modelKeyEvents[index]] = function () {
-                    model[self.rule.field] = arguments[0]
+                    const value = arguments[0];
+                    if (isOne) {
+                        model[self.rule.field] = value
+                    } else {
+                        if (!model[self.rule.field]) {
+                            model[self.rule.field] = {
+                                [key]: value
+                            }
+                        } else {
+                            model[self.rule.field][key] = value
+                        }
+                    }
                     const onName = propsToOnName(tagConfig.modelKeyEvents[index]);
                     if (self.rule?.on?.[onName]) {
-                        self.rule.on[onName](...arguments, "api")
+                        self.rule.on[onName](...arguments, baseInject.api)
                     }
                     if (self.rule?.emits) {
                         const emitItem = self.rule.emits.find(item => item.event === onName)
                         if (emitItem) {
-                            vm.emit(emitItem.alias, ...arguments, "api")
+                            vm.emit(emitItem.alias, ...arguments, baseInject.api)
                         }
                     }
                 }
+
+                if (model[self.rule.field] === undefined) {
+                    model[self.rule.field] = props[key]
+                }
+
             })
             if (Object.keys(props).length) {
                 return props
@@ -190,7 +257,7 @@ export default class renderFactory {
      * @returns 
      */
     renderChildrenSolt() {
-        const rcs = this.renderChildren()
+        const rcs = this.children
         if (rcs) {
             const solt: {
                 [key: string]: Array<VNodeTypes>
@@ -222,21 +289,6 @@ export default class renderFactory {
         }
     }
 
-    /**
-     * children实例化成当前对象
-     * @returns 
-     */
-    renderChildren() {
-        if (this.rule.children) {
-            return this.rule.children.map(rule => {
-                if (typeof rule === "string") {
-                    return rule;
-                }
-                return new renderFactory(rule)
-            })
-        }
-        return;
-    }
 
     /**
      * 渲染指令
@@ -264,33 +316,13 @@ export default class renderFactory {
      * @returns 
      */
     renderType() {
-        const tag: any = baseInject.tagCacheComponents[this.rule.type].component,
-            tagConfig = baseInject.tagCacheComponents[this.rule.type]?.config,
-            props = { ...this.rule.props, ...this.listenEvent() }
-
-        if (typeof tag === "string") {
-            delete props.disabled
-        } else {
-            if (!Object.keys(tag.props).includes("disabled")) {
-                delete props.disabled
-            }
-        }
-
-        if (!(this.rule.title === false || !tagConfig)) {
-            if (this.rule.attrs) {
-                for (let key in this.rule.attrs) {
-                    props[key] = this.rule.attrs[key]
-                }
-            }
-            if (this.rule.style) {
-                props.style = this.rule.style
-            }
-            if (this.rule.class) {
-                props.class = this.rule.class
-            }
-        }
-
-        return this.renderDirectives(h(tag, props, this.renderChildrenSolt()))
+        return this.renderDirectives(
+            h(
+                baseInject.tagCacheComponents[this.rule.type].component as any,
+                this.props,
+                this.renderChildrenSolt()
+            )
+        )
     }
 
     /**

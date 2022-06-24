@@ -1,5 +1,6 @@
 import { unref, reactive, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
 import renderFactory from './render'
+import apiFactory from './api'
 import config from '../config'
 import type ConfigType from '../config'
 import type { ComponentInternalInstance, VNodeTypes, DefineComponent } from "vue"
@@ -23,6 +24,7 @@ export interface BaseInjectType {
         }
     }
     config: ConfigType
+    api: apiFactory
 }
 
 export var vm: ComponentInternalInstance
@@ -32,7 +34,6 @@ export var formRefsName = "form"
 
 export default class RuleFactory {
     public config = new config()
-    public rules: RuleType[]
     public option: PropsOptionType
     // 顶层管理
 
@@ -45,7 +46,8 @@ export default class RuleFactory {
                 baseVm: vm,
                 allVms: [],
                 tagCacheComponents: {},
-                config: new config()
+                config: new config(),
+                api: new apiFactory()
             }
             provide('baseInject', baseInject)
             this.initTagCacheComponents()
@@ -53,7 +55,6 @@ export default class RuleFactory {
 
         model = unref(vm.props.modelValue as any) || reactive({})
 
-        this.rules = unref(vm.props.rule as RuleType[])
         this.option = unref(vm.props.option as PropsOptionType)
         if (!this.option?.form) {
             const baseVmOption = baseInject.baseVm.props.option as PropsOptionType
@@ -107,10 +108,12 @@ export default class RuleFactory {
      * @returns 
      */
     renderRule() {
-        const rr = this.rules.map(item => {
-            return new renderFactory(item)
-        })
-        // TODO:执行了两次渲染
+        const rr = unref(vm.props.rule as RuleType[]).map(item => new renderFactory(item))
+
+        baseInject.api._updateRfs(rr)
+        
+        // TODO:目前查到new renderFactory会执行两次 先记录后找问题
+        console.log("renderRule", rr)
         return rr.map(item => item.render())
     }
 
