@@ -33,7 +33,7 @@ export var modelKeyAry: string[] = []
  * 支持国际化
  * 注意设置值的时候，如果是对象，需要处理
  * 
- * 未处理vm.props.modelValue
+ * 未处理 vm.props.modelValue
  * 测试事件
  * 还有一些api没实现
  */

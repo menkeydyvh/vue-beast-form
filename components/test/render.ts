@@ -294,8 +294,7 @@ export default class renderFactory {
      * @returns 
      */
     listenModelEvent() {
-        const self = this,
-            ruleField = this.rule.field;
+        const self = this;
 
         // 组件赋值事件处理
         if (this.field) {
@@ -309,7 +308,7 @@ export default class renderFactory {
                     props[key] = self.rule.value
                 }
                 props[self._config.modelKeyEvents[index]] = function () {
-                    baseInject.api.setValue(ruleField, arguments[0], key)
+                    self.setValue(arguments[0], key)
                     const onName = propsToOnName(self._config.modelKeyEvents[index]);
                     if (self.rule?.on?.[onName]) {
                         self.rule.on[onName](...arguments, baseInject.api)
