@@ -1,4 +1,4 @@
-import { baseInject, model } from "./rule"
+import { baseInject, modelKeyAry } from "./rule"
 import type renderFactory from './render'
 
 
@@ -72,6 +72,9 @@ export default class apiFactory {
                 }
             }
         }
+        if (!result) {
+            console.error(`invalid "field=${field}"`)
+        }
         return result
     }
 
@@ -84,28 +87,7 @@ export default class apiFactory {
     setValue(field: string, value: any, key?: string) {
         const rf = this.getRule(field)
         if (rf) {
-            const config = baseInject.tagCacheComponents[rf.rule.type]?.config
-            if (!config) {
-                console.error(`invalid "field=${field}" config`)
-                return
-            }
-            if (config.modelKeys.length === 1) {
-                rf.props[config.modelKeys[0]] = value
-                model[rf.rule.field] = value
-            } else if (config.modelKeys.length > 1) {
-                if (key) {
-                    if (config.modelKeys.includes(key)) {
-                        rf.props[key] = value
-                        model[rf.rule.field][key] = value
-                    } else {
-                        console.error(`undefined parameter "key=${key}"`)
-                    }
-                } else {
-                    console.error('Required parameter "key"')
-                }
-            }
-        } else {
-            console.error(`invalid "field=${field}"`)
+            rf.setValue(value, key)
         }
     }
 
@@ -155,7 +137,7 @@ export default class apiFactory {
      * @returns 
      */
     isModelKey(field: string) {
-        return Object.keys(model).includes(field)
+        return modelKeyAry.includes(field)
     }
 
     /**
@@ -164,7 +146,20 @@ export default class apiFactory {
      * @returns 
      */
     getFormData(field?: string) {
-        return field ? this.isModelKey(field) ? model[field] : undefined : model
+        if (field) {
+            if (this.isModelKey(field)) {
+                const rf = this.getRule(field)
+                if (rf) {
+                    return rf.getValue()
+                }
+            }
+        } else {
+            const data = {}
+            modelKeyAry.forEach(key => {
+                data[key] = this.getFormData(key)
+            })
+            return data;
+        }
     }
 
     /**
@@ -173,24 +168,16 @@ export default class apiFactory {
      */
     resetFormData(field?: string) {
         if (field) {
-            if (!this.isModelKey(field)) {
-                return
-            }
-            const rf = this.getRule(field)
-            if (rf) {
-                const config = baseInject.tagCacheComponents[rf.rule.type].config
-                if (config.modelKeys.length === 1) {
-                    this.setValue(field, config.modelKeyDefaultValues[0])
-                } else if (config.modelKeys.length > 1) {
-                    config.modelKeys.forEach((key, index) => {
-                        this.setValue(field, config.modelKeyDefaultValues[index], key)
-                    })
+            if (this.isModelKey(field)) {
+                const rf = this.getRule(field)
+                if (rf) {
+                    return rf.setValue(undefined)
                 }
             }
         } else {
-            for (let key in model) {
+            modelKeyAry.forEach(key => {
                 this.resetFormData(key);
-            }
+            })
         }
     }
 

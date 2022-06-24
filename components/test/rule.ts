@@ -3,7 +3,7 @@ import renderFactory from './render'
 import apiFactory from './api'
 import config from '../config'
 import type ConfigType from '../config'
-import type { ComponentInternalInstance, VNodeTypes, DefineComponent } from "vue"
+import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
 
 
@@ -14,14 +14,7 @@ export interface BaseInjectType {
     allVms: ComponentInternalInstance[]
     //渲染组件缓存
     tagCacheComponents: {
-        [ruleType: string]: {
-            config?: {
-                modelKeys: string[]
-                modelKeyEvents: string[]
-                modelKeyDefaultValues: any[]
-            }
-            component: VNodeTypes
-        }
+        [ruleType: string]: VNodeTypes
     }
     config: ConfigType
     api: apiFactory
@@ -29,9 +22,21 @@ export interface BaseInjectType {
 
 export var vm: ComponentInternalInstance
 export var baseInject: BaseInjectType
-export var model = {}
 export var formRefsName = "form"
+export var modelKeyAry: string[] = []
 
+
+/**
+ * TODO:
+ * 补充element ui 和 iview ui的支持配置
+ * props.disabled 的修改不重绘整个组件？
+ * 支持国际化
+ * 注意设置值的时候，如果是对象，需要处理
+ * 
+ * 未处理vm.props.modelValue
+ * 测试事件
+ * 测试api
+ */
 export default class RuleFactory {
     public config = new config()
     public option: PropsOptionType
@@ -53,34 +58,31 @@ export default class RuleFactory {
             this.initTagCacheComponents()
         }
 
-        model = unref(vm.props.modelValue as any) || reactive({})
 
         this.option = unref(vm.props.option as PropsOptionType)
         if (!this.option?.form) {
             const baseVmOption = baseInject.baseVm.props.option as PropsOptionType
-            this.option = {
+            this.option = reactive({
                 isForm: baseVmOption?.isForm,
                 form: baseVmOption?.form
-            }
+            })
         }
     }
 
     initTagCacheComponents() {
         const { config, tagCacheComponents } = baseInject;
         if (config.defaultName.form) {
-            tagCacheComponents[config.defaultName.form] = {
-                component: resolveDynamicComponent(config.defaultName.form)
-            }
+            tagCacheComponents[config.defaultName.form] = resolveDynamicComponent(config.defaultName.form)
+
         }
         if (config.defaultName.formItem) {
-            tagCacheComponents[config.defaultName.formItem] = {
-                component: resolveDynamicComponent(config.defaultName.formItem)
-            }
+            tagCacheComponents[config.defaultName.formItem] = resolveDynamicComponent(config.defaultName.formItem)
+
         }
     }
 
     /**
-     * 添加子表单
+     * 记录表单vm
      */
     addVm() {
         if (baseInject && baseInject.allVms) {
@@ -92,7 +94,7 @@ export default class RuleFactory {
     }
 
     /**
-     * 除去子表单
+     * 除去记录表单vm
      */
     delVm() {
         if (baseInject && baseInject.allVms) {
@@ -111,8 +113,8 @@ export default class RuleFactory {
         const rr = unref(vm.props.rule as RuleType[]).map(item => new renderFactory(item))
 
         baseInject.api._updateRfs(rr)
-        
-        // TODO:目前查到new renderFactory会执行两次 先记录后找问题
+
+        // PS:注意 model的使用否则会触发执行多次渲染
         console.log("renderRule", rr)
         return rr.map(item => item.render())
     }
@@ -124,8 +126,7 @@ export default class RuleFactory {
     renderForm() {
         const { config, tagCacheComponents } = baseInject;
         return [
-            h(tagCacheComponents[config.defaultName.form].component as DefineComponent, {
-                model,
+            h(tagCacheComponents[config.defaultName.form] as any, {
                 ref: formRefsName,
                 ...this.option?.form,
             }, {
