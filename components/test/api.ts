@@ -1,13 +1,21 @@
-import { baseInject, modelKeyAry } from "./rule"
+import { baseInject, modelKeyAry, formRefsName } from "./rule"
 import type renderFactory from './render'
+import type { RuleType } from '../types'
 
+var rfs: renderFactory[]
 
+/**
+ * 
+ * @param ary 
+ * @param value 
+ * @param callback 
+ */
 const searchLoop = (
     ary: renderFactory[],
     value: any,
     callback: (data: {
         item: renderFactory,
-        index: Number,
+        index: number,
         ary: renderFactory[]
     }
     ) => void) => {
@@ -24,7 +32,71 @@ const searchLoop = (
     })
 }
 
-var rfs: renderFactory[]
+/**
+   * 通过field检索规则  支持xxx.xxx层级方式
+   * @param field 
+   * @returns 
+   */
+const getRule = (field: string) => {
+    let result: renderFactory = null;
+    if (field) {
+        const fields = field.split('.'), len = fields.length;
+        for (let idx = 0; idx < len; idx++) {
+            if (idx === 0) {
+                searchLoop(rfs, fields[idx], ({ item }) => {
+                    if (item) {
+                        result = item;
+                    }
+                })
+            } else if (result) {
+                searchLoop(result.children as renderFactory[], fields[idx], ({ item }) => {
+                    if (item) {
+                        result = item;
+                    } else {
+                        result = null;
+                    }
+                })
+            } else {
+                result = null;
+            }
+            if (!result) {
+                break;
+            }
+        }
+    }
+    if (!result) {
+        console.error(`invalid "field=${field}"`)
+    }
+    return result
+}
+
+/**
+    * 表单验证表单字段验证
+    * @param formEvent 
+    * @param fields 
+    * @returns 
+    */
+const formValidate = async (formEvent: any, fields?: string | string[]) => {
+    if (formEvent) {
+        try {
+            await formEvent[baseInject.config.defaultName.formEventValidate](fields)
+        } catch (error) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+    * 清除表单验证
+    * @param formEvent 
+    * @param fields 
+    */
+const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
+    if (formEvent) {
+        formEvent[baseInject.config.defaultName.formEventClearValidate](fields)
+    }
+}
 
 export default class apiFactory {
 
@@ -41,51 +113,13 @@ export default class apiFactory {
     }
 
     /**
-      * 通过field检索规则  支持xxx.xxx层级方式
-      * @param field 
-      * @returns 
-      */
-    getRule(field: string) {
-        let result: renderFactory = null;
-        if (field) {
-            const fields = field.split('.'), len = fields.length;
-            for (let idx = 0; idx < len; idx++) {
-                if (idx === 0) {
-                    searchLoop(rfs, fields[idx], ({ item }) => {
-                        if (item) {
-                            result = item;
-                        }
-                    })
-                } else if (result) {
-                    searchLoop(result.children as renderFactory[], fields[idx], ({ item }) => {
-                        if (item) {
-                            result = item;
-                        } else {
-                            result = null;
-                        }
-                    })
-                } else {
-                    result = null;
-                }
-                if (!result) {
-                    break;
-                }
-            }
-        }
-        if (!result) {
-            console.error(`invalid "field=${field}"`)
-        }
-        return result
-    }
-
-    /**
      * 修改值
      * @param field 
      * @param value 
      * @param key 
      */
     setValue(field: string, value: any, key?: string) {
-        const rf = this.getRule(field)
+        const rf = getRule(field)
         if (rf) {
             rf.setValue(value, key)
         }
@@ -97,7 +131,7 @@ export default class apiFactory {
      * @param value 
      */
     setClass(field: string, value: any) {
-        const rf = this.getRule(field)
+        const rf = getRule(field)
         if (rf) {
             rf.props.class = value
         }
@@ -109,7 +143,7 @@ export default class apiFactory {
      * @param value 
      */
     setStyle(field: string, value: any) {
-        const rf = this.getRule(field)
+        const rf = getRule(field)
         if (rf) {
             rf.props.style = value
         }
@@ -123,11 +157,38 @@ export default class apiFactory {
     setAttrs(field: string, value: {
         [key: string]: any
     }) {
-        const rf = this.getRule(field)
+        const rf = getRule(field)
         if (rf) {
             for (let key in value) {
                 rf.props[key] = value[key]
             }
+        }
+    }
+
+
+    /**
+     * 插入子节点
+     * @param field 
+     * @param rule 
+     * @param index 
+     */
+    pushChildren(field: string, rule: string | RuleType, index?: number) {
+        const rf = getRule(field)
+        if (rf) {
+            // 统一插入处理
+            rf.addChildren(rule, index)
+        }
+    }
+
+    /**
+     * 删除子节点
+     * @param field 
+     * @param index 
+     */
+    delChildren(field: string, index?: number) {
+        const rf = getRule(field)
+        if (rf) {
+            rf.delChildren(index)
         }
     }
 
@@ -148,7 +209,7 @@ export default class apiFactory {
     getFormData(field?: string) {
         if (field) {
             if (this.isModelKey(field)) {
-                const rf = this.getRule(field)
+                const rf = getRule(field)
                 if (rf) {
                     return rf.getValue()
                 }
@@ -169,7 +230,7 @@ export default class apiFactory {
     resetFormData(field?: string) {
         if (field) {
             if (this.isModelKey(field)) {
-                const rf = this.getRule(field)
+                const rf = getRule(field)
                 if (rf) {
                     return rf.setValue(undefined)
                 }
@@ -181,4 +242,33 @@ export default class apiFactory {
         }
     }
 
+    /**
+     * 验证字段规则
+     * @param callback 
+     * @param fields 
+     */
+    async validate(callback: (valid: boolean) => void, fields?: string | string[]) {
+        let valid = true
+        if (baseInject.allVms) {
+            let i = 0, len = baseInject.allVms.length;
+            for (i; i < len; i++) {
+                if (!await formValidate(baseInject.allVms[i].refs[formRefsName], fields)) {
+                    valid = false
+                }
+            }
+        }
+        callback(valid)
+    }
+
+    /**
+     * 清理字段验证
+     * @param fields 
+     */
+    clearValidate(fields?: string | string[]) {
+        if (baseInject.allVms) {
+            baseInject.allVms.forEach(item => {
+                clearFormValidate(item.refs[formRefsName], fields);
+            })
+        }
+    }
 }

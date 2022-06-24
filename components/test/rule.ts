@@ -35,7 +35,7 @@ export var modelKeyAry: string[] = []
  * 
  * 未处理vm.props.modelValue
  * 测试事件
- * 测试api
+ * 还有一些api没实现
  */
 export default class RuleFactory {
     public config = new config()

@@ -16,7 +16,7 @@ export default class renderFactory {
 
     public props: any
 
-    public children: Array<renderFactory | string>
+    public children: Array<renderFactory | string> = []
 
     private _config: {
         modelKeys: string[]
@@ -32,80 +32,6 @@ export default class renderFactory {
         this.initChildre()
     }
 
-    /**
-    * 修改值
-    * @param value 
-    * @param key 
-    */
-    setValue(value: any, key?: string) {
-        if (!this.field) {
-            return;
-        }
-
-        if (value === undefined) {
-            // 设置默认空值
-            if (this._config.modelKeys.length === 1) {
-                this.props[this._config.modelKeys[0]] = this._config.modelKeyDefaultValues[0]
-            } else if (this._config.modelKeys.length > 1) {
-                if (key) {
-                    const keyIndex = this._config.modelKeys.findIndex(mk => mk === key)
-                    if (keyIndex > -1) {
-                        this.props[key] = this._config.modelKeyDefaultValues[keyIndex]
-                    }
-                } else {
-                    this._config.modelKeys.forEach(mk => {
-                        this.setValue(value, mk)
-                    })
-                }
-            }
-        } else {
-            // 正常设置值
-            if (this._config.modelKeys.length === 1) {
-                this.props[this._config.modelKeys[0]] = value
-            } else if (this._config.modelKeys.length > 1) {
-                if (key) {
-                    if (this._config.modelKeys.includes(key)) {
-                        this.props[key] = value
-                    } else {
-                        console.error(`undefined parameter "key=${key}"`)
-                    }
-                } else {
-                    // todo:存在使用问题先不启用
-                    // this._config.modelKeys.forEach(mk => {
-                    //     this.setValue(value?.[mk], mk)
-                    // })
-                    console.error('Required parameter "key"')
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取值
-     * @param key 
-     * @returns 
-     */
-    getValue(key?: string) {
-        if (!this.field) {
-            return;
-        }
-
-        if (this._config.modelKeys.length === 1) {
-            return this.props[this._config.modelKeys[0]]
-        } else if (this._config.modelKeys.length > 1) {
-            if (key) {
-                if (this._config.modelKeys.includes(key)) {
-                    return this.props[key]
-                }
-            } else {
-                const data = {};
-                this._config.modelKeys.forEach(mk => {
-                    data[mk] = this.getValue(mk)
-                })
-                return data
-            }
-        }
-    }
 
     initConfigCache() {
         if (!baseInject.tagCacheComponents[this.rule.type]) {
@@ -211,15 +137,109 @@ export default class renderFactory {
 
     initChildre() {
         if (this.rule.children) {
-            this.children = this.rule.children.map(rule => {
-                if (typeof rule === "string") {
-                    return rule;
-                }
-                return new renderFactory(rule)
+            this.rule.children.map(rule => {
+                this.addChildren(rule)
             })
         }
     }
 
+    // 底下是api相关
+
+    /**
+     * 修改值
+     * @param value 
+     * @param key 
+    */
+    setValue(value: any, key?: string) {
+        if (!this.field) {
+            return;
+        }
+
+        if (value === undefined) {
+            // 设置默认空值
+            if (this._config.modelKeys.length === 1) {
+                this.props[this._config.modelKeys[0]] = this._config.modelKeyDefaultValues[0]
+            } else if (this._config.modelKeys.length > 1) {
+                if (key) {
+                    const keyIndex = this._config.modelKeys.findIndex(mk => mk === key)
+                    if (keyIndex > -1) {
+                        this.props[key] = this._config.modelKeyDefaultValues[keyIndex]
+                    }
+                } else {
+                    this._config.modelKeys.forEach(mk => {
+                        this.setValue(value, mk)
+                    })
+                }
+            }
+        } else {
+            // 正常设置值
+            if (this._config.modelKeys.length === 1) {
+                this.props[this._config.modelKeys[0]] = value
+            } else if (this._config.modelKeys.length > 1) {
+                if (key) {
+                    if (this._config.modelKeys.includes(key)) {
+                        this.props[key] = value
+                    } else {
+                        console.error(`undefined parameter "key=${key}"`)
+                    }
+                } else {
+                    // todo:存在使用问题先不启用
+                    // this._config.modelKeys.forEach(mk => {
+                    //     this.setValue(value?.[mk], mk)
+                    // })
+                    console.error('Required parameter "key"')
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取值
+     * @param key 
+     * @returns 
+     */
+    getValue(key?: string) {
+        if (!this.field) {
+            return;
+        }
+
+        if (this._config.modelKeys.length === 1) {
+            return this.props[this._config.modelKeys[0]]
+        } else if (this._config.modelKeys.length > 1) {
+            if (key) {
+                if (this._config.modelKeys.includes(key)) {
+                    return this.props[key]
+                }
+            } else {
+                const data = {};
+                this._config.modelKeys.forEach(mk => {
+                    data[mk] = this.getValue(mk)
+                })
+                return data
+            }
+        }
+    }
+
+    /**
+     * 添加children
+     * @param rule 
+     * @param index 
+     */
+    addChildren(rule: RuleType | string, index?: number) {
+        const startIndex = index === undefined || index === null ? this.children.length : index
+        this.children.splice(startIndex, 0, typeof rule === "string" ? rule : new renderFactory(rule))
+    }
+
+    /**
+     * 删除children
+     * @param index 
+     */
+    delChildren(index?: number) {
+        const endIndex = index === undefined || index === null ? this.children.length : 1
+        this.children.splice(index, endIndex)
+    }
+
+    // 底下是渲染相关
 
 
     /**
