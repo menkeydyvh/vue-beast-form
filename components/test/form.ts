@@ -1,8 +1,7 @@
 import { unref, reactive, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
 import { RuleFactory } from './rule'
-import apiFactory from './api'
 import config from '../config'
-// import { deepCopy } from '../tool'
+import Api from './api'
 import type ConfigType from '../config'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
@@ -35,6 +34,7 @@ export var modelValue: {
  * 注意设置值的时候，如果是对象，需要处理
  * 
  * modelValue和api都需要针对form创建 
+ * 还是需要计入form的层级结构
  * 
  * 测试事件
  * 还有一些api没实现
@@ -45,12 +45,16 @@ export class FormFactory {
 
     public option: PropsOptionType
 
-    static api: apiFactory
+    public rules: RuleFactory[]
+
+    public api: Api
 
     static formRefsName = "form"
 
     constructor() {
         this.vm = getCurrentInstance()
+        this.api = new Api()
+
         baseInject = inject<BaseInjectType>('baseInject', null)
 
         if (!baseInject) {
@@ -64,7 +68,6 @@ export class FormFactory {
             this.initTagCacheComponents()
         }
 
-
         this.option = unref(this.vm.props.option as PropsOptionType)
         if (!this.option?.form) {
             const baseVmOption = baseInject.baseVm.props.option as PropsOptionType
@@ -74,8 +77,13 @@ export class FormFactory {
             })
         }
 
-
         modelValue = reactive({ ...unref(this.vm.props.modelValue as any) })
+
+        this.rules = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.api))
+
+        this.api._updateRfs(this.rules)
+
+        console.log(this.vm)
     }
 
     initTagCacheComponents() {
@@ -115,16 +123,6 @@ export class FormFactory {
     }
 
     /**
-     * 渲染规则
-     * @returns 
-     */
-    renderRule(): VNodeTypes[] {
-        const rr = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item))
-        FormFactory.api = new apiFactory(rr)
-        return rr.map(item => item.render())
-    }
-
-    /**
      * 渲染form
      * @returns 
      */
@@ -136,7 +134,7 @@ export class FormFactory {
                 model: modelValue,
                 ...this.option?.form,
             }, {
-                default: () => this.renderRule()
+                default: () => this.rules.map(item => item.render())
             })
         ]
     }
@@ -147,7 +145,7 @@ export class FormFactory {
      */
     render() {
         if (this.option.isForm === false) {
-            return this.renderRule()
+            return this.rules.map(item => item.render())
         } else {
             return this.renderForm()
         }

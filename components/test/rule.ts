@@ -1,5 +1,6 @@
 import { h, unref, reactive, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
-import { baseInject, modelValue, FormFactory } from './form'
+import { baseInject, modelValue } from './form'
+import type Api from './api'
 import type { VNodeTypes } from 'vue'
 import type { RuleType, EmitType } from '../types'
 import { onToPropsName, propsToOnName } from '../tool'
@@ -8,6 +9,8 @@ import { deepCopy } from '../tool'
 export class RuleFactory {
 
     public rule: RuleType
+
+    public api: Api
 
     /**
      * 有v-model的时候这个值会有数据
@@ -29,8 +32,9 @@ export class RuleFactory {
 
     static onChangeField: (field: string, value: any) => void
 
-    constructor(rule: RuleType) {
+    constructor(rule: RuleType, api: Api) {
         this.rule = rule;
+        this.api = api;
 
         this.display = this.rule.display
 
@@ -106,10 +110,7 @@ export class RuleFactory {
                     modelKeyEvents,
                     modelKeyDefaultValues
                 }
-
-
             }
-
         }
     }
 
@@ -260,7 +261,7 @@ export class RuleFactory {
      */
     addChildren(rule: RuleType | string, index?: number) {
         const startIndex = index === undefined || index === null ? this.children.length : index
-        this.children.splice(startIndex, 0, typeof rule === "string" ? rule : new RuleFactory(rule))
+        this.children.splice(startIndex, 0, typeof rule === "string" ? rule : new RuleFactory(rule, this.api))
     }
 
     /**
@@ -281,9 +282,9 @@ export class RuleFactory {
         const self = this;
         this.props[onToPropsName(event)] = function () {
             if (callback) {
-                callback(...arguments, FormFactory.api)
+                callback(...arguments, this.api)
             } else {
-                self.rule.on[event](...arguments, FormFactory.api)
+                self.rule.on[event](...arguments, this.api)
             }
         }
     }
@@ -295,7 +296,7 @@ export class RuleFactory {
     addEmit(eType: EmitType) {
         if (eType) {
             this.props[onToPropsName(eType.event)] = function () {
-                baseInject.baseVm.emit(eType.alias, ...arguments, FormFactory.api)
+                baseInject.baseVm.emit(eType.alias, ...arguments, this.api)
             }
         }
     }
@@ -372,12 +373,12 @@ export class RuleFactory {
                 self.setValue(arguments[0], key)
                 const onName = propsToOnName(self._config.modelKeyEvents[index]);
                 if (self.rule?.on?.[onName]) {
-                    self.rule.on[onName](...arguments, FormFactory.api)
+                    self.rule.on[onName](...arguments, this.api)
                 }
                 if (self.rule?.emits) {
                     const emitItem = self.rule.emits.find(item => item.event === onName)
                     if (emitItem) {
-                        baseInject.baseVm.emit(emitItem.alias, ...arguments, FormFactory.api)
+                        baseInject.baseVm.emit(emitItem.alias, ...arguments, this.api)
                     }
                 }
             }
@@ -477,7 +478,7 @@ export class RuleFactory {
         if (typeof this.rule.title === "string") {
             return;
         }
-        const titleRender = new RuleFactory(this.rule.title)
+        const titleRender = new RuleFactory(this.rule.title, this.api)
         return titleRender.render()
     }
 

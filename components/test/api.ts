@@ -1,8 +1,9 @@
+import { getCurrentInstance } from "vue"
 import { baseInject, modelValue, FormFactory } from "./form"
+import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'
 import type { RuleType, EmitType } from '../types'
 
-var rfs: RuleFactory[]
 
 /**
  * 
@@ -32,43 +33,6 @@ const searchLoop = (
     })
 }
 
-/**
-   * 通过field检索规则  支持xxx.xxx层级方式
-   * @param field 
-   * @returns 
-   */
-const getRule = (field: string) => {
-    let result: RuleFactory = null;
-    if (field) {
-        const fields = field.split('.'), len = fields.length;
-        for (let idx = 0; idx < len; idx++) {
-            if (idx === 0) {
-                searchLoop(rfs, fields[idx], ({ item }) => {
-                    if (item) {
-                        result = item;
-                    }
-                })
-            } else if (result) {
-                searchLoop(result.children as RuleFactory[], fields[idx], ({ item }) => {
-                    if (item) {
-                        result = item;
-                    } else {
-                        result = null;
-                    }
-                })
-            } else {
-                result = null;
-            }
-            if (!result) {
-                break;
-            }
-        }
-    }
-    if (!result) {
-        console.error(`invalid "field=${field}"`)
-    }
-    return result
-}
 
 /**
     * 表单验证表单字段验证
@@ -100,8 +64,51 @@ const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
 
 export default class apiFactory {
 
+    public vm: ComponentInternalInstance
+
+    public rfs: RuleFactory[]
+
     constructor(ruleFs?: RuleFactory[]) {
+        this.vm = getCurrentInstance()
         this._updateRfs(ruleFs)
+    }
+
+    /**
+       * 通过field检索规则  支持xxx.xxx层级方式
+       * @param field 
+       * @returns 
+       */
+    getRule = (field: string) => {
+        let result: RuleFactory = null;
+        if (field) {
+            const fields = field.split('.'), len = fields.length;
+            for (let idx = 0; idx < len; idx++) {
+                if (idx === 0) {
+                    searchLoop(this.rfs, fields[idx], ({ item }) => {
+                        if (item) {
+                            result = item;
+                        }
+                    })
+                } else if (result) {
+                    searchLoop(result.children as RuleFactory[], fields[idx], ({ item }) => {
+                        if (item) {
+                            result = item;
+                        } else {
+                            result = null;
+                        }
+                    })
+                } else {
+                    result = null;
+                }
+                if (!result) {
+                    break;
+                }
+            }
+        }
+        if (!result) {
+            console.error(`invalid "field=${field}"`)
+        }
+        return result
     }
 
     /**
@@ -109,7 +116,7 @@ export default class apiFactory {
      * @param ruleFs 
      */
     _updateRfs(ruleFs: RuleFactory[]) {
-        rfs = ruleFs || []
+        this.rfs = ruleFs || []
     }
 
     /**
@@ -119,7 +126,7 @@ export default class apiFactory {
      * @param key 
      */
     setValue(field: string, value: any, key?: string) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             rf.setValue(value, key)
         }
@@ -151,7 +158,7 @@ export default class apiFactory {
     setAttrs(field: string, value: {
         [key: string]: any
     }) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             // 严格控制不从attrs 修改props
             const rfComponent = baseInject.tagCacheComponents[rf.rule.type] as any
@@ -176,7 +183,7 @@ export default class apiFactory {
      * @param value 
      */
     setProps(field: string, key: string, value: any) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             rf.props[key] = value[key]
         }
@@ -188,7 +195,7 @@ export default class apiFactory {
      * @param display 
      */
     setDisplay(field: string, display: boolean) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             rf.display = display === true
         }
@@ -210,7 +217,7 @@ export default class apiFactory {
      * @param index 
      */
     pushChildren(field: string, rule: string | RuleType, index?: number) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             // 统一插入处理
             rf.addChildren(rule, index)
@@ -223,7 +230,7 @@ export default class apiFactory {
      * @param index 
      */
     delChildren(field: string, index?: number) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             rf.delChildren(index)
         }
@@ -246,7 +253,7 @@ export default class apiFactory {
     getFormData(field?: string) {
         if (field) {
             if (this.isModelKey(field)) {
-                const rf = getRule(field)
+                const rf = this.getRule(field)
                 if (rf) {
                     return rf.getValue()
                 }
@@ -267,7 +274,7 @@ export default class apiFactory {
     resetFormData(field?: string) {
         if (field) {
             if (this.isModelKey(field)) {
-                const rf = getRule(field)
+                const rf = this.getRule(field)
                 if (rf) {
                     return rf.setValue(undefined)
                 }
@@ -284,13 +291,19 @@ export default class apiFactory {
      * @param callback 
      * @param fields 
      */
-    async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[]) {
+    async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[], form?: ComponentInternalInstance) {
         let valid = true, data = null
-        if (baseInject.allVms) {
-            let i = 0, len = baseInject.allVms.length;
-            for (i; i < len; i++) {
-                if (!await formValidate(baseInject.allVms[i].refs[FormFactory.formRefsName], fields)) {
-                    valid = false
+        if (form) {
+            if (!await formValidate(form, fields)) {
+                valid = false
+            }
+        } else {
+            if (baseInject.allVms) {
+                let i = 0, len = baseInject.allVms.length;
+                for (i; i < len; i++) {
+                    if (!await formValidate(baseInject.allVms[i].refs[FormFactory.formRefsName], fields)) {
+                        valid = false
+                    }
                 }
             }
         }
@@ -304,11 +317,15 @@ export default class apiFactory {
      * 清理字段验证
      * @param fields 
      */
-    clearValidate(fields?: string | string[]) {
-        if (baseInject.allVms) {
-            baseInject.allVms.forEach(item => {
-                clearFormValidate(item.refs[FormFactory.formRefsName], fields);
-            })
+    clearValidate(fields?: string | string[], form?: ComponentInternalInstance) {
+        if (form) {
+            clearFormValidate(form, fields);
+        } else {
+            if (baseInject.allVms) {
+                baseInject.allVms.forEach(item => {
+                    clearFormValidate(item.refs[FormFactory.formRefsName], fields);
+                })
+            }
         }
     }
 
@@ -320,7 +337,7 @@ export default class apiFactory {
      * @returns 
      */
     addOn(field: string, event: string, callback?: Function) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             return rf.addOn(event, callback)
         }
@@ -333,7 +350,7 @@ export default class apiFactory {
      * @returns 
      */
     addEmit(field: string, emit: EmitType) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             return rf.addEmit(emit)
         }
@@ -346,7 +363,7 @@ export default class apiFactory {
      * @returns 
      */
     delOnOrEmit(field: string, event: string) {
-        const rf = getRule(field)
+        const rf = this.getRule(field)
         if (rf) {
             return rf.delOnOrEmit(event)
         }

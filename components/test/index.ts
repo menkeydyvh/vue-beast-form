@@ -42,7 +42,7 @@ export default function factory() {
                 }
 
                 console.log(modelValue)
-                emit("update:api", FormFactory.api)
+                // emit("update:api", FormFactory.api)
                 emit("update:modelValue", modelValue)
             })
             
