@@ -1,5 +1,6 @@
-import { defineComponent, onMounted, onBeforeUnmount, } from 'vue'
-import RuleFactory from './rule'
+import { reactive, defineComponent, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { FormFactory, modelValue } from './form'
+import { RuleFactory } from './rule'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
@@ -21,15 +22,32 @@ export default function factory() {
             disabled: { type: Boolean },
         },
         emits,
-        setup() {
-            const rf = new RuleFactory()
+        setup(_, { emit }) {
+            const rf = new FormFactory()
+
             onMounted(() => {
                 rf.addVm()
             });
             onBeforeUnmount(() => {
                 rf.delVm()
             })
-            return () => rf.render();
+
+
+
+            nextTick(() => {
+                const formValue = reactive({ ...modelValue })
+                
+                RuleFactory.onChangeField = function (field: string, value: any, key: string) {
+                    formValue[field] = value;
+                    emit("changeField", field, value, key)
+                    emit("update:modelValue", formValue)
+                }
+
+                emit("update:modelValue", formValue)
+            })
+
+
+            return () => rf.render()
         },
 
 

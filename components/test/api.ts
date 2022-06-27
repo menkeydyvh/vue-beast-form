@@ -1,8 +1,8 @@
-import { baseInject, modelKeyAry, formRefsName } from "./rule"
-import type renderFactory from './render'
+import { baseInject, modelValue, formRefsName } from "./form"
+import type { RuleFactory } from './rule'
 import type { RuleType } from '../types'
 
-var rfs: renderFactory[]
+var rfs: RuleFactory[]
 
 /**
  * 
@@ -11,12 +11,12 @@ var rfs: renderFactory[]
  * @param callback 
  */
 const searchLoop = (
-    ary: renderFactory[],
+    ary: RuleFactory[],
     value: any,
     callback: (data: {
-        item: renderFactory,
+        item: RuleFactory,
         index: number,
-        ary: renderFactory[]
+        ary: RuleFactory[]
     }
     ) => void) => {
     ary.forEach((item, index) => {
@@ -26,7 +26,7 @@ const searchLoop = (
             }
 
             if (item.children) {
-                return searchLoop(item.children as renderFactory[], value, callback)
+                return searchLoop(item.children as RuleFactory[], value, callback)
             }
         }
     })
@@ -38,7 +38,7 @@ const searchLoop = (
    * @returns 
    */
 const getRule = (field: string) => {
-    let result: renderFactory = null;
+    let result: RuleFactory = null;
     if (field) {
         const fields = field.split('.'), len = fields.length;
         for (let idx = 0; idx < len; idx++) {
@@ -49,7 +49,7 @@ const getRule = (field: string) => {
                     }
                 })
             } else if (result) {
-                searchLoop(result.children as renderFactory[], fields[idx], ({ item }) => {
+                searchLoop(result.children as RuleFactory[], fields[idx], ({ item }) => {
                     if (item) {
                         result = item;
                     } else {
@@ -100,7 +100,7 @@ const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
 
 export default class apiFactory {
 
-    constructor(renderFactorys?: renderFactory[]) {
+    constructor(renderFactorys?: RuleFactory[]) {
         this._updateRfs(renderFactorys)
     }
 
@@ -108,7 +108,7 @@ export default class apiFactory {
      * 更新记录数组
      * @param renderFactorys 
      */
-    _updateRfs(renderFactorys: renderFactory[]) {
+    _updateRfs(renderFactorys: RuleFactory[]) {
         rfs = renderFactorys || []
     }
 
@@ -198,7 +198,7 @@ export default class apiFactory {
      * @returns 
      */
     isModelKey(field: string) {
-        return modelKeyAry.includes(field)
+        return Object.keys(modelValue).includes(field)
     }
 
     /**
@@ -215,10 +215,10 @@ export default class apiFactory {
                 }
             }
         } else {
-            const data = {}
-            modelKeyAry.forEach(key => {
+            const data = {};
+            for (let key in modelValue) {
                 data[key] = this.getFormData(key)
-            })
+            }
             return data;
         }
     }
@@ -236,9 +236,9 @@ export default class apiFactory {
                 }
             }
         } else {
-            modelKeyAry.forEach(key => {
+            for (let key in modelValue) {
                 this.resetFormData(key);
-            })
+            }
         }
     }
 
