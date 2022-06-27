@@ -1,6 +1,5 @@
 <template>
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
-    <!-- <json-layout v-model="value" v-model:api="jApi" :rule="rule" :option="option" /> -->
     <test-json-layout v-model="value" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
     <a-button @click="onAdd">add</a-button>
@@ -68,17 +67,6 @@ export default defineComponent({
                 on: {
                   click: (e, api) => {
                     api.resetFormData();
-                  },
-                },
-              },
-              {
-                type: "a-button",
-                field: "btn",
-                props: {},
-                children: ["清空"],
-                on: {
-                  click: (e, api) => {
-                    api.clearValue("name");
                   },
                 },
               },

@@ -1,6 +1,6 @@
 import { baseInject, modelValue, formRefsName } from "./form"
 import type { RuleFactory } from './rule'
-import type { RuleType } from '../types'
+import type { RuleType, EmitType } from '../types'
 
 var rfs: RuleFactory[]
 
@@ -100,16 +100,16 @@ const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
 
 export default class apiFactory {
 
-    constructor(renderFactorys?: RuleFactory[]) {
-        this._updateRfs(renderFactorys)
+    constructor(ruleFs?: RuleFactory[]) {
+        this._updateRfs(ruleFs)
     }
 
     /**
      * 更新记录数组
-     * @param renderFactorys 
+     * @param ruleFs 
      */
-    _updateRfs(renderFactorys: RuleFactory[]) {
-        rfs = renderFactorys || []
+    _updateRfs(ruleFs: RuleFactory[]) {
+        rfs = ruleFs || []
     }
 
     /**
@@ -131,10 +131,7 @@ export default class apiFactory {
      * @param value 
      */
     setClass(field: string, value: any) {
-        const rf = getRule(field)
-        if (rf) {
-            rf.props.class = value
-        }
+        this.setProps(field, "class", value)
     }
 
     /**
@@ -143,10 +140,7 @@ export default class apiFactory {
      * @param value 
      */
     setStyle(field: string, value: any) {
-        const rf = getRule(field)
-        if (rf) {
-            rf.props.style = value
-        }
+        this.setProps(field, "style", value)
     }
 
     /**
@@ -159,12 +153,55 @@ export default class apiFactory {
     }) {
         const rf = getRule(field)
         if (rf) {
-            for (let key in value) {
-                rf.props[key] = value[key]
+            // 严格控制不从attrs 修改props
+            const rfComponent = baseInject.tagCacheComponents[rf.rule.type] as any
+            if (typeof rfComponent === "string") {
+                for (let key in value) {
+                    rf.props[key] = value[key]
+                }
+            } else {
+                const propsKeys = rfComponent.props ? Object.keys(rfComponent.props) : []
+                for (let key in value) {
+                    if (!propsKeys.includes(key)) {
+                        rf.props[key] = value[key]
+                    }
+                }
             }
         }
     }
 
+    /**
+     * 设置props
+     * @param field 
+     * @param value 
+     */
+    setProps(field: string, key: string, value: any) {
+        const rf = getRule(field)
+        if (rf) {
+            rf.props[key] = value[key]
+        }
+    }
+
+    /**
+     * 设置是否显示
+     * @param field 
+     * @param display 
+     */
+    setDisplay(field: string, display: boolean) {
+        const rf = getRule(field)
+        if (rf) {
+            rf.display = display === true
+        }
+    }
+
+    /**
+     * 设置禁用
+     * @param field 
+     * @param isBool 
+     */
+    setDisabled(field: string, isBool: boolean) {
+        this.setProps(field, "disabled", isBool === true ? true : undefined)
+    }
 
     /**
      * 插入子节点
@@ -247,8 +284,8 @@ export default class apiFactory {
      * @param callback 
      * @param fields 
      */
-    async validate(callback: (valid: boolean) => void, fields?: string | string[]) {
-        let valid = true
+    async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[]) {
+        let valid = true, data = null
         if (baseInject.allVms) {
             let i = 0, len = baseInject.allVms.length;
             for (i; i < len; i++) {
@@ -257,7 +294,10 @@ export default class apiFactory {
                 }
             }
         }
-        callback(valid)
+        if (valid) {
+            data = this.getFormData();
+        }
+        callback(valid, data)
     }
 
     /**
@@ -269,6 +309,46 @@ export default class apiFactory {
             baseInject.allVms.forEach(item => {
                 clearFormValidate(item.refs[formRefsName], fields);
             })
+        }
+    }
+
+    /**
+     * 添加事件
+     * @param field 
+     * @param event 
+     * @param callback 
+     * @returns 
+     */
+    addOn(field: string, event: string, callback?: Function) {
+        const rf = getRule(field)
+        if (rf) {
+            return rf.addOn(event, callback)
+        }
+    }
+
+    /**
+     * 添加事件监听
+     * @param field 
+     * @param emit 
+     * @returns 
+     */
+    addEmit(field: string, emit: EmitType) {
+        const rf = getRule(field)
+        if (rf) {
+            return rf.addEmit(emit)
+        }
+    }
+
+    /**
+     * 删除事件或监听
+     * @param field 
+     * @param event 
+     * @returns 
+     */
+    delOnOrEmit(field: string, event: string) {
+        const rf = getRule(field)
+        if (rf) {
+            return rf.delOnOrEmit(event)
         }
     }
 }

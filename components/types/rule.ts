@@ -96,7 +96,7 @@ export type RuleType = {
     /**
      * 会抛出事件
      */
-    emits?: Array<emitType>
+    emits?: Array<EmitType>
 }
 
 
@@ -106,7 +106,7 @@ interface RuleValidateType {
     message?: string;
     trigger?: string;
 }
-interface emitType {
+export interface EmitType {
     event: string;
     alias: string;
 }

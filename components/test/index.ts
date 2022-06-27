@@ -28,11 +28,10 @@ export default function factory() {
             onMounted(() => {
                 rf.addVm()
             });
+
             onBeforeUnmount(() => {
                 rf.delVm()
             })
-
-
 
             nextTick(() => {
                 const formValue = reactive({ ...modelValue })

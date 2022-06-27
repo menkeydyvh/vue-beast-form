@@ -1,7 +1,7 @@
 import { h, unref, reactive, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
 import { baseInject, vm, modelValue } from './form'
 import type { VNodeTypes } from 'vue'
-import type { RuleType } from '../types'
+import type { RuleType, EmitType } from '../types'
 import { onToPropsName, propsToOnName } from '../tool'
 
 export class RuleFactory {
@@ -16,6 +16,8 @@ export class RuleFactory {
 
     public props: any
 
+    public display: boolean
+
     public children: Array<RuleFactory | string> = []
 
     private _config: {
@@ -28,6 +30,8 @@ export class RuleFactory {
 
     constructor(rule: RuleType) {
         this.rule = rule;
+
+        this.display = this.rule.display
 
         this.initConfigCache()
         this.initProps()
@@ -107,7 +111,6 @@ export class RuleFactory {
         const tag = baseInject.tagCacheComponents[this.rule.type] as any,
             props = {
                 ...this.rule.props,
-                ...this.listenEvent(),
                 disabled: unref(vm.props.disabled as boolean) === true || this.rule.props?.disabled === true
             }
 
@@ -136,7 +139,9 @@ export class RuleFactory {
 
         this.props = reactive(props)
 
-        // 设置值或者初始化
+        this.listenEvent()
+
+        // 初始化value相关
         if (this.field) {
             if (Object.keys(modelValue).includes(this.field)) {
                 this.setValue(modelValue[this.field])
@@ -170,13 +175,11 @@ export class RuleFactory {
             // 设置默认空值
             if (this._config.modelKeys.length === 1) {
                 this.props[this._config.modelKeys[0]] = this._config.modelKeyDefaultValues[0]
-                modelValue[this.field] = this._config.modelKeyDefaultValues[0]
             } else if (this._config.modelKeys.length > 1) {
                 if (key) {
                     const keyIndex = this._config.modelKeys.findIndex(mk => mk === key)
                     if (keyIndex > -1) {
                         this.props[key] = this._config.modelKeyDefaultValues[keyIndex]
-                        modelValue[this.field][key] = this._config.modelKeyDefaultValues[keyIndex]
                     }
                 } else {
                     this._config.modelKeys.forEach(mk => {
@@ -188,12 +191,10 @@ export class RuleFactory {
             // 正常设置值
             if (this._config.modelKeys.length === 1) {
                 this.props[this._config.modelKeys[0]] = value
-                modelValue[this.field] = value
             } else if (this._config.modelKeys.length > 1) {
                 if (key) {
                     if (this._config.modelKeys.includes(key)) {
                         this.props[key] = value
-                        modelValue[this.field][key] = value
                     }
                 } else {
                     this._config.modelKeys.forEach(mk => {
@@ -202,8 +203,7 @@ export class RuleFactory {
                 }
             }
         }
-
-
+        RuleFactory.onChangeField && RuleFactory.onChangeField(this.field, value, key)
     }
 
     /**
@@ -252,6 +252,45 @@ export class RuleFactory {
         this.children.splice(index, endIndex)
     }
 
+    /**
+     * 添加事件
+     * @param event 
+     * @param callback 
+     */
+    addOn(event: string, callback?: Function) {
+        const self = this;
+        this.props[onToPropsName(event)] = function () {
+            if (callback) {
+                callback(...arguments, baseInject.api)
+            } else {
+                self.rule.on[event](...arguments, baseInject.api)
+            }
+        }
+    }
+
+    /**
+     * 添加emit
+     * @param eType 
+     */
+    addEmit(eType: EmitType) {
+        if (eType) {
+            this.props[onToPropsName(eType.event)] = function () {
+                vm.emit(eType.alias, ...arguments, baseInject.api)
+            }
+        }
+    }
+
+    /**
+    * 删除事件
+    * @param event 
+    */
+    delOnOrEmit(event: string) {
+        let propsEventName = onToPropsName(event)
+        if (typeof this.props[propsEventName] === 'function') {
+            delete this.props[propsEventName]
+        }
+    }
+
     // 底下是渲染相关
 
 
@@ -260,7 +299,7 @@ export class RuleFactory {
      * @returns 
      */
     listenRuleOnAndEmits() {
-        const self = this, props = {}, listens: {
+        const self = this, listens: {
             source: "on" | "emits"
             event: string
         }[] = [];
@@ -288,18 +327,13 @@ export class RuleFactory {
         }
 
         listens.forEach(item => {
-            props[onToPropsName(item.event)] = function () {
-                if (item.source === "on") {
-                    self.rule.on[item.event](...arguments, baseInject.api)
-                } else if (item.source === "emits") {
-                    const emitItem = self.rule.emits.find(emit => emit.event === item.event)
-                    vm.emit(emitItem.alias, ...arguments, baseInject.api)
-                }
+            if (item.source === "on") {
+                this.addOn(item.event)
+            } else if (item.source === "emits") {
+                const emitItem = self.rule.emits.find(emit => emit.event === item.event)
+                this.addEmit(emitItem)
             }
         })
-        if (Object.keys(props).length) {
-            return props
-        }
     }
 
     /**
@@ -307,23 +341,20 @@ export class RuleFactory {
      * @returns 
      */
     listenModelEvent() {
-
         // 组件赋值事件处理
         if (this.field) {
-            const props = {};
             this._config.modelKeys.forEach((key, index) => {
-                props[key] = this._config.modelKeyDefaultValues[index]
+                this.props[key] = this._config.modelKeyDefaultValues[index]
                 if (this.rule.props[key]) {
-                    props[key] = this.rule.props[key]
+                    this.props[key] = this.rule.props[key]
                 }
                 if (this.rule.value != undefined) {
-                    props[key] = this.rule.value
+                    this.props[key] = this.rule.value
                 }
 
                 const self = this;
-                props[self._config.modelKeyEvents[index]] = function () {
+                this.props[self._config.modelKeyEvents[index]] = function () {
                     self.setValue(arguments[0], key)
-                    RuleFactory.onChangeField && RuleFactory.onChangeField(self.field, arguments[0], key)
                     const onName = propsToOnName(self._config.modelKeyEvents[index]);
                     if (self.rule?.on?.[onName]) {
                         self.rule.on[onName](...arguments, baseInject.api)
@@ -336,11 +367,7 @@ export class RuleFactory {
                     }
                 }
             })
-            if (Object.keys(props).length) {
-                return props
-            }
         }
-        return;
     }
 
     /**
@@ -348,10 +375,8 @@ export class RuleFactory {
      * @returns 
      */
     listenEvent() {
-        return {
-            ...this.listenRuleOnAndEmits(),
-            ...this.listenModelEvent()
-        }
+        this.listenRuleOnAndEmits()
+        this.listenModelEvent()
     }
 
     /**
@@ -484,7 +509,7 @@ export class RuleFactory {
      * @returns 
      */
     render() {
-        if (this.rule.display) return;
+        if (this.display === false) return;
         return this.renderFormItem() || this.renderType()
     }
 }
