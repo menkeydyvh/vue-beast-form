@@ -3,7 +3,7 @@
     <a-row>
       <a-col flex="auto">
         <a-space>
-          <a-radio-group v-model:value="isForm" button-style="solid">
+          <a-radio-group v-model:value="option.isForm" button-style="solid">
             <a-radio-button :value="true">解析成表单</a-radio-button>
             <a-radio-button :value="false">解析成布局</a-radio-button>
           </a-radio-group>
@@ -11,10 +11,9 @@
             disabled ? "启用表单" : "禁用表单"
           }}</a-button>
         </a-space>
-        <json-layout
+        <test-json-layout
           v-model:api="jApi"
           v-model="value"
-          :isForm="isForm"
           :rule="rule"
           :option="option"
           :disabled="disabled"
@@ -29,15 +28,14 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { JsonLayout } from "../../../components";
+import { JsonLayout, TestJsonLayout } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { JsonLayout, TestJsonLayout },
   setup() {
     const jApi = ref(),
       disabled = ref(false),
-      isForm = ref(true),
       value = ref({ input: "input" }),
       rule = ref<RuleType[]>([]),
       option = ref({
@@ -45,6 +43,7 @@ export default defineComponent({
           wrapperCol: { span: 14 },
           layout: "vertical",
         },
+        isForm: true,
       });
 
     rule.value = [
@@ -278,7 +277,7 @@ export default defineComponent({
                   type: "primary",
                   htmlType: "sbumit",
                   onClick: () => {
-                    if (isForm.value) {
+                    if (option.value.isForm) {
                       jApi.value.validate((valid: boolean) => {
                         console.log(valid, jApi.value.getFormData(), value.value);
                       });
@@ -308,7 +307,6 @@ export default defineComponent({
     ];
 
     return {
-      isForm,
       disabled,
       jApi,
       value,

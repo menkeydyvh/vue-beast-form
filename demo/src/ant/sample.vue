@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
-    <test-json-layout v-model="value" :rule="rule" :option="option" />
+    <json-layout v-model="value" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
     <a-button @click="onAdd">add</a-button>
   </a-card>
@@ -13,7 +13,7 @@ import { ruleStringify, ruleParse } from "../../../components/tool";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
-  components: { JsonLayout, TestJsonLayout },
+  components: { JsonLayout },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),

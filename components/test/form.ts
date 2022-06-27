@@ -2,6 +2,7 @@ import { unref, reactive, getCurrentInstance, resolveDynamicComponent, provide, 
 import { RuleFactory } from './rule'
 import apiFactory from './api'
 import config from '../config'
+// import { deepCopy } from '../tool'
 import type ConfigType from '../config'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
@@ -17,7 +18,6 @@ export interface BaseInjectType {
         [ruleType: string]: VNodeTypes
     }
     config: ConfigType
-    api: apiFactory
 }
 
 export var vm: ComponentInternalInstance
@@ -25,7 +25,7 @@ export var baseInject: BaseInjectType
 export var formRefsName = "form"
 export var modelValue: {
     [field: string]: any
-} = {}
+}
 
 
 /**
@@ -41,10 +41,12 @@ export var modelValue: {
  * 还有一些api没实现
  */
 export class FormFactory {
-    
+
     public config = new config()
+
     public option: PropsOptionType
-    // 顶层管理
+
+    static api: apiFactory
 
     constructor() {
         vm = getCurrentInstance()
@@ -56,7 +58,6 @@ export class FormFactory {
                 allVms: [],
                 tagCacheComponents: {},
                 config: new config(),
-                api: new apiFactory()
             }
             provide('baseInject', baseInject)
             this.initTagCacheComponents()
@@ -73,7 +74,7 @@ export class FormFactory {
         }
 
 
-        modelValue = { ...unref(vm.props.modelValue as any) }
+        modelValue = reactive({ ...unref(vm.props.modelValue as any) })
     }
 
     initTagCacheComponents() {
@@ -118,11 +119,7 @@ export class FormFactory {
      */
     renderRule(): VNodeTypes[] {
         const rr = unref(vm.props.rule as RuleType[]).map(item => new RuleFactory(item))
-
-        baseInject.api._updateRfs(rr)
-
-        // PS:注意 model的使用否则会触发执行多次渲染
-        console.log("renderRule", rr)
+        FormFactory.api = new apiFactory(rr)
         return rr.map(item => item.render())
     }
 
@@ -135,6 +132,7 @@ export class FormFactory {
         return [
             h(tagCacheComponents[config.defaultName.form] as any, {
                 ref: formRefsName,
+                model: modelValue,
                 ...this.option?.form,
             }, {
                 default: () => this.renderRule()

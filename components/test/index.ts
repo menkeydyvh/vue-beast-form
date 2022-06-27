@@ -1,6 +1,7 @@
-import { reactive, defineComponent, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { defineComponent, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { FormFactory, modelValue } from './form'
 import { RuleFactory } from './rule'
+import type Api from './api'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
@@ -8,7 +9,7 @@ import type { RuleType, PropsOptionType } from '../types'
 export default function factory() {
 
     const name = 'JsonLayout',
-        emits = ["changeField", "update:modelValue"];
+        emits = ["changeField", "update:modelValue", "update:api"];
 
 
     return defineComponent({
@@ -16,6 +17,7 @@ export default function factory() {
         components: {},
         directives: {},
         props: {
+            api: { type: Object as PropType<Api> },
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
             option: { type: Object as PropType<PropsOptionType> },
@@ -34,17 +36,18 @@ export default function factory() {
             })
 
             nextTick(() => {
-                const formValue = reactive({ ...modelValue })
-                
-                RuleFactory.onChangeField = function (field: string, value: any, key: string) {
-                    formValue[field] = value;
-                    emit("changeField", field, value, key)
-                    emit("update:modelValue", formValue)
+
+                RuleFactory.onChangeField = function (field, value) {
+                    emit("changeField", field, value)
                 }
 
-                emit("update:modelValue", formValue)
+                emit("update:api", FormFactory.api)
+                emit("update:modelValue", modelValue)
             })
 
+            watch(modelValue, () => {
+                emit("update:modelValue", modelValue)
+            }, { deep: true })
 
             return () => rf.render()
         },
