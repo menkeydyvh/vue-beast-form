@@ -11,7 +11,7 @@
             disabled ? "启用表单" : "禁用表单"
           }}</a-button>
         </a-space>
-        <test-json-layout
+        <json-layout
           v-model:api="jApi"
           v-model="value"
           :rule="rule"
@@ -28,11 +28,11 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { JsonLayout, TestJsonLayout } from "../../../components";
+import { JsonLayout } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
 export default defineComponent({
-  components: { JsonLayout, TestJsonLayout },
+  components: { JsonLayout },
   setup() {
     const jApi = ref(),
       disabled = ref(false),

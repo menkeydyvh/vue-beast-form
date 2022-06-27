@@ -41,18 +41,17 @@ export default function factory() {
                     emit("changeField", field, value)
                 }
 
+                console.log(modelValue)
                 emit("update:api", FormFactory.api)
                 emit("update:modelValue", modelValue)
             })
-
+            
             watch(modelValue, () => {
                 emit("update:modelValue", modelValue)
             }, { deep: true })
 
             return () => rf.render()
         },
-
-
     });
 
 }

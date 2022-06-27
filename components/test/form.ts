@@ -8,7 +8,7 @@ import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
 
 
-export interface BaseInjectType {
+interface BaseInjectType {
     // 顶层vm
     baseVm: ComponentInternalInstance
     // 顶层计入所有层vm
@@ -20,9 +20,8 @@ export interface BaseInjectType {
     config: ConfigType
 }
 
-export var vm: ComponentInternalInstance
 export var baseInject: BaseInjectType
-export var formRefsName = "form"
+
 export var modelValue: {
     [field: string]: any
 }
@@ -35,26 +34,28 @@ export var modelValue: {
  * 支持国际化
  * 注意设置值的时候，如果是对象，需要处理
  * 
- * 在处理props.modelValue的时候会多渲染一次，这个看后续是否有办法处理目前问题不大
+ * modelValue和api都需要针对form创建 
  * 
  * 测试事件
  * 还有一些api没实现
  */
 export class FormFactory {
 
-    public config = new config()
+    public vm: ComponentInternalInstance
 
     public option: PropsOptionType
 
     static api: apiFactory
 
+    static formRefsName = "form"
+
     constructor() {
-        vm = getCurrentInstance()
+        this.vm = getCurrentInstance()
         baseInject = inject<BaseInjectType>('baseInject', null)
 
         if (!baseInject) {
             baseInject = {
-                baseVm: vm,
+                baseVm: this.vm,
                 allVms: [],
                 tagCacheComponents: {},
                 config: new config(),
@@ -64,7 +65,7 @@ export class FormFactory {
         }
 
 
-        this.option = unref(vm.props.option as PropsOptionType)
+        this.option = unref(this.vm.props.option as PropsOptionType)
         if (!this.option?.form) {
             const baseVmOption = baseInject.baseVm.props.option as PropsOptionType
             this.option = reactive({
@@ -74,7 +75,7 @@ export class FormFactory {
         }
 
 
-        modelValue = reactive({ ...unref(vm.props.modelValue as any) })
+        modelValue = reactive({ ...unref(this.vm.props.modelValue as any) })
     }
 
     initTagCacheComponents() {
@@ -94,9 +95,9 @@ export class FormFactory {
      */
     addVm() {
         if (baseInject && baseInject.allVms) {
-            let idx = baseInject.allVms.findIndex(item => item.uid === vm.uid)
+            let idx = baseInject.allVms.findIndex(item => item.uid === this.vm.uid)
             if (idx === -1) {
-                baseInject.allVms.push(vm)
+                baseInject.allVms.push(this.vm)
             }
         }
     }
@@ -106,7 +107,7 @@ export class FormFactory {
      */
     delVm() {
         if (baseInject && baseInject.allVms) {
-            let idx = baseInject.allVms.findIndex(item => item.uid === vm.uid)
+            let idx = baseInject.allVms.findIndex(item => item.uid === this.vm.uid)
             if (idx > -1) {
                 baseInject.allVms.splice(idx, 1)
             }
@@ -118,7 +119,7 @@ export class FormFactory {
      * @returns 
      */
     renderRule(): VNodeTypes[] {
-        const rr = unref(vm.props.rule as RuleType[]).map(item => new RuleFactory(item))
+        const rr = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item))
         FormFactory.api = new apiFactory(rr)
         return rr.map(item => item.render())
     }
@@ -131,7 +132,7 @@ export class FormFactory {
         const { config, tagCacheComponents } = baseInject;
         return [
             h(tagCacheComponents[config.defaultName.form] as any, {
-                ref: formRefsName,
+                ref: FormFactory.formRefsName,
                 model: modelValue,
                 ...this.option?.form,
             }, {

@@ -1,5 +1,5 @@
 import { h, unref, reactive, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
-import { baseInject, vm, modelValue, FormFactory } from './form'
+import { baseInject, modelValue, FormFactory } from './form'
 import type { VNodeTypes } from 'vue'
 import type { RuleType, EmitType } from '../types'
 import { onToPropsName, propsToOnName } from '../tool'
@@ -161,7 +161,7 @@ export class RuleFactory {
         const tag = baseInject.tagCacheComponents[this.rule.type] as any,
             props = {
                 ...this.rule.props,
-                disabled: unref(vm.props.disabled as boolean) === true || this.rule.props?.disabled === true
+                disabled: unref(baseInject.baseVm.props.disabled as boolean) === true || this.rule.props?.disabled === true
             }
 
         if (typeof tag === "string") {
@@ -295,7 +295,7 @@ export class RuleFactory {
     addEmit(eType: EmitType) {
         if (eType) {
             this.props[onToPropsName(eType.event)] = function () {
-                vm.emit(eType.alias, ...arguments, FormFactory.api)
+                baseInject.baseVm.emit(eType.alias, ...arguments, FormFactory.api)
             }
         }
     }
@@ -377,7 +377,7 @@ export class RuleFactory {
                 if (self.rule?.emits) {
                     const emitItem = self.rule.emits.find(item => item.event === onName)
                     if (emitItem) {
-                        vm.emit(emitItem.alias, ...arguments, FormFactory.api)
+                        baseInject.baseVm.emit(emitItem.alias, ...arguments, FormFactory.api)
                     }
                 }
             }

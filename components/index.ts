@@ -1,10 +1,10 @@
 import type { App } from 'vue';
-import factory from './core';
+// import factory from './core';
 import testFactory from './test';
 
-export const TestJsonLayout = testFactory();
+export const JsonLayout = testFactory();
 
-export const JsonLayout = factory();
+// export const JsonLayout = factory();
 
 const useComponent = {
   install: (app: App) => {

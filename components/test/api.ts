@@ -1,4 +1,4 @@
-import { baseInject, modelValue, formRefsName } from "./form"
+import { baseInject, modelValue, FormFactory } from "./form"
 import type { RuleFactory } from './rule'
 import type { RuleType, EmitType } from '../types'
 
@@ -289,7 +289,7 @@ export default class apiFactory {
         if (baseInject.allVms) {
             let i = 0, len = baseInject.allVms.length;
             for (i; i < len; i++) {
-                if (!await formValidate(baseInject.allVms[i].refs[formRefsName], fields)) {
+                if (!await formValidate(baseInject.allVms[i].refs[FormFactory.formRefsName], fields)) {
                     valid = false
                 }
             }
@@ -307,7 +307,7 @@ export default class apiFactory {
     clearValidate(fields?: string | string[]) {
         if (baseInject.allVms) {
             baseInject.allVms.forEach(item => {
-                clearFormValidate(item.refs[formRefsName], fields);
+                clearFormValidate(item.refs[FormFactory.formRefsName], fields);
             })
         }
     }
