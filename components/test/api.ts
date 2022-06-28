@@ -1,5 +1,6 @@
 import { getCurrentInstance } from "vue"
-import { baseInject, modelValue, FormFactory } from "./form"
+import FormFactory, { baseInject } from "./form"
+import type { ModelValueType } from "./form"
 import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'
 import type { RuleType, EmitType } from '../types'
@@ -66,19 +67,47 @@ export default class apiFactory {
 
     public vm: ComponentInternalInstance
 
-    public rfs: RuleFactory[]
+    private modelValue: ModelValueType
 
-    constructor(ruleFs?: RuleFactory[]) {
+    private rfs: RuleFactory[]
+
+    private allVms: ComponentInternalInstance[]
+
+    constructor() {
         this.vm = getCurrentInstance()
-        this._updateRfs(ruleFs)
     }
+
+    /**
+   * 记录数据
+   * @param modelValue 
+   */
+    setModelValue(modelValue: ModelValueType) {
+        this.modelValue = modelValue
+    }
+
+    /**
+   * 记录数据
+   * @param ruleFs 
+   */
+    setRfs(ruleFs: RuleFactory[]) {
+        this.rfs = ruleFs || []
+    }
+
+    /**
+   * 记录数据
+   * @param ruleFs 
+   */
+    setAllVms(allVms: ComponentInternalInstance[]) {
+        this.allVms = allVms
+    }
+
 
     /**
        * 通过field检索规则  支持xxx.xxx层级方式
        * @param field 
        * @returns 
        */
-    getRule = (field: string) => {
+    private getRule = (field: string) => {
         let result: RuleFactory = null;
         if (field) {
             const fields = field.split('.'), len = fields.length;
@@ -111,13 +140,6 @@ export default class apiFactory {
         return result
     }
 
-    /**
-     * 更新记录数组
-     * @param ruleFs 
-     */
-    _updateRfs(ruleFs: RuleFactory[]) {
-        this.rfs = ruleFs || []
-    }
 
     /**
      * 修改值
@@ -242,7 +264,7 @@ export default class apiFactory {
      * @returns 
      */
     isModelKey(field: string) {
-        return Object.keys(modelValue).includes(field)
+        return Object.keys(this.modelValue).includes(field)
     }
 
     /**
@@ -260,7 +282,7 @@ export default class apiFactory {
             }
         } else {
             const data = {};
-            for (let key in modelValue) {
+            for (let key in this.modelValue) {
                 data[key] = this.getFormData(key)
             }
             return data;
@@ -280,7 +302,7 @@ export default class apiFactory {
                 }
             }
         } else {
-            for (let key in modelValue) {
+            for (let key in this.modelValue) {
                 this.resetFormData(key);
             }
         }
@@ -291,17 +313,17 @@ export default class apiFactory {
      * @param callback 
      * @param fields 
      */
-    async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[], form?: ComponentInternalInstance) {
+    async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[], formVm?: ComponentInternalInstance) {
         let valid = true, data = null
-        if (form) {
-            if (!await formValidate(form, fields)) {
+        if (formVm) {
+            if (!await formValidate(formVm.refs[FormFactory.formRefsName], fields)) {
                 valid = false
             }
         } else {
-            if (baseInject.allVms) {
-                let i = 0, len = baseInject.allVms.length;
+            if (this.allVms) {
+                let i = 0, len = this.allVms.length;
                 for (i; i < len; i++) {
-                    if (!await formValidate(baseInject.allVms[i].refs[FormFactory.formRefsName], fields)) {
+                    if (!await formValidate(this.allVms[i].refs[FormFactory.formRefsName], fields)) {
                         valid = false
                     }
                 }
@@ -317,12 +339,12 @@ export default class apiFactory {
      * 清理字段验证
      * @param fields 
      */
-    clearValidate(fields?: string | string[], form?: ComponentInternalInstance) {
-        if (form) {
-            clearFormValidate(form, fields);
+    clearValidate(fields?: string | string[], formVm?: ComponentInternalInstance) {
+        if (formVm) {
+            clearFormValidate(formVm.refs[FormFactory.formRefsName], fields);
         } else {
-            if (baseInject.allVms) {
-                baseInject.allVms.forEach(item => {
+            if (this.allVms) {
+                this.allVms.forEach(item => {
                     clearFormValidate(item.refs[FormFactory.formRefsName], fields);
                 })
             }

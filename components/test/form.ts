@@ -6,12 +6,7 @@ import type ConfigType from '../config'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
 
-
 interface BaseInjectType {
-    // 顶层vm
-    baseVm: ComponentInternalInstance
-    // 顶层计入所有层vm
-    allVms: ComponentInternalInstance[]
     //渲染组件缓存
     tagCacheComponents: {
         [ruleType: string]: VNodeTypes
@@ -19,12 +14,11 @@ interface BaseInjectType {
     config: ConfigType
 }
 
-export var baseInject: BaseInjectType
-
-export var modelValue: {
+export interface ModelValueType {
     [field: string]: any
 }
 
+export var baseInject: BaseInjectType
 
 /**
  * TODO:
@@ -33,15 +27,16 @@ export var modelValue: {
  * 支持国际化
  * 注意设置值的时候，如果是对象，需要处理
  * 
- * modelValue和api都需要针对form创建 
  * 还是需要计入form的层级结构
  * 
  * 测试事件
  * 还有一些api没实现
  */
-export class FormFactory {
+export default class FormFactory {
 
     public vm: ComponentInternalInstance
+
+    public modelValue: ModelValueType
 
     public option: PropsOptionType
 
@@ -51,39 +46,49 @@ export class FormFactory {
 
     static formRefsName = "form"
 
+    // 计入form层关系
+    public baseVm: ComponentInternalInstance = null
+    public allVms: ComponentInternalInstance[] = []
+
     constructor() {
-        this.vm = getCurrentInstance()
-        this.api = new Api()
-
-        baseInject = inject<BaseInjectType>('baseInject', null)
-
         if (!baseInject) {
             baseInject = {
-                baseVm: this.vm,
-                allVms: [],
                 tagCacheComponents: {},
                 config: new config(),
             }
-            provide('baseInject', baseInject)
             this.initTagCacheComponents()
         }
 
+        this.vm = getCurrentInstance()
+
+        this.baseVm = inject('baseVm', null)
+
+        if (this.baseVm === null) {
+            provide('baseVm', this.vm)
+            provide('allVms', this.allVms)
+        } else {
+            this.allVms = inject('allVms');
+        }
+
+        this.api = new Api()
+
+
         this.option = unref(this.vm.props.option as PropsOptionType)
         if (!this.option?.form) {
-            const baseVmOption = baseInject.baseVm.props.option as PropsOptionType
+            const baseVmOption = this.baseVm.props?.option as PropsOptionType
             this.option = reactive({
                 isForm: baseVmOption?.isForm,
                 form: baseVmOption?.form
             })
         }
 
-        modelValue = reactive({ ...unref(this.vm.props.modelValue as any) })
+        this.modelValue = reactive({ ...unref(this.vm.props.modelValue as any) })
 
-        this.rules = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.api))
+        this.rules = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api))
 
-        this.api._updateRfs(this.rules)
-
-        console.log(this.vm)
+        this.api.setRfs(this.rules)
+        this.api.setModelValue(this.modelValue)
+        this.api.setAllVms(this.allVms);
     }
 
     initTagCacheComponents() {
@@ -102,10 +107,10 @@ export class FormFactory {
      * 记录表单vm
      */
     addVm() {
-        if (baseInject && baseInject.allVms) {
-            let idx = baseInject.allVms.findIndex(item => item.uid === this.vm.uid)
+        if (this.allVms) {
+            let idx = this.allVms.findIndex(item => item.uid === this.vm.uid)
             if (idx === -1) {
-                baseInject.allVms.push(this.vm)
+                this.allVms.push(this.vm)
             }
         }
     }
@@ -114,10 +119,10 @@ export class FormFactory {
      * 除去记录表单vm
      */
     delVm() {
-        if (baseInject && baseInject.allVms) {
-            let idx = baseInject.allVms.findIndex(item => item.uid === this.vm.uid)
+        if (this.allVms) {
+            let idx = this.allVms.findIndex(item => item.uid === this.vm.uid)
             if (idx > -1) {
-                baseInject.allVms.splice(idx, 1)
+                this.allVms.splice(idx, 1)
             }
         }
     }
@@ -131,7 +136,7 @@ export class FormFactory {
         return [
             h(tagCacheComponents[config.defaultName.form] as any, {
                 ref: FormFactory.formRefsName,
-                model: modelValue,
+                model: this.modelValue,
                 ...this.option?.form,
             }, {
                 default: () => this.rules.map(item => item.render())

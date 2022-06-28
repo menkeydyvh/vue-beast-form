@@ -1,16 +1,21 @@
-import { h, unref, reactive, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
-import { baseInject, modelValue } from './form'
+import { h, unref, reactive, getCurrentInstance, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
+import { baseInject } from './form'
 import type Api from './api'
-import type { VNodeTypes } from 'vue'
+import type { VNodeTypes, ComponentInternalInstance } from 'vue'
+import type { ModelValueType } from './form'
 import type { RuleType, EmitType } from '../types'
 import { onToPropsName, propsToOnName } from '../tool'
 import { deepCopy } from '../tool'
 
 export class RuleFactory {
 
+    public vm: ComponentInternalInstance
+
     public rule: RuleType
 
     public api: Api
+
+    public modelValue: ModelValueType
 
     /**
      * 有v-model的时候这个值会有数据
@@ -32,8 +37,10 @@ export class RuleFactory {
 
     static onChangeField: (field: string, value: any) => void
 
-    constructor(rule: RuleType, api: Api) {
+    constructor(rule: RuleType, modelValue: any, api: Api) {
+        this.vm = getCurrentInstance()
         this.rule = rule;
+        this.modelValue = modelValue;
         this.api = api;
 
         this.display = this.rule.display
@@ -121,8 +128,8 @@ export class RuleFactory {
 
         let data: any
         if (this._config.modelKeys.length === 1) {
-            if (modelValue?.[this.field] !== undefined) {
-                data = modelValue[this.field]
+            if (this.modelValue?.[this.field] !== undefined) {
+                data = this.modelValue[this.field]
             } else if (this.rule?.value !== undefined) {
                 data = this.rule.value
             } else if (this.rule?.props?.[this._config.modelKeys[0]] !== undefined) {
@@ -137,8 +144,8 @@ export class RuleFactory {
         } else {
             data = {}
             this._config.modelKeys.forEach((key, keyIdx) => {
-                if (modelValue?.[this.field]?.[key] !== undefined) {
-                    data = modelValue[this.field][key]
+                if (this.modelValue?.[this.field]?.[key] !== undefined) {
+                    data = this.modelValue[this.field][key]
                 } else if (this.rule?.value !== undefined) {
                     data[key] = this.rule.value[key]
                 } else if (this.rule?.props?.[key] !== undefined) {
@@ -153,8 +160,8 @@ export class RuleFactory {
             })
         }
 
-        if (!Object.keys(modelValue).includes(this.field)) {
-            modelValue[this.field] = data
+        if (!Object.keys(this.modelValue).includes(this.field)) {
+            this.modelValue[this.field] = data
         }
     }
 
@@ -162,7 +169,7 @@ export class RuleFactory {
         const tag = baseInject.tagCacheComponents[this.rule.type] as any,
             props = {
                 ...this.rule.props,
-                disabled: unref(baseInject.baseVm.props.disabled as boolean) === true || this.rule.props?.disabled === true
+                disabled: unref(this.vm.props.disabled as boolean) === true || this.rule.props?.disabled === true
             }
 
         if (typeof tag === "string") {
@@ -226,7 +233,7 @@ export class RuleFactory {
             }
         }
 
-        modelValue[this.field] = this.getValue()
+        this.modelValue[this.field] = this.getValue()
         if (RuleFactory.onChangeField) {
             RuleFactory.onChangeField(this.field, this.getValue())
         }
@@ -261,7 +268,7 @@ export class RuleFactory {
      */
     addChildren(rule: RuleType | string, index?: number) {
         const startIndex = index === undefined || index === null ? this.children.length : index
-        this.children.splice(startIndex, 0, typeof rule === "string" ? rule : new RuleFactory(rule, this.api))
+        this.children.splice(startIndex, 0, typeof rule === "string" ? rule : new RuleFactory(rule, this.modelValue, this.api))
     }
 
     /**
@@ -282,9 +289,9 @@ export class RuleFactory {
         const self = this;
         this.props[onToPropsName(event)] = function () {
             if (callback) {
-                callback(...arguments, this.api)
+                callback(...arguments, self.api)
             } else {
-                self.rule.on[event](...arguments, this.api)
+                self.rule.on[event](...arguments, self.api)
             }
         }
     }
@@ -295,8 +302,9 @@ export class RuleFactory {
      */
     addEmit(eType: EmitType) {
         if (eType) {
+            const self = this;
             this.props[onToPropsName(eType.event)] = function () {
-                baseInject.baseVm.emit(eType.alias, ...arguments, this.api)
+                self.vm.emit(eType.alias, ...arguments, self.api)
             }
         }
     }
@@ -320,7 +328,7 @@ export class RuleFactory {
      * @returns 
      */
     listenRuleOnAndEmits() {
-        const self = this, listens: {
+        const listens: {
             source: "on" | "emits"
             event: string
         }[] = [];
@@ -351,7 +359,7 @@ export class RuleFactory {
             if (item.source === "on") {
                 this.addOn(item.event)
             } else if (item.source === "emits") {
-                const emitItem = self.rule.emits.find(emit => emit.event === item.event)
+                const emitItem = this.rule.emits.find(emit => emit.event === item.event)
                 this.addEmit(emitItem)
             }
         })
@@ -373,12 +381,12 @@ export class RuleFactory {
                 self.setValue(arguments[0], key)
                 const onName = propsToOnName(self._config.modelKeyEvents[index]);
                 if (self.rule?.on?.[onName]) {
-                    self.rule.on[onName](...arguments, this.api)
+                    self.rule.on[onName](...arguments, self.api)
                 }
                 if (self.rule?.emits) {
                     const emitItem = self.rule.emits.find(item => item.event === onName)
                     if (emitItem) {
-                        baseInject.baseVm.emit(emitItem.alias, ...arguments, this.api)
+                        self.vm.emit(emitItem.alias, ...arguments, self.api)
                     }
                 }
             }
@@ -478,7 +486,7 @@ export class RuleFactory {
         if (typeof this.rule.title === "string") {
             return;
         }
-        const titleRender = new RuleFactory(this.rule.title, this.api)
+        const titleRender = new RuleFactory(this.rule.title, this.modelValue, this.api)
         return titleRender.render()
     }
 

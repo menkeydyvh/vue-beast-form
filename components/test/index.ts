@@ -1,7 +1,5 @@
 import { defineComponent, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { FormFactory, modelValue } from './form'
-import { RuleFactory } from './rule'
-import type Api from './api'
+import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
@@ -17,7 +15,7 @@ export default function factory() {
         components: {},
         directives: {},
         props: {
-            api: { type: Object as PropType<Api> },
+            api: { type: Object },
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
             option: { type: Object as PropType<PropsOptionType> },
@@ -36,18 +34,12 @@ export default function factory() {
             })
 
             nextTick(() => {
-
-                RuleFactory.onChangeField = function (field, value) {
-                    emit("changeField", field, value)
-                }
-
-                console.log(modelValue)
-                // emit("update:api", FormFactory.api)
-                emit("update:modelValue", modelValue)
+                emit("update:api", rf.api)
+                emit("update:modelValue", rf.modelValue)
             })
-            
-            watch(modelValue, () => {
-                emit("update:modelValue", modelValue)
+
+            watch(rf.modelValue, () => {
+                emit("update:modelValue", rf.modelValue)
             }, { deep: true })
 
             return () => rf.render()

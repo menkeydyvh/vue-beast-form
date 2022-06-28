@@ -77,6 +77,7 @@ export default defineComponent({
                 children: ["设置1"],
                 on: {
                   click: (e, api) => {
+                    debugger;
                     api.setValue("name", "1");
                   },
                 },
@@ -88,6 +89,7 @@ export default defineComponent({
     ];
 
     const onAdd = () => {
+      debugger;
       rule.value.push({
         type: "div",
         children: ["onAdd设置"],
