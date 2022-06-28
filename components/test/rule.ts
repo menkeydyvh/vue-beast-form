@@ -35,8 +35,6 @@ export class RuleFactory {
         modelKeyDefaultValues: any[]
     }
 
-    static onChangeField: (field: string, value: any) => void
-
     constructor(rule: RuleType, modelValue: any, api: Api) {
         this.vm = getCurrentInstance()
         this.rule = rule;
@@ -63,7 +61,7 @@ export class RuleFactory {
         if (typeof rdc === "object") {
             const config = baseInject.config, rdcName = rdc.name;
             let modelKeys: string[] = [], modelKeyEvents = [], modelKeyDefaultValues = [], rdcPropsKey = rdc.props ? Object.keys(rdc.props || {}) : [];
-
+            // v-model配置
             if (this.rule.vModelKey) {
                 if (Array.isArray(this.rule.vModelKey)) {
                     modelKeys = this.rule.vModelKey
@@ -87,6 +85,7 @@ export class RuleFactory {
             // 过滤验证 确认这个key在这个props里
             modelKeys = modelKeys.filter(item => rdcPropsKey.includes(item))
             if (modelKeys.length) {
+                // 事件配置
                 const confRdcEvent = config.formDataComponentChangeKeyEvent[rdcName]
                 if (confRdcEvent) {
                     if (Array.isArray(confRdcEvent)) {
@@ -98,8 +97,18 @@ export class RuleFactory {
                 if (modelKeyEvents.length === 0) {
                     modelKeyEvents = modelKeys.map(item => `onUpdate:${item}`)
                 }
+
+                // 默认空值配置
+                if (this.rule.vModelKeyDefaultValue) {
+                    if (Array.isArray(this.rule.vModelKeyDefaultValue)) {
+                        modelKeyDefaultValues = this.rule.vModelKeyDefaultValue
+                    } else {
+                        modelKeyDefaultValues.push(this.rule.vModelKeyDefaultValue)
+                    }
+                }
+
                 const confRdcDValue = config.formDataComponentDefaultValue[rdcName]
-                if (confRdcDValue) {
+                if (modelKeyDefaultValues.length === 0 && confRdcDValue) {
                     if (Array.isArray(confRdcDValue)) {
                         modelKeyDefaultValues = confRdcDValue
                     } else {
@@ -145,7 +154,7 @@ export class RuleFactory {
             data = {}
             this._config.modelKeys.forEach((key, keyIdx) => {
                 if (this.modelValue?.[this.field]?.[key] !== undefined) {
-                    data = this.modelValue[this.field][key]
+                    data[key] = this.modelValue[this.field][key]
                 } else if (this.rule?.value !== undefined) {
                     data[key] = this.rule.value[key]
                 } else if (this.rule?.props?.[key] !== undefined) {
@@ -169,13 +178,13 @@ export class RuleFactory {
         const tag = baseInject.tagCacheComponents[this.rule.type] as any,
             props = {
                 ...this.rule.props,
-                disabled: unref(this.vm.props.disabled as boolean) === true || this.rule.props?.disabled === true
+                disabled: unref(this.vm?.props?.disabled as boolean) === true || this.rule.props?.disabled === true
             }
 
         if (typeof tag === "string") {
             delete props.disabled
         } else {
-            if (!Object.keys(tag.props).includes("disabled")) {
+            if (!tag.props || !Object.keys(tag.props).includes("disabled")) {
                 delete props.disabled
             }
         }
@@ -234,9 +243,8 @@ export class RuleFactory {
         }
 
         this.modelValue[this.field] = this.getValue()
-        if (RuleFactory.onChangeField) {
-            RuleFactory.onChangeField(this.field, this.getValue())
-        }
+
+        this.vm.emit('changeField', this.field, this.getValue(), this.api)
     }
 
     getValue(key?: string) {
@@ -267,8 +275,10 @@ export class RuleFactory {
      * @param index 
      */
     addChildren(rule: RuleType | string, index?: number) {
-        const startIndex = index === undefined || index === null ? this.children.length : index
-        this.children.splice(startIndex, 0, typeof rule === "string" ? rule : new RuleFactory(rule, this.modelValue, this.api))
+        if (rule) {
+            const startIndex = index === undefined || index === null ? this.children.length : index
+            this.children.splice(startIndex, 0, typeof rule === "object" ? new RuleFactory(rule, this.modelValue, this.api) : rule)
+        }
     }
 
     /**
@@ -518,9 +528,10 @@ export class RuleFactory {
             }
             props[config.defaultName.formItemPropRules] = this.rule.validate
         }
+
         if (typeof this.rule.title === 'string') {
             props[config.defaultName.formItemPropLabel] = this.rule.title;
-        } else {
+        } else if (typeof this.rule.title === 'object') {
             slot[config.defaultName.formItemSlotTitle] = () => this.renderTitle()
         }
 

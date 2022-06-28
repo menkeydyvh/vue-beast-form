@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { defineComponent, toRefs, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
@@ -22,11 +22,13 @@ export default function factory() {
             disabled: { type: Boolean },
         },
         emits,
-        setup(_, { emit }) {
+        setup(props, { emit }) {
+            const { modelValue } = toRefs(props)
             const rf = new FormFactory()
 
             onMounted(() => {
                 rf.addVm()
+
             });
 
             onBeforeUnmount(() => {
@@ -37,6 +39,12 @@ export default function factory() {
                 emit("update:api", rf.api)
                 emit("update:modelValue", rf.modelValue)
             })
+
+            if (!(modelValue.value === undefined || modelValue.value === null)) {
+                watch(modelValue, () => {
+                    rf.updateModelValue(modelValue.value)
+                }, { deep: true })
+            }
 
             watch(rf.modelValue, () => {
                 emit("update:modelValue", rf.modelValue)

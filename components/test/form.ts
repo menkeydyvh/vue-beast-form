@@ -23,14 +23,10 @@ export var baseInject: BaseInjectType
 /**
  * TODO:
  * 补充element ui 和 iview ui的支持配置
- * props.disabled 的修改不重绘整个组件？
  * 支持国际化
  * 注意设置值的时候，如果是对象，需要处理
  * 
  * 还是需要计入form的层级结构
- * 
- * 测试事件
- * 还有一些api没实现
  */
 export default class FormFactory {
 
@@ -40,7 +36,7 @@ export default class FormFactory {
 
     public option: PropsOptionType
 
-    public rules: RuleFactory[]
+    public rules: RuleFactory[] = []
 
     public api: Api
 
@@ -72,21 +68,10 @@ export default class FormFactory {
 
         this.api = new Api()
 
-
-        this.option = unref(this.vm.props.option as PropsOptionType)
-        if (!this.option?.form) {
-            const baseVmOption = this.baseVm.props?.option as PropsOptionType
-            this.option = reactive({
-                isForm: baseVmOption?.isForm,
-                form: baseVmOption?.form
-            })
-        }
+        this.initOption()
 
         this.modelValue = reactive({ ...unref(this.vm.props.modelValue as any) })
 
-        this.rules = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api))
-
-        this.api.setRfs(this.rules)
         this.api.setModelValue(this.modelValue)
         this.api.setAllVms(this.allVms);
     }
@@ -99,7 +84,27 @@ export default class FormFactory {
         }
         if (config.defaultName.formItem) {
             tagCacheComponents[config.defaultName.formItem] = resolveDynamicComponent(config.defaultName.formItem)
+        }
+    }
 
+    initOption() {
+        this.option = unref(this.vm.props.option as PropsOptionType)
+        if (!this.option?.form) {
+            const baseVmOption = this.baseVm.props?.option as PropsOptionType
+            this.option = reactive({
+                isForm: baseVmOption?.isForm,
+                form: baseVmOption?.form
+            })
+        }
+    }
+
+    updateModelValue(modelValue: ModelValueType) {
+        if (modelValue) {
+            for (let key in modelValue) {
+                if (this.modelValue[key] !== modelValue[key]) {
+                    this.api.setValue(key, modelValue[key])
+                }
+            }
         }
     }
 
@@ -127,6 +132,12 @@ export default class FormFactory {
         }
     }
 
+    renderRule() {
+        this.rules = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api))
+        this.api.setRfs(this.rules)
+        return this.rules.map(item => item.render())
+    }
+
     /**
      * 渲染form
      * @returns 
@@ -139,7 +150,7 @@ export default class FormFactory {
                 model: this.modelValue,
                 ...this.option?.form,
             }, {
-                default: () => this.rules.map(item => item.render())
+                default: () => this.renderRule()
             })
         ]
     }
@@ -150,7 +161,7 @@ export default class FormFactory {
      */
     render() {
         if (this.option.isForm === false) {
-            return this.rules.map(item => item.render())
+            return this.renderRule()
         } else {
             return this.renderForm()
         }

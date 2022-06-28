@@ -3,7 +3,6 @@
     <json-layout
       :rule="rule"
       v-model="value"
-      v-model:api="jApi"
       :option="{
         form: {
           layout: 'vertical',
@@ -22,8 +21,7 @@ export default defineComponent({
   components: { JsonLayout },
   setup() {
     const rule = ref<RuleType[]>(),
-      value = ref({}),
-      jApi = ref<ApiFnType>();
+      value = ref({});
 
     rule.value = [
       {
@@ -176,27 +174,28 @@ export default defineComponent({
         type: "a-button",
         props: {
           type: "primary",
-          onClick: () => {
-            jApi.value.validate((valid: boolean) => {
-              console.log(valid, jApi.value.getFormData());
+        },
+        children: ["submit提交"],
+        on: {
+          click: (e, api) => {
+            api.validate((valid, data) => {
+              console.log("validate:", valid, data);
             });
           },
         },
-        children: ["submit提交"],
       },
       {
         type: "a-button",
-        props: {
-          onClick: () => {
-            jApi.value.setValue("drawer", true);
+        children: ["显示抽屉"],
+        on: {
+          click: (e, api) => {
+            api.setValue("drawer", true);
           },
         },
-        children: ["显示抽屉"],
       },
     ];
 
     return {
-      jApi,
       value,
       rule,
     };
