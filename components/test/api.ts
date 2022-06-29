@@ -175,26 +175,13 @@ export default class apiFactory {
     /**
      * 设置attrs
      * @param field 
-     * @param value 
+     * @param attrs
      */
-    setAttrs(field: string, value: {
-        [key: string]: any
-    }) {
+    setAttrs(field: string, attrs: { [key: string]: any }) {
         const rf = this.getRule(field)
         if (rf) {
-            // 严格控制不从attrs 修改props
-            const rfComponent = baseInject.tagCacheComponents[rf.rule.type] as any
-            if (typeof rfComponent === "string") {
-                for (let key in value) {
-                    rf.props[key] = value[key]
-                }
-            } else {
-                const propsKeys = rfComponent.props ? Object.keys(rfComponent.props) : []
-                for (let key in value) {
-                    if (!propsKeys.includes(key)) {
-                        rf.props[key] = value[key]
-                    }
-                }
+            for (let key in attrs) {
+                rf.setAttrs(key, attrs[key])
             }
         }
     }
@@ -207,7 +194,14 @@ export default class apiFactory {
     setProps(field: string, key: string, value: any) {
         const rf = this.getRule(field)
         if (rf) {
-            rf.props[key] = value[key]
+            rf.setProps(key, value)
+        }
+    }
+
+    getProps(field: string) {
+        const rf = this.getRule(field)
+        if (rf) {
+            return rf.props
         }
     }
 
@@ -219,7 +213,7 @@ export default class apiFactory {
     setDisplay(field: string, display: boolean) {
         const rf = this.getRule(field)
         if (rf) {
-            rf.display = display === true
+            rf.display.value = display === true
         }
     }
 
@@ -229,7 +223,10 @@ export default class apiFactory {
      * @param isBool 
      */
     setDisabled(field: string, isBool: boolean) {
-        this.setProps(field, "disabled", isBool === true ? true : undefined)
+        const rf = this.getRule(field)
+        if (rf) {
+            rf.setDisabled(isBool)
+        }
     }
 
     /**

@@ -10,8 +10,8 @@
         },
       }"
       :disabled="disabled"
-      @divBtnClick="divBtnClick"
     />
+    <!-- @divBtnClick="divBtnClick" -->
     <br />
     <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
   </a-card>
@@ -32,7 +32,8 @@ export default defineComponent({
       jApi = ref<ApiFnType>();
 
     let disbaled = false,
-      display = true;
+      display = true,
+      n = 1;
 
     rule.value = [
       {
@@ -132,10 +133,10 @@ export default defineComponent({
             children: [`设置input1 style和class`],
             on: {
               click: (e, api) => {
-                api.setStyle("input1", {
-                  border: "1px solid red",
+                api.setStyle("input2", {
+                  border: `${n++}px solid red`,
                 });
-                api.setClass("input1", ["testClass", "red"]);
+                api.setClass("input2", ["testClass", "red"]);
               },
             },
           },
@@ -146,7 +147,7 @@ export default defineComponent({
               click: (e, api) => {
                 disbaled = !disbaled;
                 api.setDisabled("input2", disbaled);
-                api.setProps("divBtn", "loading", disbaled);
+                api.setProps("divBtn", { loading: disbaled });
               },
             },
           },

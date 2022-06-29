@@ -1,7 +1,7 @@
-import { h, unref, reactive, getCurrentInstance, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
+import { h, reactive, toRef, getCurrentInstance, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
 import { baseInject } from './form'
 import type Api from './api'
-import type { VNodeTypes, ComponentInternalInstance } from 'vue'
+import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
 import type { RuleType, EmitType } from '../types'
 import { onToPropsName, propsToOnName } from '../tool'
@@ -22,9 +22,11 @@ export class RuleFactory {
      */
     public field: string
 
-    public props: any
+    public props = reactive<{
+        [key: string]: any
+    }>({})
 
-    public display: boolean
+    public display: Ref<boolean>
 
     public children: Array<RuleFactory | string> = []
 
@@ -48,7 +50,7 @@ export class RuleFactory {
         this.modelValue = modelValue;
         this.api = api;
 
-        this.display = this.rule.display
+        this.display = toRef(this.rule, "display")
 
         this.initConfigCache()
         this.initProps()
@@ -158,37 +160,37 @@ export class RuleFactory {
     }
 
     initProps() {
-        const tag = baseInject.tagCacheComponents[this.rule.type] as any,
-            props = {
-                ...this.rule.props,
-            }
+        const tag = baseInject.tagCacheComponents[this.rule.type] as any;
+        let tagPropsKeys = []
+        if (typeof tag === 'object' && tag.props) {
+            tagPropsKeys = Object.keys(tag.props)
+        }
 
-        if (this._config.disabled) {
-            props[this._config.disabled] = unref(this.vm?.props?.disabled as boolean) === true || this.rule.props?.disabled === true
-            if (typeof tag === "string") {
-                delete props[this._config.disabled]
-            } else {
-                if (!tag.props || !Object.keys(tag.props).includes(this._config.disabled)) {
-                    delete props[this._config.disabled]
-                }
+        if (this.rule.props) {
+            for (let key in this.rule.props) {
+                this.props[key] = this.rule.props[key]
             }
+        }
+
+        if (this._config.disabled && tagPropsKeys.includes(this._config.disabled)) {
+            this.props[this._config.disabled] = false
         }
 
         if (!(this.rule.title === false || !this.field)) {
             if (this.rule.attrs) {
                 for (let key in this.rule.attrs) {
-                    props[key] = this.rule.attrs[key]
+                    if (!tagPropsKeys.includes(key)) {
+                        this.props[key] = this.rule.attrs[key]
+                    }
                 }
             }
             if (this.rule.style) {
-                props.style = this.rule.style
+                this.props.style = this.rule.style
             }
             if (this.rule.class) {
-                props.class = this.rule.class
+                this.props.class = this.rule.class
             }
         }
-
-        this.props = reactive(props)
 
     }
 
@@ -201,6 +203,35 @@ export class RuleFactory {
     }
 
     // 底下是api相关
+
+    /**
+     * 禁用
+     * @param disabled 
+     */
+    setDisabled(disabled: boolean) {
+        if (this._config.disabled) {
+            if (this.vm.props.disabled === true) {
+                this.setProps(this._config.disabled, true)
+            } else {
+                this.setProps(this._config.disabled, disabled === true)
+            }
+        }
+    }
+
+    setProps(key: string, value: any) {
+        this.props[key] = value
+    }
+
+    setAttrs(key: string, value: any) {
+        const tag = baseInject.tagCacheComponents[this.rule.type] as any;
+        let tagPropsKeys = []
+        if (typeof tag === 'object' && tag.props) {
+            tagPropsKeys = Object.keys(tag.props)
+        }
+        if (!tagPropsKeys.includes(key)) {
+            this.setProps(key, value)
+        }
+    }
 
     /**
      * 修改值
@@ -412,13 +443,9 @@ export class RuleFactory {
     renderChildrenSolt() {
         const rcs = this.children
         if (rcs) {
-            const solt: {
-                [key: string]: Array<VNodeTypes>
-            } = {
+            const solt = {
                 default: []
-            }, result: {
-                [key: string]: () => Array<VNodeTypes>
-            } = {};
+            }, result = {};
             rcs.forEach(rc => {
                 if (typeof rc === "string") {
                     solt.default.push(rc)
@@ -515,7 +542,7 @@ export class RuleFactory {
         }
 
         props[config.defaultName.formItemPropName] = this.rule.field
-        if (this.props.disabled != true && this.rule.validate) {
+        if (this.props[this._config.disabled] !== true && this.rule.validate) {
             if (this.rule.validate.find(item => item.required)) {
                 props.required = true
             }
@@ -536,7 +563,7 @@ export class RuleFactory {
      * @returns 
      */
     render() {
-        if (this.display === false) return;
+        if (this.display.value === false) return;
         return this.renderFormItem() || this.renderType()
     }
 }

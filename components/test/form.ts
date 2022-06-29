@@ -1,4 +1,4 @@
-import { unref, reactive, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
+import { reactive, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
 import { RuleFactory } from './rule'
 import config from '../config'
 import Api from './api'
@@ -70,7 +70,7 @@ export default class FormFactory {
 
         this.initOption()
 
-        this.modelValue = reactive({ ...unref(this.vm.props.modelValue as any) })
+        this.modelValue = reactive({ ...this.vm.props.modelValue as any })
 
         this.api.setModelValue(this.modelValue)
         this.api.setAllVms(this.allVms);
@@ -88,7 +88,7 @@ export default class FormFactory {
     }
 
     initOption() {
-        this.option = unref(this.vm.props.option as PropsOptionType)
+        this.option = this.vm.props.option as PropsOptionType
         if (!this.option?.form) {
             const baseVmOption = this.baseVm.props?.option as PropsOptionType
             this.option = reactive({
@@ -133,7 +133,7 @@ export default class FormFactory {
     }
 
     renderRule() {
-        this.rules = unref(this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api))
+        this.rules = (this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api))
         this.api.setRfs(this.rules)
         return this.rules.map(item => item.render())
     }
