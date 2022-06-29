@@ -330,7 +330,18 @@ export default class apiFactory {
             }
         }
         if (valid) {
-            data = this.getFormData();
+            if (fields) {
+                if (Array.isArray(fields)) {
+                    data = {};
+                    fields.forEach(field => {
+                        data[field] = this.getFormData(field);
+                    })
+                } else {
+                    data = this.getFormData(fields);
+                }
+            } else {
+                data = this.getFormData();
+            }
         }
         callback(valid, data)
     }

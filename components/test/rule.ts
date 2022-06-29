@@ -9,7 +9,7 @@ import { deepCopy } from '../tool'
 
 export class RuleFactory {
 
-    public vm: ComponentInternalInstance
+    public vm: ComponentInternalInstance | any
 
     public rule: RuleType
 
@@ -26,8 +26,9 @@ export class RuleFactory {
 
     public display: boolean
 
-
     public children: Array<RuleFactory | string> = []
+
+    static changeEmits: (action: "add" | "del", name: string) => void
 
     private _config: {
         disabled: string
@@ -297,6 +298,9 @@ export class RuleFactory {
     addEmit(eType: EmitType) {
         if (eType) {
             const self = this;
+            if (RuleFactory.changeEmits) {
+                RuleFactory.changeEmits("add", eType.alias)
+            }
             this.props[onToPropsName(eType.event)] = function () {
                 self.vm.emit(eType.alias, ...arguments, self.api)
             }
@@ -308,7 +312,12 @@ export class RuleFactory {
     * @param event 
     */
     delOnOrEmit(event: string) {
-        let propsEventName = onToPropsName(event)
+        const propsEventName = onToPropsName(event), eType = this.rule.emits.find(item => item.event === event)
+        if (eType) {
+            if (RuleFactory.changeEmits) {
+                RuleFactory.changeEmits("del", eType.alias)
+            }
+        }
         if (typeof this.props[propsEventName] === 'function') {
             delete this.props[propsEventName]
         }

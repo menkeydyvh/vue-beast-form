@@ -21,7 +21,7 @@ import { defineComponent, ref } from "vue";
 import { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
-console.log(JsonLayout)
+console.log(JsonLayout);
 
 export default defineComponent({
   components: { JsonLayout },
@@ -119,92 +119,92 @@ export default defineComponent({
         children: [
           {
             type: "a-button",
-            props: {
-              onClick: () => {
+            children: [`${display ? "隐藏" : "显示"}显示input1`],
+            on: {
+              click: (e, api) => {
                 display = !display;
-                jApi.value.setDisplay("input1", display);
+                api.setDisplay("input1", display);
               },
             },
-            children: [`${display ? "隐藏" : "显示"}显示input1`],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.setStyle("input1", {
+            children: [`设置input1 style和class`],
+            on: {
+              click: (e, api) => {
+                api.setStyle("input1", {
                   border: "1px solid red",
                 });
-                jApi.value.setClass("input1", ["testClass", "red"]);
+                api.setClass("input1", ["testClass", "red"]);
               },
             },
-            children: [`设置input1 style和class`],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                disbaled = !disbaled;
-                jApi.value.setDisabled("input2", disbaled);
-                jApi.value.getProps("divBtn").loading = disbaled;
-              },
-            },
             children: [`${disbaled ? "启用" : "禁用"}按钮和input2`],
-          },
-          {
-            type: "a-button",
-            props: {
-              onClick: () => {
-                // value.value.input1 = '14141';
-                jApi.value.setValue("input1", "123456");
+            on: {
+              click: (e, api) => {
+                disbaled = !disbaled;
+                api.setDisabled("input2", disbaled);
+                api.setProps("divBtn", "loading", disbaled);
               },
             },
-            children: ["设置input1值"],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.validate((valid: boolean) => {
-                  console.log("api.validate()", valid);
+            children: ["设置input1值"],
+            on: {
+              click: (e, api) => {
+                api.setValue("input1", "123456");
+              },
+            },
+          },
+          {
+            type: "a-button",
+            children: ["验证"],
+            on: {
+              click: (e, api) => {
+                api.validate((valid, data) => {
+                  console.log("api.validate()", valid, data);
                 });
               },
             },
-            children: ["验证"],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.clearValidate();
+            children: ["清除验证"],
+            on: {
+              click: (e, api) => {
+                api.clearValidate();
               },
             },
-            children: ["清除验证"],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.validate((valid: boolean) => {
-                  console.log("api.validate('input1')", valid);
+            children: ["验证input1"],
+            on: {
+              click: (e, api) => {
+                api.validate((valid, data) => {
+                  console.log("api.validate('input1')", valid, data);
                 }, "input1");
               },
             },
-            children: ["验证input1"],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.clearValidate("input1");
+            children: ["清除验证input1"],
+            on: {
+              click: (e, api) => {
+                api.clearValidate("input1");
               },
             },
-            children: ["清除验证input1"],
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.pushChildren(
+            children: ["展示按钮添加新按钮"],
+            on: {
+              click: (e, api) => {
+                api.pushChildren(
                   "divbtns",
                   {
                     type: "a-button",
@@ -213,56 +213,45 @@ export default defineComponent({
                   },
                   0
                 );
-                jApi.value.addOn("nBtn", "click", (e, api) => {
+                api.addOn("nBtn", "click", (e, api) => {
                   console.log("新按钮被点击", e, api);
                 });
               },
             },
-            children: ["展示按钮添加新按钮"],
           },
           {
             type: "a-button",
             children: ["展示按钮清除新按钮"],
             on: {
               click: (e, api) => {
-                api.clearChildren("divbtns", 0);
+                api.delChildren("divbtns", 0);
               },
             },
           },
           {
             type: "a-button",
-            children: ["设置subForm的titile"],
-            on: {
-              click: (e: any, f: ApiFnType) => {
-                f.setTitle("subForm", "123");
-                console.log(e);
-              },
-            },
-          },
-          {
-            type: "a-button",
-            props: {
-              onClick: () => {
-                console.log("当前页面 value", value.value);
-                console.log("api.getFormData()", jApi.value.getFormData());
-              },
-            },
             children: ["表单数据"],
+            on: {
+              click: (e, api) => {
+                console.log("当前页面 value", value.value);
+                console.log("api.getFormData()", api.getFormData());
+              },
+            },
           },
           {
             type: "a-button",
-            props: {
-              onClick: () => {
-                jApi.value.clearValue();
+            children: ["清空表单数据"],
+            on: {
+              click: (e, api) => {
+                api.resetFormData();
               },
             },
-            children: ["清空表单数据"],
           },
         ],
       },
     ];
     const divBtnClick = (e, api) => {
-      console.log("divBtnClick", e, api);
+      console.log("divBtnClick:emits", api);
     };
 
     return {
