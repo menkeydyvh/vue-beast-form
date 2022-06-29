@@ -19,6 +19,9 @@ import Group from "./components/group.vue";
 import { JsonLayout } from "../../../components";
 import type { RuleType, FactoryOptionType } from "../../../components/types";
 
+// 导入组件 用法和当前组件的按需引入一样
+JsonLayout.components = { Group };
+
 export default defineComponent({
   components: { JsonLayout },
   setup() {
@@ -26,9 +29,6 @@ export default defineComponent({
       value = ref(),
       jApi = ref();
 
-    // 导入组件 用法和当前组件的按需引入一样
-    JsonLayout.components = { Group };
-    
     rule.value = [
       {
         type: "group",

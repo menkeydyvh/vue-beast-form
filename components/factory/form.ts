@@ -9,7 +9,6 @@ export interface ModelValueType {
     [field: string]: any
 }
 
-
 /**
  * TODO:
  * 补充element ui 和 iview ui的支持配置
@@ -41,10 +40,8 @@ export default class FormFactory {
         if (!globalCache?.config) {
             new LoaderFactory(vm)
         }
-        console.log(vm)
-        this.vm = vm
 
-        LoaderFactory.loaderComponents(vm.components)
+        this.vm = vm
 
         this.baseVm = inject('baseVm', null)
 

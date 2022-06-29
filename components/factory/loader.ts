@@ -1,3 +1,5 @@
+import { resolveDynamicComponent } from "vue"
+import { NAME } from './index'
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
@@ -18,9 +20,11 @@ export class LoaderFactory {
     constructor(vm: ComponentInternalInstance) {
         globalCache.config = new Config(vm)
         globalCache.tagCacheComponents = vm.appContext.components
+        globalCache.tagCacheComponents[NAME] = resolveDynamicComponent(NAME)
     }
 
     static loaderComponents(components: { [key: string]: VNodeTypes }) {
+        debugger;
         if (components) {
             for (let key in components) {
                 globalCache.tagCacheComponents[key] = components[key]

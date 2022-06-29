@@ -4,14 +4,14 @@ import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
+export const NAME = 'JsonLayout'
 
 export default function factory() {
 
-    const name = 'JsonLayout',
-        emits = ["changeField", "update:modelValue", "update:api"];
+    const emits = ["changeField", "update:modelValue", "update:api"];
 
     return defineComponent({
-        name,
+        name: NAME,
         components: {},
         directives: {},
         props: {
