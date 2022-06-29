@@ -27,6 +27,7 @@ export var baseInject: BaseInjectType
  * 注意设置值的时候，如果是对象，需要处理
  * 
  * 还是需要计入form的层级结构
+ * 应该需要加一个disabledKey的处理避免一些组件disabled被占用或者使用readonly来代替
  */
 export default class FormFactory {
 

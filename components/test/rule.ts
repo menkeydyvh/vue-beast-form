@@ -101,7 +101,11 @@ export class RuleFactory {
                 // 默认空值配置
                 if (this.rule.vModelKeyDefaultValue) {
                     if (Array.isArray(this.rule.vModelKeyDefaultValue)) {
-                        modelKeyDefaultValues = this.rule.vModelKeyDefaultValue
+                        if (modelKeys.length === 1) {
+                            modelKeyDefaultValues[0] = this.rule.vModelKeyDefaultValue
+                        } else {
+                            modelKeyDefaultValues = this.rule.vModelKeyDefaultValue
+                        }
                     } else {
                         modelKeyDefaultValues.push(this.rule.vModelKeyDefaultValue)
                     }
@@ -110,7 +114,11 @@ export class RuleFactory {
                 const confRdcDValue = config.formDataComponentDefaultValue[rdcName]
                 if (modelKeyDefaultValues.length === 0 && confRdcDValue) {
                     if (Array.isArray(confRdcDValue)) {
-                        modelKeyDefaultValues = confRdcDValue
+                        if (modelKeys.length === 1) {
+                            modelKeyDefaultValues[0] = confRdcDValue
+                        } else {
+                            modelKeyDefaultValues = confRdcDValue
+                        }
                     } else {
                         modelKeyDefaultValues.push(confRdcDValue)
                     }

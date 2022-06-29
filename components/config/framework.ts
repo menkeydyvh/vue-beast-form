@@ -33,15 +33,15 @@ export const framework = {
             AChecked: 'checked',
             ARadio: 'checked',
             ASwitch: 'checked',
-            ATransfer: ["selectedKeys", "targetKeys"],
+            ATransfer: "targetKeys",
             AUpload: 'fileList',
             AUploadDragger: "fileList",
         },
         formDataComponentDefaultValue: {
-            ATransfer: [[], []],
+            ATransfer: [],
         },
         formDataComponentChangeKeyEvent: {
-            AInputNumber: 'onChange',
+            // AInputNumber: 'onChange',
         }
     }
     // 后续继续加框架
