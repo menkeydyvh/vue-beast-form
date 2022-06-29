@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { JsonLayout, TestJsonLayout } from "../../../components";
+import { JsonLayout } from "../../../components";
 import { ruleStringify, ruleParse } from "../../../components/tool";
 import type { RuleType } from "../../../components/types";
 

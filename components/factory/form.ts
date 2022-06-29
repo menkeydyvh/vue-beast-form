@@ -1,8 +1,7 @@
-import { reactive, toRefs, resolveDynamicComponent, provide, inject, h } from "vue"
+import { reactive, toRefs, provide, inject, h } from "vue"
 import { RuleFactory } from './rule'
-import { globalCache } from './index'
+import { globalCache, LoaderFactory } from './loader'
 import Api from './api'
-import Config from '../config'
 import type { ComponentInternalInstance } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
 
@@ -38,24 +37,25 @@ export default class FormFactory {
     public baseVm: ComponentInternalInstance = null
     public allVms: ComponentInternalInstance[] = []
 
-    constructor(vm: ComponentInternalInstance) {
+    constructor(vm: any) {
         if (!globalCache?.config) {
-            globalCache.config = new Config(vm)
-            this.loaderCacheComponents()
+            new LoaderFactory(vm)
         }
-
+        console.log(vm)
         this.vm = vm
+
+        LoaderFactory.loaderComponents(vm.components)
 
         this.baseVm = inject('baseVm', null)
 
         if (this.baseVm === null) {
-            provide('baseVm', this.vm)
+            provide('baseVm', vm)
             provide('allVms', this.allVms)
         } else {
             this.allVms = inject('allVms');
         }
 
-        this.api = new Api(this.vm)
+        this.api = new Api(vm)
 
         this.api.setAllVms(this.allVms);
 
@@ -69,16 +69,6 @@ export default class FormFactory {
         this.modelValue = reactive({ ...modelValue.value as any })
 
         this.api.setModelValue(this.modelValue)
-    }
-
-    loaderCacheComponents() {
-        const { config, tagCacheComponents } = globalCache;
-        if (config.defaultName.form) {
-            tagCacheComponents[config.defaultName.form] = resolveDynamicComponent(config.defaultName.form)
-        }
-        if (config.defaultName.formItem) {
-            tagCacheComponents[config.defaultName.formItem] = resolveDynamicComponent(config.defaultName.formItem)
-        }
     }
 
     initRule() {
@@ -142,9 +132,9 @@ export default class FormFactory {
      * @returns 
      */
     renderForm() {
-        const { config, tagCacheComponents } = globalCache;
+        const { config } = globalCache;
         return [
-            h(tagCacheComponents[config.defaultName.form] as any, {
+            h(LoaderFactory.getComponents(config.defaultName.form) as any, {
                 ref: FormFactory.formRefsName,
                 model: this.modelValue,
                 ...this.option?.form,

@@ -1,5 +1,5 @@
-import { h, reactive, toRef, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
-import { globalCache } from './index'
+import { h, reactive, toRef, resolveDirective, withDirectives } from 'vue'
+import { globalCache, LoaderFactory } from './loader'
 import type Api from './api'
 import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
@@ -58,13 +58,13 @@ export class RuleFactory {
         this.initChildre()
     }
 
+    private getTag() {
+        return LoaderFactory.getComponents(this.rule.type) as any
+    }
 
     initConfigCache() {
-        if (!globalCache.tagCacheComponents[this.rule.type]) {
-            globalCache.tagCacheComponents[this.rule.type] = resolveDynamicComponent(this.rule.type)
-        }
 
-        let rdc = globalCache.tagCacheComponents[this.rule.type] as any
+        let rdc = this.getTag()
 
         if (typeof rdc === "object") {
             const config = globalCache.config, rdcName = rdc.name;
@@ -159,7 +159,7 @@ export class RuleFactory {
     }
 
     initProps() {
-        const tag = globalCache.tagCacheComponents[this.rule.type] as any;
+        const tag = this.getTag();
         let tagPropsKeys = []
         if (typeof tag === 'object' && tag.props) {
             tagPropsKeys = Object.keys(tag.props)
@@ -222,7 +222,7 @@ export class RuleFactory {
     }
 
     setAttrs(key: string, value: any) {
-        const tag = globalCache.tagCacheComponents[this.rule.type] as any;
+        const tag = this.getTag();
         let tagPropsKeys = []
         if (typeof tag === 'object' && tag.props) {
             tagPropsKeys = Object.keys(tag.props)
@@ -489,7 +489,7 @@ export class RuleFactory {
     renderType() {
         return this.renderDirectives(
             h(
-                globalCache.tagCacheComponents[this.rule.type] as any,
+                this.getTag(),
                 this.props,
                 this.renderChildrenSolt()
             )
@@ -546,7 +546,7 @@ export class RuleFactory {
             slot[config.defaultName.formItemSlotTitle] = () => this.renderTitle()
         }
 
-        return h(globalCache.tagCacheComponents[config.defaultName.formItem] as any, props, slot)
+        return h(LoaderFactory.getComponents(config.defaultName.formItem) as any, props, slot)
     }
 
     /**

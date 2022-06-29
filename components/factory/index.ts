@@ -1,21 +1,8 @@
 import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import FormFactory from './form'
 // import { RuleFactory } from './rule'
-import type config from '../config'
-import type { PropType, VNodeTypes } from 'vue'
+import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
-
-
-export const globalCache: {
-    //渲染组件缓存
-    tagCacheComponents: {
-        [ruleType: string]: VNodeTypes
-    }
-    config: config
-} = {
-    tagCacheComponents: {},
-    config: null
-}
 
 
 export default function factory() {
