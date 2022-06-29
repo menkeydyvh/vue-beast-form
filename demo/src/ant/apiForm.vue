@@ -147,7 +147,7 @@ export default defineComponent({
               click: (e, api) => {
                 disbaled = !disbaled;
                 api.setDisabled("input2", disbaled);
-                api.setProps("divBtn", { loading: disbaled });
+                api.setProps("divBtn", "loading", disbaled);
               },
             },
           },

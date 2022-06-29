@@ -89,7 +89,7 @@ export default defineComponent({
     ];
 
     const onAdd = () => {
-      debugger;
+      console.log("add");
       rule.value.push({
         type: "div",
         children: ["onAdd设置"],

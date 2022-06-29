@@ -1,5 +1,5 @@
-import { h, reactive, toRef, getCurrentInstance, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
-import { baseInject } from './form'
+import { h, reactive, toRef, resolveDynamicComponent, resolveDirective, withDirectives } from 'vue'
+import { globalCache } from './index'
 import type Api from './api'
 import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
@@ -22,15 +22,13 @@ export class RuleFactory {
      */
     public field: string
 
-    public props = reactive<{
+    public props: {
         [key: string]: any
-    }>({})
+    }
 
     public display: Ref<boolean>
 
     public children: Array<RuleFactory | string> = []
-
-    static changeEmits: (action: "add" | "del", name: string) => void
 
     private _config: {
         disabled: string
@@ -44,11 +42,12 @@ export class RuleFactory {
             modelKeyDefaultValues: [],
         }
 
-    constructor(rule: RuleType, modelValue: any, api: Api) {
-        this.vm = getCurrentInstance()
+    constructor(rule: RuleType, modelValue: any, api: Api, vm: ComponentInternalInstance) {
+        this.vm = vm
         this.rule = rule;
         this.modelValue = modelValue;
         this.api = api;
+        this.props = reactive({})
 
         this.display = toRef(this.rule, "display")
 
@@ -61,14 +60,14 @@ export class RuleFactory {
 
 
     initConfigCache() {
-        if (!baseInject.tagCacheComponents[this.rule.type]) {
-            baseInject.tagCacheComponents[this.rule.type] = resolveDynamicComponent(this.rule.type)
+        if (!globalCache.tagCacheComponents[this.rule.type]) {
+            globalCache.tagCacheComponents[this.rule.type] = resolveDynamicComponent(this.rule.type)
         }
 
-        let rdc = baseInject.tagCacheComponents[this.rule.type] as any
+        let rdc = globalCache.tagCacheComponents[this.rule.type] as any
 
         if (typeof rdc === "object") {
-            const config = baseInject.config, rdcName = rdc.name;
+            const config = globalCache.config, rdcName = rdc.name;
             // disabled
             this._config.disabled = config.getComponentDisabled(rdcName)
 
@@ -160,7 +159,7 @@ export class RuleFactory {
     }
 
     initProps() {
-        const tag = baseInject.tagCacheComponents[this.rule.type] as any;
+        const tag = globalCache.tagCacheComponents[this.rule.type] as any;
         let tagPropsKeys = []
         if (typeof tag === 'object' && tag.props) {
             tagPropsKeys = Object.keys(tag.props)
@@ -223,7 +222,7 @@ export class RuleFactory {
     }
 
     setAttrs(key: string, value: any) {
-        const tag = baseInject.tagCacheComponents[this.rule.type] as any;
+        const tag = globalCache.tagCacheComponents[this.rule.type] as any;
         let tagPropsKeys = []
         if (typeof tag === 'object' && tag.props) {
             tagPropsKeys = Object.keys(tag.props)
@@ -293,7 +292,7 @@ export class RuleFactory {
     addChildren(rule: RuleType | string, index?: number) {
         if (rule) {
             const startIndex = index === undefined || index === null ? this.children.length : index
-            this.children.splice(startIndex, 0, typeof rule === "object" ? new RuleFactory(rule, this.modelValue, this.api) : rule)
+            this.children.splice(startIndex, 0, typeof rule === "object" ? new RuleFactory(rule, this.modelValue, this.api, this.vm) : rule)
         }
     }
 
@@ -329,9 +328,6 @@ export class RuleFactory {
     addEmit(eType: EmitType) {
         if (eType) {
             const self = this;
-            if (RuleFactory.changeEmits) {
-                RuleFactory.changeEmits("add", eType.alias)
-            }
             this.props[onToPropsName(eType.event)] = function () {
                 self.vm.emit(eType.alias, ...arguments, self.api)
             }
@@ -343,12 +339,7 @@ export class RuleFactory {
     * @param event 
     */
     delOnOrEmit(event: string) {
-        const propsEventName = onToPropsName(event), eType = this.rule.emits.find(item => item.event === event)
-        if (eType) {
-            if (RuleFactory.changeEmits) {
-                RuleFactory.changeEmits("del", eType.alias)
-            }
-        }
+        const propsEventName = onToPropsName(event)
         if (typeof this.props[propsEventName] === 'function') {
             delete this.props[propsEventName]
         }
@@ -498,7 +489,7 @@ export class RuleFactory {
     renderType() {
         return this.renderDirectives(
             h(
-                baseInject.tagCacheComponents[this.rule.type] as any,
+                globalCache.tagCacheComponents[this.rule.type] as any,
                 this.props,
                 this.renderChildrenSolt()
             )
@@ -516,7 +507,7 @@ export class RuleFactory {
         if (typeof this.rule.title === "string") {
             return;
         }
-        const titleRender = new RuleFactory(this.rule.title, this.modelValue, this.api)
+        const titleRender = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
         return titleRender.render()
     }
 
@@ -531,7 +522,7 @@ export class RuleFactory {
         if (this.rule.title === false) {
             return
         }
-        const config = baseInject.config, props = { ...this.rule.attrs }, slot = {
+        const config = globalCache.config, props = { ...this.rule.attrs }, slot = {
             default: () => this.renderType()
         };
         if (this.rule.class) {
@@ -555,7 +546,7 @@ export class RuleFactory {
             slot[config.defaultName.formItemSlotTitle] = () => this.renderTitle()
         }
 
-        return h(baseInject.tagCacheComponents[config.defaultName.formItem] as any, props, slot)
+        return h(globalCache.tagCacheComponents[config.defaultName.formItem] as any, props, slot)
     }
 
     /**

@@ -1,10 +1,9 @@
-import { getCurrentInstance } from "vue"
-import FormFactory, { baseInject } from "./form"
+import { globalCache } from "./index"
+import FormFactory from "./form"
 import type { ModelValueType } from "./form"
 import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'
 import type { RuleType, EmitType } from '../types'
-
 
 /**
  * 
@@ -34,7 +33,6 @@ const searchLoop = (
     })
 }
 
-
 /**
     * 表单验证表单字段验证
     * @param formEvent 
@@ -44,7 +42,7 @@ const searchLoop = (
 const formValidate = async (formEvent: any, fields?: string | string[]) => {
     if (formEvent) {
         try {
-            await formEvent[baseInject.config.defaultName.formEventValidate](fields)
+            await formEvent[globalCache.config.defaultName.formEventValidate](fields)
         } catch (error) {
             return false;
         }
@@ -59,7 +57,7 @@ const formValidate = async (formEvent: any, fields?: string | string[]) => {
     */
 const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
     if (formEvent) {
-        formEvent[baseInject.config.defaultName.formEventClearValidate](fields)
+        formEvent[globalCache.config.defaultName.formEventClearValidate](fields)
     }
 }
 
@@ -73,8 +71,8 @@ export default class apiFactory {
 
     private allVms: ComponentInternalInstance[]
 
-    constructor() {
-        this.vm = getCurrentInstance()
+    constructor(vm: ComponentInternalInstance) {
+        this.vm = vm
     }
 
     /**

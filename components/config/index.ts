@@ -1,11 +1,13 @@
-import { getCurrentInstance } from 'vue'
 import { framework } from './framework'
 import type { DefaultName, ConfigOptionsType } from '../types'
+import type { ComponentInternalInstance } from "vue"
 
 /**
  * 支持组件多情况配置
  */
 export default class config {
+
+    public vm: ComponentInternalInstance
     /**
      * form 组件名称相关定义
      */
@@ -45,7 +47,8 @@ export default class config {
             default: 'disabled'
         }
 
-    constructor(option?: ConfigOptionsType) {
+    constructor(vm: ComponentInternalInstance, option?: ConfigOptionsType) {
+        this.vm = vm
         if (option) {
             this.initConfig(option)
         } else {
@@ -57,7 +60,7 @@ export default class config {
      * 初始化全局配置
      */
     initGlobalConfig() {
-        const globalConfig = getCurrentInstance().appContext.config.globalProperties.$jsonLayout as ConfigOptionsType
+        const globalConfig = this.vm.appContext.config.globalProperties.$jsonLayout as ConfigOptionsType
         if (!globalConfig) {
             console.error("error: You need set app.config.globalProperties.$jsonLayout")
             return

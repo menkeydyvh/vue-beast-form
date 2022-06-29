@@ -1,24 +1,15 @@
-import { reactive, getCurrentInstance, resolveDynamicComponent, provide, inject, h } from "vue"
+import { reactive, toRefs, resolveDynamicComponent, provide, inject, h } from "vue"
 import { RuleFactory } from './rule'
-import config from '../config'
+import { globalCache } from './index'
 import Api from './api'
-import type ConfigType from '../config'
-import type { ComponentInternalInstance, VNodeTypes } from "vue"
+import Config from '../config'
+import type { ComponentInternalInstance } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
-
-interface BaseInjectType {
-    //渲染组件缓存
-    tagCacheComponents: {
-        [ruleType: string]: VNodeTypes
-    }
-    config: ConfigType
-}
 
 export interface ModelValueType {
     [field: string]: any
 }
 
-export var baseInject: BaseInjectType
 
 /**
  * TODO:
@@ -27,6 +18,7 @@ export var baseInject: BaseInjectType
  * 注意设置值的时候，如果是对象，需要处理
  * 
  * 还是需要计入form的层级结构
+ * props.rule变化时候需要重载处理
  */
 export default class FormFactory {
 
@@ -46,16 +38,13 @@ export default class FormFactory {
     public baseVm: ComponentInternalInstance = null
     public allVms: ComponentInternalInstance[] = []
 
-    constructor() {
-        if (!baseInject) {
-            baseInject = {
-                tagCacheComponents: {},
-                config: new config(),
-            }
-            this.initTagCacheComponents()
+    constructor(vm: ComponentInternalInstance) {
+        if (!globalCache?.config) {
+            globalCache.config = new Config(vm)
+            this.loaderCacheComponents()
         }
 
-        this.vm = getCurrentInstance()
+        this.vm = vm
 
         this.baseVm = inject('baseVm', null)
 
@@ -66,29 +55,41 @@ export default class FormFactory {
             this.allVms = inject('allVms');
         }
 
-        this.api = new Api()
+        this.api = new Api(this.vm)
+
+        this.api.setAllVms(this.allVms);
 
         this.initOption()
-
-        this.modelValue = reactive({ ...this.vm.props.modelValue as any })
-
-        this.api.setModelValue(this.modelValue)
-        this.api.setAllVms(this.allVms);
+        this.initModelValue()
+        this.initRule()
     }
 
-    initTagCacheComponents() {
-        const { config, tagCacheComponents } = baseInject;
+    initModelValue() {
+        const { modelValue } = toRefs(this.vm.props)
+        this.modelValue = reactive({ ...modelValue.value as any })
+
+        this.api.setModelValue(this.modelValue)
+    }
+
+    loaderCacheComponents() {
+        const { config, tagCacheComponents } = globalCache;
         if (config.defaultName.form) {
             tagCacheComponents[config.defaultName.form] = resolveDynamicComponent(config.defaultName.form)
-
         }
         if (config.defaultName.formItem) {
             tagCacheComponents[config.defaultName.formItem] = resolveDynamicComponent(config.defaultName.formItem)
         }
     }
 
+    initRule() {
+        const { rule } = toRefs(this.vm.props)
+        this.rules = (rule.value as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api, this.vm))
+        this.api.setRfs(this.rules)
+    }
+
     initOption() {
-        this.option = this.vm.props.option as PropsOptionType
+        const { option } = toRefs(this.vm.props)
+        this.option = option.value as PropsOptionType
         if (!this.option?.form) {
             const baseVmOption = this.baseVm.props?.option as PropsOptionType
             this.option = reactive({
@@ -133,8 +134,6 @@ export default class FormFactory {
     }
 
     renderRule() {
-        this.rules = (this.vm.props.rule as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api))
-        this.api.setRfs(this.rules)
         return this.rules.map(item => item.render())
     }
 
@@ -143,7 +142,7 @@ export default class FormFactory {
      * @returns 
      */
     renderForm() {
-        const { config, tagCacheComponents } = baseInject;
+        const { config, tagCacheComponents } = globalCache;
         return [
             h(tagCacheComponents[config.defaultName.form] as any, {
                 ref: FormFactory.formRefsName,
