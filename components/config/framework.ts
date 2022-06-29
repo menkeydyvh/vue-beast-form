@@ -40,9 +40,11 @@ export const framework = {
         formDataComponentDefaultValue: {
             ATransfer: [],
         },
-        formDataComponentChangeKeyEvent: {
-            // AInputNumber: 'onChange',
-        }
+        formDataComponentChangeKeyEvent: {},
+        formDataComponentDisabled: {
+            ACollapsePanel: ""
+        },
+
     }
     // 后续继续加框架
 }

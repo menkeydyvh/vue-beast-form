@@ -1,6 +1,6 @@
 import { getCurrentInstance } from 'vue'
-import type { DefaultName, ConfigOptionsType } from '../types'
 import { framework } from './framework'
+import type { DefaultName, ConfigOptionsType } from '../types'
 
 /**
  * 支持组件多情况配置
@@ -36,6 +36,15 @@ export default class config {
         [ComponentName: string]: string | string[];
     } = {}
 
+    /**
+  * 表单组件定义 v-model 的 :key
+  */
+    public formDataComponentDisabled: {
+        [ComponentName: string]: string;
+    } = {
+            default: 'disabled'
+        }
+
     constructor(option?: ConfigOptionsType) {
         if (option) {
             this.initConfig(option)
@@ -68,10 +77,9 @@ export default class config {
 
         if (option.base) {
             if (framework[option.base]) {
-                this.setKeyValue("defaultName", framework[option.base].defaultName)
-                this.setKeyValue("formDataComponentKey", framework[option.base].formDataComponentKey)
-                this.setKeyValue("formDataComponentDefaultValue", framework[option.base].formDataComponentDefaultValue)
-                this.setKeyValue("formDataComponentChangeKeyEvent", framework[option.base].formDataComponentChangeKeyEvent)
+                for (let key in framework[option.base]) {
+                    this.setKeyValue(key, framework[option.base][key])
+                }
             }
         }
         if (option.frameworks) {
@@ -81,9 +89,11 @@ export default class config {
                         option.base = item
                         this.setKeyValue("defaultName", framework[item].defaultName)
                     }
-                    this.setKeyValue("formDataComponentKey", framework[item].formDataComponentKey)
-                    this.setKeyValue("formDataComponentDefaultValue", framework[item].formDataComponentDefaultValue)
-                    this.setKeyValue("formDataComponentChangeKeyEvent", framework[item].formDataComponentChangeKeyEvent)
+                    for (let key in framework[item]) {
+                        if (key != "defaultName") {
+                            this.setKeyValue(key, framework[item][key])
+                        }
+                    }
                 }
             })
         }
@@ -103,20 +113,90 @@ export default class config {
         if (option.formDataComponentChangeKeyEvent) {
             this.setKeyValue("formDataComponentChangeKeyEvent", option.formDataComponentChangeKeyEvent)
         }
+        if (option.formDataComponentDisabled) {
+            this.setKeyValue("formDataComponentDisabled", option.formDataComponentDisabled)
+        }
     }
 
     /**
      * 替换defaultName值
      * @param config 
      */
-    setKeyValue = (
-        thisKey: "defaultName" | "formDataComponentKey" | "formDataComponentDefaultValue" | "formDataComponentChangeKeyEvent",
-        config: {
-            [key: string]: any;
-        }) => {
-        for (let key in config) {
-            this[thisKey][key] = config[key]
+    setKeyValue = (thisKey: string, config: { [key: string]: any; }) => {
+        if (["defaultName", "formDataComponentKey", "formDataComponentDefaultValue", "formDataComponentChangeKeyEvent", "formDataComponentDisabled"].includes(thisKey)) {
+            for (let key in config) {
+                this[thisKey][key] = config[key]
+            }
         }
+    }
+
+    /**
+     * 获取配置中的 formDataComponentKey
+     * @param componentName 
+     * @returns 
+     */
+    getModelValueKeys(componentName: string) {
+        const fck = this.formDataComponentKey[componentName] || this.formDataComponentKey.default
+        if (Array.isArray(fck)) {
+            return fck
+        } else {
+            return [fck]
+        }
+    }
+
+    /**
+     *  获取配置中的 formDataComponentChangeKeyEvent
+     * @param componentName 
+     * @param keys 
+     * @returns 
+     */
+    getModelValueChangeEvents(componentName: string, keys: string[]) {
+        const fcke = this.formDataComponentChangeKeyEvent[componentName]
+        if (fcke) {
+            if (Array.isArray(fcke)) {
+                return keys.map((key, i) => {
+                    if (i < fcke.length) {
+                        return fcke[i]
+                    } else {
+                        return `onUpdate:${key}`
+                    }
+                })
+            } else {
+                return keys.map(() => fcke)
+            }
+        } else {
+            return keys.map(key => `onUpdate:${key}`)
+        }
+    }
+
+    /**
+     * 获取配置中的 formDataComponentDefaultValue
+     * @param componentName 
+     * @param keys 
+     * @returns 
+     */
+    getModelValueDefaultNullValues(componentName: string, keys: string[]) {
+        const fcdv = this.formDataComponentDefaultValue[componentName] || null
+        if (Array.isArray(fcdv) && fcdv.length) {
+            return keys.map((_, i) => {
+                if (i < fcdv.length) {
+                    return fcdv[i]
+                } else {
+                    return null
+                }
+            })
+        }
+        return keys.map(() => fcdv);
+    }
+
+    /**
+     * 获取配置中的 formDataComponentDisabled
+     * @param componentName 
+     * @returns 
+     */
+    getComponentDisabled(componentName: string) {
+        const fcd = this.formDataComponentDisabled[componentName]
+        return typeof fcd === "string" ? fcd : this.formDataComponentDisabled.default
     }
 }
 

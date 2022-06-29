@@ -19,7 +19,6 @@ export class RuleFactory {
 
     /**
      * 有v-model的时候这个值会有数据
-     * todo:需要测试 v-model是对象和数组的情况是否正确
      */
     public field: string
 
@@ -27,13 +26,20 @@ export class RuleFactory {
 
     public display: boolean
 
+
     public children: Array<RuleFactory | string> = []
 
     private _config: {
+        disabled: string
         modelKeys: string[]
         modelKeyEvents: string[]
-        modelKeyDefaultValues: any[]
-    }
+        modelKeyDefaultValues: any[],
+    } = {
+            disabled: "",
+            modelKeys: [],
+            modelKeyEvents: [],
+            modelKeyDefaultValues: [],
+        }
 
     constructor(rule: RuleType, modelValue: any, api: Api) {
         this.vm = getCurrentInstance()
@@ -60,45 +66,28 @@ export class RuleFactory {
 
         if (typeof rdc === "object") {
             const config = baseInject.config, rdcName = rdc.name;
+            // disabled
+            this._config.disabled = config.getComponentDisabled(rdcName)
+
             let modelKeys: string[] = [], modelKeyEvents = [], modelKeyDefaultValues = [], rdcPropsKey = rdc.props ? Object.keys(rdc.props || {}) : [];
-            // v-model配置
+            // -- v-model配置
             if (this.rule.vModelKey) {
                 if (Array.isArray(this.rule.vModelKey)) {
                     modelKeys = this.rule.vModelKey
                 } else {
-                    modelKeys.push(this.rule.vModelKey)
+                    modelKeys = [this.rule.vModelKey]
                 }
             }
-            const confRdcKey = config.formDataComponentKey[rdcName]
-            if (modelKeys.length === 0 && confRdcKey) {
-                if (Array.isArray(confRdcKey)) {
-                    modelKeys = confRdcKey
-                } else {
-                    modelKeys.push(confRdcKey)
-                }
-            }
-
             if (modelKeys.length === 0) {
-                modelKeys.push(config.formDataComponentKey.default as string)
+                modelKeys = config.getModelValueKeys(rdcName)
             }
-
             // 过滤验证 确认这个key在这个props里
             modelKeys = modelKeys.filter(item => rdcPropsKey.includes(item))
             if (modelKeys.length) {
-                // 事件配置
-                const confRdcEvent = config.formDataComponentChangeKeyEvent[rdcName]
-                if (confRdcEvent) {
-                    if (Array.isArray(confRdcEvent)) {
-                        modelKeyEvents = confRdcEvent
-                    } else {
-                        modelKeyEvents.push(confRdcEvent)
-                    }
-                }
-                if (modelKeyEvents.length === 0) {
-                    modelKeyEvents = modelKeys.map(item => `onUpdate:${item}`)
-                }
+                // -- 事件配置
+                modelKeyEvents = config.getModelValueChangeEvents(rdcName, modelKeys)
 
-                // 默认空值配置
+                // -- 默认空值配置
                 if (this.rule.vModelKeyDefaultValue) {
                     if (Array.isArray(this.rule.vModelKeyDefaultValue)) {
                         if (modelKeys.length === 1) {
@@ -110,30 +99,15 @@ export class RuleFactory {
                         modelKeyDefaultValues.push(this.rule.vModelKeyDefaultValue)
                     }
                 }
-
-                const confRdcDValue = config.formDataComponentDefaultValue[rdcName]
-                if (modelKeyDefaultValues.length === 0 && confRdcDValue) {
-                    if (Array.isArray(confRdcDValue)) {
-                        if (modelKeys.length === 1) {
-                            modelKeyDefaultValues[0] = confRdcDValue
-                        } else {
-                            modelKeyDefaultValues = confRdcDValue
-                        }
-                    } else {
-                        modelKeyDefaultValues.push(confRdcDValue)
-                    }
-                }
                 if (modelKeyDefaultValues.length === 0) {
-                    modelKeyDefaultValues = modelKeys.map(() => null)
+                    modelKeyDefaultValues = config.getModelValueDefaultNullValues(rdcName, modelKeys)
                 }
 
                 this.field = this.rule.field
 
-                this._config = {
-                    modelKeys,
-                    modelKeyEvents,
-                    modelKeyDefaultValues
-                }
+                this._config.modelKeys = modelKeys
+                this._config.modelKeyEvents = modelKeyEvents
+                this._config.modelKeyDefaultValues = modelKeyDefaultValues
             }
         }
     }
@@ -186,14 +160,16 @@ export class RuleFactory {
         const tag = baseInject.tagCacheComponents[this.rule.type] as any,
             props = {
                 ...this.rule.props,
-                disabled: unref(this.vm?.props?.disabled as boolean) === true || this.rule.props?.disabled === true
             }
 
-        if (typeof tag === "string") {
-            delete props.disabled
-        } else {
-            if (!tag.props || !Object.keys(tag.props).includes("disabled")) {
-                delete props.disabled
+        if (this._config.disabled) {
+            props[this._config.disabled] = unref(this.vm?.props?.disabled as boolean) === true || this.rule.props?.disabled === true
+            if (typeof tag === "string") {
+                delete props[this._config.disabled]
+            } else {
+                if (!tag.props || !Object.keys(tag.props).includes(this._config.disabled)) {
+                    delete props[this._config.disabled]
+                }
             }
         }
 
