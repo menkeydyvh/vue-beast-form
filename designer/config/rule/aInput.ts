@@ -1,5 +1,6 @@
 import type { RuleType } from "../../types/rule"
 
+let uuid = 0;
 const label = '输入框';
 const name = 'a-input';
 const tag = 'form';
@@ -8,9 +9,9 @@ const config: RuleType = {
     label,
     name,
     tag,
-    isMask: true,
     rule() {
         return {
+            field: `${name}${++uuid}`,
             type: name,
             title: label,
         };

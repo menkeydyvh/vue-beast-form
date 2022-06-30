@@ -25,7 +25,7 @@ export default function factory() {
         emits,
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
-                { modelValue, rule } = toRefs(props);
+                { modelValue, rule, option } = toRefs(props);
 
             const rf = new FormFactory(vm)
 
@@ -46,11 +46,14 @@ export default function factory() {
                 emit("update:modelValue", rf.modelValue)
             })
 
-            if (!(modelValue.value === undefined || modelValue.value === null)) {
-                watch(modelValue, () => {
-                    rf.updateModelValue(modelValue.value)
-                }, { deep: true })
-            }
+            watch(modelValue, () => {
+                rf.updateModelValue(modelValue.value)
+            }, { deep: true })
+
+            watch(option, () => {
+                rf.initOption()
+                vm.ctx.$forceUpdate()
+            }, { deep: true })
 
             watch(rf.modelValue, () => {
                 emit("update:modelValue", rf.modelValue)

@@ -53,7 +53,7 @@ export class RuleFactory {
         this.display = toRef(this.rule, "display")
 
         if (typeof this.rule.title === "object") {
-            this.titleRule = new RuleFactory(deepCopy(this.rule.title), this.modelValue, this.api, this.vm)
+            this.titleRule = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
         }
 
         this.initConfigCache()
@@ -496,15 +496,6 @@ export class RuleFactory {
         )
     }
 
-    renderTitle(slot: {
-        [key: string]: any
-    }) {
-        const config = globalCache.config;
-        if (typeof this.rule.title === "object") {
-            slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
-        }
-    }
-
     /**
      * 渲染formItem
      * @returns 
@@ -539,7 +530,7 @@ export class RuleFactory {
         if (typeof this.rule.title === 'string') {
             props[config.defaultName.formItemPropLabel] = this.rule.title;
         } else if (typeof this.rule.title === 'object') {
-            this.renderTitle(slot)
+            slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }
 
         return h(LoaderFactory.getComponents(config.defaultName.formItem) as any, props, slot)

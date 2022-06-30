@@ -22,7 +22,7 @@
       </a-collapse>
     </div>
     <div class="designer-content">
-      <json-layout :rule="coreForm.rule" />
+      <json-layout :rule="coreForm.rule" :option="coreForm.option" />
     </div>
     <div class="designer-right">
       <a-tabs v-model:activeKey="activeKey" type="card">
@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, provide, watch } from "vue";
-import { JsonLayout } from "../../components/index";
+import jlc, { JsonLayout } from "../../components/index";
 import { deepCopy } from "../../components/tool";
 import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";
@@ -57,7 +57,7 @@ import Menu from "../config/menu";
 import Base from "../config/base";
 import "../styles/index.less";
 
-JsonLayout.components = { Drag, DragTool };
+jlc.components({ Drag, DragTool });
 let slotNotation = 0;
 
 export default defineComponent({
@@ -161,7 +161,7 @@ export default defineComponent({
         const confRule = config.rule(),
           dragToolId = `DragTool${++slotNotation}`;
 
-        confRule._config = config;
+        confRule._conf = config;
 
         let drag;
 
@@ -228,7 +228,7 @@ export default defineComponent({
           activeRule.value = dragToolRule.children[0];
           const baseRules = baseConfig.baseRules();
           // 获取定义好的props
-          propsForm.value.rule = [...baseRules, ...activeRule.value._config.props()];
+          propsForm.value.rule = [...baseRules, ...activeRule.value._conf.props()];
           // 赋值处理
           const propsValue = {
             ...activeRule.value.props,
@@ -239,20 +239,17 @@ export default defineComponent({
                 activeRule.value[item.field.replace(baseConfig.ruleFieldPrefix, "")];
             }
           });
-
           propsForm.value.value = deepCopy(propsValue);
         } else {
           activeRule.value = null;
         }
       },
-      propsChangeField = (field, value, key) => {
+      propsChangeField = (field, value, api) => {
         if (activeRule.value) {
           if (field.indexOf(baseConfig.ruleFieldPrefix) === 0) {
-            activeRule.value[field.replace(baseConfig.ruleFieldPrefix, "")] = key
-              ? value?.[key]
-              : value;
+            activeRule.value[field.replace(baseConfig.ruleFieldPrefix, "")] = value;
           } else {
-            activeRule.value[field] = key ? value?.[key] : value;
+            activeRule.value[field] = value;
           }
         }
       },

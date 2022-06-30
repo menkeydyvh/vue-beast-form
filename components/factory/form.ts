@@ -46,6 +46,7 @@ export default class FormFactory {
         this.baseVm = inject('baseVm', null)
 
         if (this.baseVm === null) {
+            this.baseVm = vm;
             provide('baseVm', vm)
             provide('allVms', this.allVms)
         } else {
@@ -80,7 +81,7 @@ export default class FormFactory {
         if (!this.option?.form) {
             const baseVmOption = this.baseVm.props?.option as PropsOptionType
             this.option = reactive({
-                isForm: baseVmOption?.isForm,
+                isForm: baseVmOption?.isForm === false ? false : true,
                 form: baseVmOption?.form
             })
         }

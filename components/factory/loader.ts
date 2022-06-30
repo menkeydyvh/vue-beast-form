@@ -13,7 +13,6 @@ export const globalCache: {
     config: null,
 }
 
-
 export class LoaderFactory {
 
     constructor(vm: ComponentInternalInstance) {
@@ -51,21 +50,16 @@ export class LoaderFactory {
             }
         } else {
             // 存在小写
-            if (key.indexOf('-') > 0) {
-                // a-abc 转换为 AAbc
-                let upperKey = "";
-                key.split('-').forEach(k => {
+            // a-abc 转换为 AAbc
+            // abc 转为 Abc
+            let upperKey = "";
+            key.split('-').forEach(k => {
+                if (k) {
                     upperKey += firstToUpper(k)
-                })
-                if (globalCache.tagCacheComponents[upperKey]) {
-                    return globalCache.tagCacheComponents[upperKey];
                 }
-            } else {
-                // abc 转为 Abc
-                let upperKey = firstToUpper(key);
-                if (globalCache.tagCacheComponents[upperKey]) {
-                    return globalCache.tagCacheComponents[upperKey];
-                }
+            })
+            if (globalCache.tagCacheComponents[upperKey]) {
+                return globalCache.tagCacheComponents[upperKey];
             }
         }
 
