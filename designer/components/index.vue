@@ -22,13 +22,17 @@
       </a-collapse>
     </div>
     <div class="designer-content">
-      <json-layout :rule="coreForm.rule" :option="coreForm.option" />
+      <json-layout
+        :rule="coreForm.rule"
+        :option="coreForm.option"
+        @changeField="coreChangeField"
+      />
     </div>
     <div class="designer-right">
       <a-tabs v-model:activeKey="activeKey" type="card">
         <a-tab-pane key="props" tab="组件" :disabled="!recordAcitve.active">
           <json-layout
-            v-model="propsForm.value"
+            :modelValue="propsForm.value"
             :rule="propsForm.rule"
             :option="propsForm.option"
             @changeField="propsChangeField"
@@ -49,7 +53,7 @@
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, provide, watch } from "vue";
 import jlc, { JsonLayout } from "../../components/index";
-import { deepCopy } from "../../components/tool";
+import { deepCopy, searchLoop } from "../../components/tool";
 import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";
 import draggable from "vuedraggable";
@@ -189,7 +193,7 @@ export default defineComponent({
 
         // 正常设置操作层
         return {
-          type: "DragTool",
+          type: "drag-tool",
           props: {
             isDrag: config.isDrag !== false,
             isChild: !!config.children,
@@ -201,11 +205,7 @@ export default defineComponent({
             dragToolAdd: (onlyId) => {
               let idx = parentChildren.findIndex((item) => item.slot === onlyId);
               if (idx > -1) {
-                const copyRule = deepCopy(parentChildren[idx]),
-                  copyOnlyId = `DragTool${++slotNotation}`;
-                copyRule.props.onlyId = copyOnlyId;
-                copyRule.slot = copyOnlyId;
-                parentChildren.splice(idx, 0, copyRule);
+                parentChildren.splice(idx + 1, 0, makeRule(config, parentChildren));
               }
             },
             dragToolDel: (onlyId) => {
@@ -226,35 +226,99 @@ export default defineComponent({
         if (dragToolRule) {
           activeKey.value = "props";
           activeRule.value = dragToolRule.children[0];
-          const baseRules = baseConfig.baseRules();
-          // 获取定义好的props
-          propsForm.value.rule = [...baseRules, ...activeRule.value._conf.props()];
+          const baseRules = baseConfig.baseRules(),
+            propsRules = activeRule.value._conf.props();
+          // 获取所有定义好的参数规则
+          propsForm.value.rule = [...baseRules, ...propsRules];
+
           // 赋值处理
-          const propsValue = {
-            ...activeRule.value.props,
-          };
+          const propsValue = {};
+
           baseRules.forEach((item) => {
             if (item.field) {
               propsValue[item.field] =
                 activeRule.value[item.field.replace(baseConfig.ruleFieldPrefix, "")];
             }
           });
-          propsForm.value.value = deepCopy(propsValue);
+
+          propsRules.forEach((item) => {
+            if (item.field) {
+              propsValue[item.field] = activeRule.value?.props?.[item.field];
+            }
+          });
+
+          propsForm.value.value = propsValue;
         } else {
           activeRule.value = null;
         }
       },
-      propsChangeField = (field, value, api) => {
+      // 设置value
+      coreChangeField = (field, value) => {
+        searchLoop(coreForm.value.rule, field, ({ item }) => {
+          item.value = value;
+        });
+      },
+      // 设置rule和props相关
+      propsChangeField = (field, value) => {
         if (activeRule.value) {
           if (field.indexOf(baseConfig.ruleFieldPrefix) === 0) {
             activeRule.value[field.replace(baseConfig.ruleFieldPrefix, "")] = value;
           } else {
-            activeRule.value[field] = value;
+            if (!activeRule.value.props) {
+              activeRule.value.props = {};
+            }
+            activeRule.value.props[field] = value;
           }
         }
       },
+      // 清理不必要的值
+      clearObject = (o) => {
+        const oks = Object.keys(o);
+        if (oks.length !== 0) {
+          oks.forEach((k) => {
+            if (o[k] === undefined) {
+              delete o[k];
+            } else if (Array.isArray(o[k]) && o[k].length === 0) {
+              delete o[k];
+            } else if (typeof o[k] === "object") {
+              clearObject(o[k]);
+            }
+          });
+        }
+      },
+      // 解析获取真实规则
+      parseRule = (children) => {
+        return [...children].reduce((c, rule) => {
+          if (!rule) {
+            return c;
+          }
+          if (typeof rule === "string") {
+            return c;
+          } else if (typeof rule === "object") {
+            if (rule.type === "drag") {
+              c.push(...parseRule(rule.children));
+              return c;
+            } else if (rule.type === "drag-tool") {
+              c.push(...parseRule(rule.children));
+              return c;
+            } else {
+              const nr = { ...rule };
+              if (nr.children && nr.children.length) {
+                nr.children = parseRule(nr.children);
+              }
+              delete nr._conf;
+              clearObject(nr);
+              c.push(nr);
+              return c;
+            }
+          }
+        }, []);
+      },
+      getRule = () => {
+        return parseRule(coreForm.value.rule);
+      },
       onClick = () => {
-        console.log(coreForm.value);
+        console.log(getRule());
       };
 
     coreForm.value.rule = makeDragRule(coreForm.value.rule);
@@ -275,6 +339,7 @@ export default defineComponent({
       formProps,
       onClick,
       propsChangeField,
+      coreChangeField,
     };
   },
 });

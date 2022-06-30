@@ -6,32 +6,29 @@
     :activeId="onlyId"
   >
     <div class="dragTool-left">
-      <div
+      <span
         v-if="state.active === onlyId && isDrag !== false"
         class="dragTool-btn dragBtn"
         title="移动"
       >
-        M
-      </div>
+        移动
+      </span>
     </div>
     <div class="dragTool-right">
-      <div class="dragTool-btn" @click.stop="$emit('dragToolAdd', onlyId)" title="添加">
-        A
-      </div>
-      <!-- <div class="dragTool-btn" @click.stop="$emit('dragToolCopy', onlyId)" title="复制">
-        C
-      </div> -->
-      <div
+      <span class="dragTool-btn" @click.stop="$emit('dragToolAdd', onlyId)" title="拷贝">
+        拷贝
+      </span>
+      <span
         class="dragTool-btn"
         v-if="isChild"
         @click.stop="$emit('dragToolAddChild', onlyId)"
         title="添加子节点"
       >
-        AC
-      </div>
-      <div class="dragTool-btn" @click.stop="$emit('dragToolDel', onlyId)" title="删除">
-        D
-      </div>
+        +子节点
+      </span>
+      <span class="dragTool-btn" @click.stop="$emit('dragToolDel', onlyId)" title="删除">
+        删除
+      </span>
     </div>
     <div class="dragTool-mask" v-if="isMask"></div>
     <slot></slot>

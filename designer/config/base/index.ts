@@ -31,6 +31,11 @@ export default class Base {
                 type: 'a-input',
                 field: `${this.ruleFieldPrefix}class`,
                 title: 'class',
+            }, {
+                type: 'a-switch',
+                field: `${this.ruleFieldPrefix}display`,
+                value: true,
+                title: '显示组件',
             },
         ]
     }

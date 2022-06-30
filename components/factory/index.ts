@@ -60,8 +60,8 @@ export default function factory() {
             }, { deep: true })
 
             watch(rule, () => {
-                vm.ctx.$forceUpdate()
                 rf.initRule()
+                vm.ctx.$forceUpdate()
             }, { deep: true })
 
             return () => rf.render()
