@@ -104,7 +104,7 @@ export default defineComponent({
 
     provide("recordAcitve", recordAcitve);
 
-    menus.value = siderMenu.menus;
+    menus.value = siderMenu.getMenus();
     formProps.value.rule = baseConfig.formPropsRules();
 
     const makeDrag = (children, on, tag, group) => {
@@ -161,8 +161,8 @@ export default defineComponent({
         children.splice(newIndex, 0, cacheRule);
         console.log("dragEnd");
       },
-      makeRule = (config, parentChildren) => {
-        const confRule = config.rule(),
+      makeRule = (config, parentChildren, _cRule) => {
+        const confRule = _cRule || config.rule(),
           dragToolId = `DragTool${++slotNotation}`;
 
         confRule._conf = config;
@@ -170,20 +170,19 @@ export default defineComponent({
         let drag;
 
         if (config.drag) {
-          const curChild = [];
           drag = makeDrag(
-            curChild,
+            [],
             {
-              add: (e) => dragAdd(e, curChild),
-              end: (e) => dragEnd(e, curChild),
+              add: (e) => dragAdd(e, drag.children),
+              end: (e) => dragEnd(e, drag.children),
             },
             confRule.type,
             config.drag
           );
-          confRule.children = [drag];
+          confRule.children.push(drag);
         }
 
-        if (config.children) {
+        if (config.children && !_cRule) {
           const child = makeRule(
             siderMenu.getRule(config.children),
             (drag || confRule).children
@@ -191,6 +190,9 @@ export default defineComponent({
           (drag || confRule).children.push(child);
         }
 
+        if (drag) {
+          return confRule;
+        }
         // 正常设置操作层
         return {
           type: "drag-tool",
@@ -214,7 +216,14 @@ export default defineComponent({
                 parentChildren.splice(idx, 1);
               }
             },
-            dragToolAddChild: (onlyId) => {},
+            dragToolAddChild: (onlyId) => {
+              let idx = parentChildren.findIndex((item) => item.slot === onlyId);
+              if (idx > -1) {
+                confRule.children.push(
+                  makeRule(siderMenu.getRule(config.children), confRule.children)
+                );
+              }
+            },
             dragToolActive: (onlyId) => {
               selectDragTool(parentChildren.find((item) => item.slot === onlyId));
             },
@@ -286,6 +295,33 @@ export default defineComponent({
           });
         }
       },
+      loadRule = (rules) => {
+        let nrs = [];
+        rules.forEach((rule) => {
+          if (typeof rule === "string") {
+            nrs.psuh(rule);
+            return;
+          }
+
+          const _conf = siderMenu.getRule(rule.type),
+            _child = rule.children;
+          rule.children = null;
+
+          // TODO:处理child
+
+          if (_conf) {
+            rule = makeRule(_conf, nrs, rule);
+            if (_child) {
+            }
+          } else if (_child) {
+            rule.children = loadRule(_child);
+          }
+
+          nrs.push(rule);
+        });
+
+        return nrs;
+      },
       // 解析获取真实规则
       parseRule = (children) => {
         return [...children].reduce((c, rule) => {
@@ -317,8 +353,23 @@ export default defineComponent({
       getRule = () => {
         return parseRule(coreForm.value.rule);
       },
+      setRule = (rules) => {
+        coreForm.value.rule = loadRule(
+          typeof rules === "string" ? ljc.ruleParse(rules) : rules
+        );
+      },
       onClick = () => {
         console.log(getRule());
+        // setRule([
+        //   {
+        //     field: "a-input12",
+        //     type: "a-input",
+        //     title: "输入框2",
+        //     props: {
+        //       placeholder: "3",
+        //     },
+        //   },
+        // ]);
       };
 
     coreForm.value.rule = makeDragRule(coreForm.value.rule);

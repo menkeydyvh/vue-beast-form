@@ -1,6 +1,6 @@
 import rules from '../rule/index';
 import type { MenuType } from '../../types/menu';
-import type { RuleType } from '../../types/rule';
+import type { ConfigRuleType } from '../../types/rule';
 
 export default class Menu {
     public menus: MenuType[] = [
@@ -36,7 +36,15 @@ export default class Menu {
         })
     }
 
-    getRule(name: string): RuleType {
+    getMenus() {
+        return this.menus.map(menu => {
+            const newMenu = { ...menu }
+            newMenu.list = menu.list.filter(list => list.showMenu === false ? false : true)
+            return newMenu
+        })
+    }
+
+    getRule(name: string): ConfigRuleType {
         let data;
         this.menus.forEach(menu => {
             if (!data) {

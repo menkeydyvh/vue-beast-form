@@ -1,11 +1,11 @@
-import type { RuleType } from "../../types/rule"
+import type { ConfigRuleType } from "../../types/rule"
 
 let uuid = 0;
 const label = '输入框';
 const name = 'a-input';
 const tag = 'form';
 
-const config: RuleType = {
+const config: ConfigRuleType = {
     label,
     name,
     tag,
