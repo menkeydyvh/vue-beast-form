@@ -196,13 +196,6 @@ export default class apiFactory {
         }
     }
 
-    getProps(field: string) {
-        const rf = this.getRule(field)
-        if (rf) {
-            return rf.props
-        }
-    }
-
     /**
      * 设置是否显示
      * @param field 

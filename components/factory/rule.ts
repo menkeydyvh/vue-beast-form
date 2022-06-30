@@ -1,4 +1,4 @@
-import { h, reactive, toRef, resolveDirective, withDirectives } from 'vue'
+import { h, reactive, unref, toRef, resolveDirective, withDirectives } from 'vue'
 import { globalCache, LoaderFactory } from './loader'
 import type Api from './api'
 import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
@@ -24,11 +24,11 @@ export class RuleFactory {
 
     public props: {
         [key: string]: any
-    }
+    } = reactive({})
 
     public display: Ref<boolean>
 
-    public children: Array<RuleFactory | string> = []
+    public children: Array<RuleFactory | string> = reactive([])
 
     private _config: {
         disabled: string
@@ -47,7 +47,6 @@ export class RuleFactory {
         this.rule = rule;
         this.modelValue = modelValue;
         this.api = api;
-        this.props = reactive({})
 
         this.display = toRef(this.rule, "display")
 
@@ -432,32 +431,27 @@ export class RuleFactory {
      * @returns 
      */
     renderChildrenSolt() {
-        const rcs = this.children
-        if (rcs) {
-            const solt = {
-                default: []
-            }, result = {};
-            rcs.forEach(rc => {
-                if (typeof rc === "string") {
-                    solt.default.push(rc)
-                } else {
-                    if (rc.rule.slot) {
-                        if (!solt[rc.rule.slot]) {
-                            solt[rc.rule.slot] = []
-                        }
-                        solt[rc.rule.slot].push(rc.render())
-                    } else {
-                        solt.default.push(rc.render())
+        const solt = { default: [] }, result = {};
+
+        this.children.forEach(rc => {
+            if (typeof rc === "string") {
+                solt.default.push(rc)
+            } else {
+                if (rc.rule.slot) {
+                    if (!solt[rc.rule.slot]) {
+                        solt[rc.rule.slot] = []
                     }
+                    solt[rc.rule.slot].push(rc.render())
+                } else {
+                    solt.default.push(rc.render())
                 }
-            })
-            for (let key in solt) {
-                result[key] = () => solt[key]
             }
-            return result
-        } else {
-            return
+        })
+        for (let key in solt) {
+            result[key] = () => solt[key]
         }
+        return result
+
     }
 
 
@@ -554,7 +548,7 @@ export class RuleFactory {
      * @returns 
      */
     render() {
-        if (this.display.value === false) return;
+        if (unref(this.display) === false) return;
         return this.renderFormItem() || this.renderType()
     }
 }

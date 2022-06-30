@@ -1,7 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="object的处理">
     <json-layout
-      ref="jsonLayoutRef"
       :rule="rule"
       v-model:api="jApi"
       :option="{
@@ -17,15 +16,14 @@ import { defineComponent, ref, onMounted } from "vue";
 import { JsonLayout } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
+console.log(JsonLayout);
+
 export default defineComponent({
   components: { JsonLayout },
   setup() {
     const rule = ref<RuleType[]>(),
-      jsonLayoutRef = ref(),
       jApi = ref();
-    onMounted(() => {
-      console.log(jsonLayoutRef.value);
-    });
+
     rule.value = [
       {
         type: "a-input",
@@ -93,7 +91,6 @@ export default defineComponent({
     return {
       jApi,
       rule,
-      jsonLayoutRef,
     };
   },
 });

@@ -10,16 +10,18 @@
         },
       }"
       :disabled="disabled"
+      @divBtnClick="divBtnClick"
     />
-    <!-- @divBtnClick="divBtnClick" -->
     <br />
     <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { JsonLayout } from "../../../components";
+import jlc, { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
+
+jlc.emits("divBtnClick");
 
 export default defineComponent({
   components: { JsonLayout },
@@ -214,6 +216,7 @@ export default defineComponent({
                 );
                 api.addOn("nBtn", "click", (e, api) => {
                   console.log("新按钮被点击", e, api);
+                  api.delOnOrEmit("nBtn", "click");
                 });
               },
             },

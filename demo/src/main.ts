@@ -16,6 +16,6 @@ app.config.globalProperties.$jsonLayout = jsonLayoutConfig
 
 app.use(Antd).directive('test1', {
     mounted() {
-        console.log('directive:test1')
+        // console.log('directive:test1')
     }
 }).mount('#app')

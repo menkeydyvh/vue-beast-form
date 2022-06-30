@@ -34,6 +34,26 @@ export default {
     }
   },
   /**
+   * 
+   * @param names 
+   */
+  emits: (names: string | string[]) => {
+    const emits = JsonLayout.emits
+    if (Array.isArray(names)) {
+      names.forEach(name => {
+        let idx = emits.findIndex(emit => emit === name)
+        if (idx === -1) {
+          emits.push(name)
+        }
+      })
+    } else {
+      let idx = emits.findIndex(emit => emit === names)
+      if (idx === -1) {
+        emits.push(names)
+      }
+    }
+  },
+  /**
    * 规则字符串转换成规则对象
    * @param str 
    * @returns 
