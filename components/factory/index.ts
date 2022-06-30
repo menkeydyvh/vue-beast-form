@@ -1,16 +1,17 @@
 import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import FormFactory from './form'
-// import { RuleFactory } from './rule'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
 export const NAME = 'JsonLayout'
 
+const baseEmits = ["changeField", "update:modelValue", "update:api"];
+
 export default function factory() {
 
-    const emits = ["changeField", "update:modelValue", "update:api"];
+    const emits = [...baseEmits];
 
-    return defineComponent({
+    const component = defineComponent({
         name: NAME,
         components: {},
         directives: {},
@@ -24,14 +25,19 @@ export default function factory() {
         emits,
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
-                { modelValue, rule } = toRefs(props),
-                rf = new FormFactory(vm)
+                { modelValue, rule } = toRefs(props);
+
+            const rf = new FormFactory(vm)
 
             onMounted(() => {
                 rf.addVm()
             });
 
             onBeforeUnmount(() => {
+                emits.splice(0, emits.length)
+                baseEmits.forEach(item => {
+                    emits.push(item)
+                })
                 rf.delVm()
             })
 
@@ -60,5 +66,5 @@ export default function factory() {
 
 
     });
-
+    return component
 }

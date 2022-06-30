@@ -18,8 +18,10 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import jlc, { JsonLayout } from "../../../components";
+import { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
+
+JsonLayout.emits.push("divBtnClick");
 
 export default defineComponent({
   components: { JsonLayout },
@@ -253,8 +255,6 @@ export default defineComponent({
     const divBtnClick = (e, api) => {
       console.log("divBtnClick:emits", api);
     };
-
-    jlc.emits("divBtnClick");
 
     return {
       jApi,

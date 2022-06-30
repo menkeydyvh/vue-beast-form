@@ -50,10 +50,10 @@ export default defineComponent({
       },
       {
         type: "a-input",
-        // title: {
-        //   type: "span",
-        //   children: ["商品名称2"],
-        // },
+        title: {
+          type: "span",
+          children: ["商品名称2"],
+        },
         field: "name2",
         value: "good2",
         props: {
