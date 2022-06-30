@@ -1,5 +1,4 @@
-import { resolveDynamicComponent } from "vue"
-import { NAME } from './index'
+import { JsonLayout } from "../index"
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
@@ -19,12 +18,13 @@ export class LoaderFactory {
 
     constructor(vm: ComponentInternalInstance) {
         globalCache.config = new Config(vm)
-        globalCache.tagCacheComponents = vm.appContext.components
-        globalCache.tagCacheComponents[NAME] = resolveDynamicComponent(NAME)
+        for (let key in vm.appContext.components) {
+            globalCache.tagCacheComponents[key] = vm.appContext.components[key]
+        }
+        globalCache.tagCacheComponents[JsonLayout.name] = JsonLayout
     }
 
     static loaderComponents(components: { [key: string]: VNodeTypes }) {
-        debugger;
         if (components) {
             for (let key in components) {
                 globalCache.tagCacheComponents[key] = components[key]
@@ -37,17 +37,6 @@ export class LoaderFactory {
             return globalCache.tagCacheComponents[key];
         }
 
-        // a-abc 转换为 AAbc
-        if (key.indexOf('-') > 0) {
-            let upperKey = "";
-            key.split('-').forEach(k => {
-                upperKey += firstToUpper(k)
-            })
-            if (globalCache.tagCacheComponents[upperKey]) {
-                return globalCache.tagCacheComponents[upperKey];
-            }
-        }
-
         // 存在大写 
         if (/[A-Z]/.test(key)) {
             // AAbc 转换 a-abc
@@ -57,9 +46,26 @@ export class LoaderFactory {
                     lowerKey += firstToLower(k)
                 }
             })
-
             if (globalCache.tagCacheComponents[lowerKey]) {
                 return globalCache.tagCacheComponents[lowerKey];
+            }
+        } else {
+            // 存在小写
+            if (key.indexOf('-') > 0) {
+                // a-abc 转换为 AAbc
+                let upperKey = "";
+                key.split('-').forEach(k => {
+                    upperKey += firstToUpper(k)
+                })
+                if (globalCache.tagCacheComponents[upperKey]) {
+                    return globalCache.tagCacheComponents[upperKey];
+                }
+            } else {
+                // abc 转为 Abc
+                let upperKey = firstToUpper(key);
+                if (globalCache.tagCacheComponents[upperKey]) {
+                    return globalCache.tagCacheComponents[upperKey];
+                }
             }
         }
 

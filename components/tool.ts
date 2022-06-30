@@ -209,7 +209,7 @@ const ruleFunTag = "~~RFTAG-START~";
  * @param str 
  * @returns 
  */
-export const ruleParse = (str: string) => {
+export const ruleParse = (str: string): RuleType | RuleType[] => {
     return JSON.parse(str, function (_k, v) {
         if (typeof v === 'string' && v.indexOf(ruleFunTag) === 0) {
             return eval(v.slice(ruleFunTag.length));
