@@ -21,8 +21,6 @@ import { defineComponent, ref } from "vue";
 import jlc, { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
-jlc.emits("divBtnClick");
-
 export default defineComponent({
   components: { JsonLayout },
   setup() {
@@ -255,6 +253,8 @@ export default defineComponent({
     const divBtnClick = (e, api) => {
       console.log("divBtnClick:emits", api);
     };
+
+    jlc.emits("divBtnClick");
 
     return {
       jApi,

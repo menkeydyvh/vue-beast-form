@@ -1,7 +1,8 @@
-import type { App, Component, Directive } from 'vue';
+import { onUnmounted } from 'vue';
 import { LoaderFactory } from './factory/loader';
 import factory from './factory';
 import { ruleParse, ruleStringify } from './tool';
+import type { App, Component, Directive } from 'vue';
 import type { RuleType } from './types';
 
 
@@ -38,20 +39,37 @@ export default {
    * @param names 
    */
   emits: (names: string | string[]) => {
-    const emits = JsonLayout.emits
+    // 添加emits
     if (Array.isArray(names)) {
       names.forEach(name => {
-        let idx = emits.findIndex(emit => emit === name)
+        let idx = JsonLayout.emits.findIndex(emit => emit === name)
         if (idx === -1) {
-          emits.push(name)
+          JsonLayout.emits.push(name)
         }
       })
     } else {
-      let idx = emits.findIndex(emit => emit === names)
+      let idx = JsonLayout.emits.findIndex(emit => emit === names)
       if (idx === -1) {
-        emits.push(names)
+        JsonLayout.emits.push(names)
       }
     }
+
+    onUnmounted(() => {
+      // 清理emits
+      if (Array.isArray(names)) {
+        names.forEach(name => {
+          let idx = JsonLayout.emits.findIndex(emit => emit === name)
+          if (idx > -1) {
+            JsonLayout.emits.splice(idx, 1)
+          }
+        })
+      } else {
+        let idx = JsonLayout.emits.findIndex(emit => emit === names)
+        if (idx > -1) {
+          JsonLayout.emits.splice(idx, 1)
+        }
+      }
+    })
   },
   /**
    * 规则字符串转换成规则对象
