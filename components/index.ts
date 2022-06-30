@@ -1,4 +1,4 @@
-import type { App, Component } from 'vue';
+import type { App, Component, Directive } from 'vue';
 import { LoaderFactory } from './factory/loader';
 import factory from './factory';
 import { ruleParse, ruleStringify } from './tool';
@@ -22,6 +22,16 @@ export default {
     [key: string]: Component
   }) => {
     LoaderFactory.loaderComponents(data)
+  },
+  /**
+   * 注册指令
+   * @param key 
+   * @param directive 
+   */
+  directive: (key: string, directive: Directive) => {
+    JsonLayout.directives = {
+      [key]: directive
+    }
   },
   /**
    * 规则字符串转换成规则对象

@@ -11,8 +11,15 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { JsonLayout } from "../../../components";
+import jlc, { JsonLayout } from "../../../components";
 import type { RuleType } from "../../../components/types";
+
+// 指令
+jlc.directive("test2", {
+  mounted() {
+    console.log("directive:test2");
+  },
+});
 
 export default defineComponent({
   components: { JsonLayout },
@@ -26,15 +33,6 @@ export default defineComponent({
           layout: "vertical",
         },
       });
-
-    // 指令
-    JsonLayout.directives = {
-      test2: {
-        mounted() {
-          console.log("directive:test2");
-        },
-      },
-    };
 
     rule.value = [
       {

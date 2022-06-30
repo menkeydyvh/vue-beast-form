@@ -1,5 +1,5 @@
 import { framework } from './framework'
-import type { DefaultName, ConfigOptionsType } from '../types'
+import type { DefaultName, GlobalConfigType } from '../types'
 import type { ComponentInternalInstance } from "vue"
 
 /**
@@ -47,7 +47,7 @@ export default class config {
             default: 'disabled'
         }
 
-    constructor(vm: ComponentInternalInstance, option?: ConfigOptionsType) {
+    constructor(vm: ComponentInternalInstance, option?: GlobalConfigType) {
         this.vm = vm
         if (option) {
             this.initConfig(option)
@@ -60,7 +60,7 @@ export default class config {
      * 初始化全局配置
      */
     initGlobalConfig() {
-        const globalConfig = this.vm.appContext.config.globalProperties.$jsonLayout as ConfigOptionsType
+        const globalConfig = this.vm.appContext.config.globalProperties.$jsonLayout as GlobalConfigType
         if (!globalConfig) {
             console.error("error: You need set app.config.globalProperties.$jsonLayout")
             return
@@ -73,7 +73,7 @@ export default class config {
      * @param option 
      * @returns 
      */
-    initConfig(option: ConfigOptionsType) {
+    initConfig(option: GlobalConfigType) {
         if (!option) {
             return
         }

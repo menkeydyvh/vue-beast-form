@@ -21,8 +21,6 @@ import { defineComponent, ref } from "vue";
 import { JsonLayout } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
-console.log(JsonLayout);
-
 export default defineComponent({
   components: { JsonLayout },
   setup() {

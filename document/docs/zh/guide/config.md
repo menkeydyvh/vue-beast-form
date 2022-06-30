@@ -22,12 +22,12 @@ app.config.globalProperties.$jsonLayout = {
 ```ts{3,6-8}
 import { createApp } from 'vue'
 import App from './App.vue'
-import type { ConfigOptionsType } from "json-layout/lib/types"
+import type { GlobalConfigType } from "json-layout"
 
 const app = createApp(App)
 app.config.globalProperties.$jsonLayout =  {
     base: 'ant-design-vue'
-} as ConfigOptionsType
+} as GlobalConfigType
 ...
 ```
 
