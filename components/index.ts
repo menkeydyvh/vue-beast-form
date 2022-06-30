@@ -30,9 +30,11 @@ export default {
    * @param directive 
    */
   directive: (key: string, directive: Directive) => {
-    JsonLayout.directives = {
-      [key]: directive
-    }
+    JsonLayout.directives[key] = directive
+
+    onUnmounted(() => {
+      delete JsonLayout.directives[key]
+    });
   },
   /**
    * 

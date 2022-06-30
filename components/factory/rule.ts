@@ -13,6 +13,8 @@ export class RuleFactory {
 
     public rule: RuleType
 
+    public titleRule: RuleFactory
+
     public api: Api
 
     public modelValue: ModelValueType
@@ -49,6 +51,10 @@ export class RuleFactory {
         this.api = api;
 
         this.display = toRef(this.rule, "display")
+
+        if (typeof this.rule.title === "object") {
+            this.titleRule = new RuleFactory(deepCopy(this.rule.title), this.modelValue, this.api, this.vm)
+        }
 
         this.initConfigCache()
         this.initProps()
@@ -490,19 +496,13 @@ export class RuleFactory {
         )
     }
 
-    /**
-     * 渲染title
-     * @returns 
-     */
-    renderTitle() {
-        if (this.rule.title === false) {
-            return;
+    renderTitle(slot: {
+        [key: string]: any
+    }) {
+        const config = globalCache.config;
+        if (typeof this.rule.title === "object") {
+            slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }
-        if (typeof this.rule.title === "string") {
-            return;
-        }
-        const titleRender = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
-        return titleRender.render()
     }
 
     /**
@@ -516,9 +516,11 @@ export class RuleFactory {
         if (this.rule.title === false) {
             return
         }
-        const config = globalCache.config, props = { ...this.rule.attrs }, slot = {
-            default: () => this.renderType()
-        };
+        const config = globalCache.config,
+            props = { ...this.rule.attrs },
+            slot = {
+                default: () => [this.renderType()],
+            };
         if (this.rule.class) {
             props.class = this.rule.class;
         }
@@ -537,7 +539,7 @@ export class RuleFactory {
         if (typeof this.rule.title === 'string') {
             props[config.defaultName.formItemPropLabel] = this.rule.title;
         } else if (typeof this.rule.title === 'object') {
-            slot[config.defaultName.formItemSlotTitle] = () => this.renderTitle()
+            this.renderTitle(slot)
         }
 
         return h(LoaderFactory.getComponents(config.defaultName.formItem) as any, props, slot)
