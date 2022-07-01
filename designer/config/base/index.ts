@@ -25,10 +25,6 @@ export default class Base {
                 title: 'title',
             }, {
                 type: 'a-input',
-                field: `${this.ruleFieldPrefix}info`,
-                title: 'info',
-            }, {
-                type: 'a-input',
                 field: `${this.ruleFieldPrefix}class`,
                 title: 'class',
             }, {

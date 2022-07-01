@@ -32,7 +32,7 @@
       <a-tabs v-model:activeKey="activeKey" type="card">
         <a-tab-pane key="props" tab="组件" :disabled="!recordAcitve.active">
           <json-layout
-            :modelValue="propsForm.value"
+            v-model="propsForm.value"
             :rule="propsForm.rule"
             :option="propsForm.option"
             @changeField="propsChangeField"
@@ -53,7 +53,7 @@
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, provide, watch } from "vue";
 import jlc, { JsonLayout } from "../../components/index";
-import { deepCopy, searchLoop } from "../../components/tool";
+import { deepCopy, searchLoop, randomId } from "../../components/tool";
 import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";
 import draggable from "vuedraggable";
@@ -71,7 +71,16 @@ export default defineComponent({
     const recordAcitve = ref({
         active: null,
       }),
-      activeRule = ref(),
+      actionRule = {
+        // 选中
+        activeRule: null,
+        // 移动
+        moveRule: null,
+        // 添加
+        isAdd: false,
+        addRule: null,
+      },
+      // activeRule = ref(),
       baseConfig = new Base(),
       siderMenu = new Menu(),
       activeKey = ref("form"),
@@ -107,11 +116,15 @@ export default defineComponent({
     menus.value = siderMenu.getMenus();
     formProps.value.rule = baseConfig.formPropsRules();
 
-    const makeDrag = (children, on, tag, group) => {
+    const makeDrag = (tag, group) => {
+        const dragUuid = `drag-${randomId()}`,
+          children = [];
         // drag层
         return {
           type: "drag",
+          field: dragUuid,
           props: {
+            id: dragUuid,
             tag,
             rule: {
               props: {
@@ -126,76 +139,128 @@ export default defineComponent({
               },
             },
           },
-          children,
-          on,
+          children: children,
+          on: {
+            add: (e) => dragAdd(e),
+            end: (e) => dragEnd(e),
+            start: (e) => dragStart(e),
+            unchoose: (e) => dartUnchoose(e),
+          },
         };
-      },
-      makeDragRule = (children) => {
-        // 给children建立drag层
-        return [
-          makeDrag(
-            children,
-            {
-              add: (e) => dragAdd(e, children),
-              end: (e) => dragEnd(e, children),
-            },
-            "draggable",
-            true
-          ),
-        ];
       },
       dragAdd = (e, children) => {
         // 从菜单添加进来
-        const newIndex = e.newIndex,
+        debugger;
+        const { newIndex, to } = e,
           curItem = e.item._underlying_vm_;
-        if (curItem && curItem.name) {
-          children.splice(newIndex, 0, makeRule(curItem, children));
+        if (curItem?.name) {
+          // 从菜单添加
+          searchLoop(coreForm.value.rule, to.id, ({ item }) => {
+            item.children.splice(newIndex, 0, makeRule(curItem));
+          });
+        } else {
+          // 从选中中添加
+          if (actionRule.addRule) {
+            const { oldIndex, from, to } = actionRule.addRule;
+            let cacheRule;
+            searchLoop(coreForm.value.rule, from.id, ({ item }) => {
+              cacheRule = item.children.splice(oldIndex, 1);
+            });
+            searchLoop(coreForm.value.rule, to.id, ({ item }) => {
+              item.children.splice(newIndex, 0, cacheRule[0]);
+            });
+          }
         }
         console.log("dragAdd");
+        actionRule.isAdd = true;
       },
-      dragEnd = (e, children) => {
+      dragEnd = (e) => {
         // 拖动换位结束
-        const { oldIndex, newIndex } = e,
-          cacheRule = children[oldIndex];
-        children.splice(oldIndex, 1);
-        children.splice(newIndex, 0, cacheRule);
+        const { newIndex } = e;
+        if (!actionRule.isAdd && actionRule.moveRule) {
+          const { oldIndex, to } = actionRule.moveRule;
+          searchLoop(coreForm.value.rule, to.id, ({ item }) => {
+            const cacheRule = item.children.splice(oldIndex, 1);
+            item.children.splice(newIndex, 0, cacheRule[0]);
+          });
+        }
+        actionRule.moveRule = null;
+        actionRule.addRule = null;
+        actionRule.isAdd = false;
         console.log("dragEnd");
       },
-      makeRule = (config, parentChildren, _cRule) => {
+      dragStart = (e) => {
+        actionRule.isAdd = false;
+        actionRule.moveRule = e;
+        console.log("dragStart");
+      },
+      dartUnchoose = (e) => {
+        actionRule.addRule = e;
+        console.log("dartUnchoose");
+      },
+      makeRule = (config, _cRule) => {
         const confRule = _cRule || config.rule(),
-          dragToolId = `DragTool${++slotNotation}`;
+          dragToolId = `dragTool-${++slotNotation}`;
 
         confRule._conf = config;
+
+        if (!confRule.props) {
+          confRule.props = {};
+        }
 
         let drag;
 
         if (config.drag) {
-          drag = makeDrag(
-            [],
-            {
-              add: (e) => dragAdd(e, drag.children),
-              end: (e) => dragEnd(e, drag.children),
-            },
-            confRule.type,
-            config.drag
-          );
-          confRule.children.push(drag);
+          drag = makeDrag(confRule.type, config.drag);
         }
 
         if (config.children && !_cRule) {
-          const child = makeRule(
-            siderMenu.getRule(config.children),
-            (drag || confRule).children
-          );
+          const child = makeRule(siderMenu.getRule(config.children));
           (drag || confRule).children.push(child);
         }
 
-        if (drag) {
+        if (config.drag) {
+          confRule.children = [
+            {
+              type: "drag-tool",
+              field: dragToolId,
+              props: {
+                isDrag: config.isDrag !== false,
+                isChild: !!config.children,
+                isMask: config.isMask,
+                onlyId: dragToolId,
+              },
+              on: {
+                dragToolAdd: (onlyId) => {
+                  searchLoop(coreForm.value.rule, onlyId, (_, { item, index, ary }) => {
+                    ary.splice(index + 1, 0, makeRule(item._conf));
+                  });
+                },
+                dragToolDel: (onlyId) => {
+                  searchLoop(coreForm.value.rule, onlyId, (_, { index, ary }) => {
+                    ary.splice(index, 1);
+                  });
+                  clearSelectDragTool();
+                },
+                dragToolAddChild: (onlyId) => {
+                  console.log("drag+child");
+                },
+                dragToolActive: (onlyId) => {
+                  searchLoop(coreForm.value.rule, onlyId, (_, { item }) => {
+                    selectDragTool(item);
+                  });
+                },
+              },
+              children: [drag],
+            },
+          ];
           return confRule;
         }
+
         // 正常设置操作层
         return {
           type: "drag-tool",
+          field: dragToolId,
           props: {
             isDrag: config.isDrag !== false,
             isChild: !!config.children,
@@ -205,38 +270,42 @@ export default defineComponent({
           slot: dragToolId,
           on: {
             dragToolAdd: (onlyId) => {
-              let idx = parentChildren.findIndex((item) => item.slot === onlyId);
-              if (idx > -1) {
-                parentChildren.splice(idx + 1, 0, makeRule(config, parentChildren));
-              }
+              searchLoop(coreForm.value.rule, onlyId, ({ item, index, ary }) => {
+                ary.splice(index + 1, 0, makeRule(item.children[0]._conf));
+              });
             },
             dragToolDel: (onlyId) => {
-              let idx = parentChildren.findIndex((item) => item.slot === onlyId);
-              if (idx > -1) {
-                parentChildren.splice(idx, 1);
-              }
+              searchLoop(coreForm.value.rule, onlyId, ({ index, ary }) => {
+                ary.splice(index, 1);
+              });
+              clearSelectDragTool();
             },
             dragToolAddChild: (onlyId) => {
-              let idx = parentChildren.findIndex((item) => item.slot === onlyId);
-              if (idx > -1) {
-                confRule.children.push(
-                  makeRule(siderMenu.getRule(config.children), confRule.children)
-                );
-              }
+              searchLoop(coreForm.value.rule, onlyId, ({ item, ary }) => {
+                const childTag = item.children[0]._conf.children;
+                item.children[0].children.push(makeRule(siderMenu.getRule(childTag)));
+              });
             },
             dragToolActive: (onlyId) => {
-              selectDragTool(parentChildren.find((item) => item.slot === onlyId));
+              searchLoop(coreForm.value.rule, onlyId, ({ item }) => {
+                selectDragTool(item.children[0]);
+              });
             },
           },
           children: [confRule],
         };
       },
-      selectDragTool = (dragToolRule) => {
-        if (dragToolRule) {
+      clearSelectDragTool = () => {
+        activeKey.value = "form";
+        actionRule.activeRule = null;
+      },
+      selectDragTool = (selectRule) => {
+        if (selectRule) {
           activeKey.value = "props";
-          activeRule.value = dragToolRule.children[0];
+          actionRule.activeRule = selectRule;
+
           const baseRules = baseConfig.baseRules(),
-            propsRules = activeRule.value._conf.props();
+            propsRules = actionRule.activeRule._conf.props();
           // 获取所有定义好的参数规则
           propsForm.value.rule = [...baseRules, ...propsRules];
 
@@ -246,19 +315,19 @@ export default defineComponent({
           baseRules.forEach((item) => {
             if (item.field) {
               propsValue[item.field] =
-                activeRule.value[item.field.replace(baseConfig.ruleFieldPrefix, "")];
+                actionRule.activeRule[item.field.replace(baseConfig.ruleFieldPrefix, "")];
             }
           });
 
           propsRules.forEach((item) => {
             if (item.field) {
-              propsValue[item.field] = activeRule.value?.props?.[item.field];
+              propsValue[item.field] = actionRule.activeRule?.props?.[item.field];
             }
           });
 
           propsForm.value.value = propsValue;
         } else {
-          activeRule.value = null;
+          actionRule.activeRule = null;
         }
       },
       // 设置value
@@ -269,14 +338,14 @@ export default defineComponent({
       },
       // 设置rule和props相关
       propsChangeField = (field, value) => {
-        if (activeRule.value) {
+        if (actionRule.activeRule) {
           if (field.indexOf(baseConfig.ruleFieldPrefix) === 0) {
-            activeRule.value[field.replace(baseConfig.ruleFieldPrefix, "")] = value;
+            actionRule.activeRule[field.replace(baseConfig.ruleFieldPrefix, "")] = value;
           } else {
-            if (!activeRule.value.props) {
-              activeRule.value.props = {};
+            if (!actionRule.activeRule.props) {
+              actionRule.activeRule.props = {};
             }
-            activeRule.value.props[field] = value;
+            actionRule.activeRule.props[field] = value;
           }
         }
       },
@@ -310,7 +379,7 @@ export default defineComponent({
           // TODO:处理child
 
           if (_conf) {
-            rule = makeRule(_conf, nrs, rule);
+            rule = makeRule(_conf, rule);
             if (_child) {
             }
           } else if (_child) {
@@ -359,7 +428,8 @@ export default defineComponent({
         );
       },
       onClick = () => {
-        console.log(getRule());
+        console.log(coreForm.value.rule);
+        // console.log(getRule());
         // setRule([
         //   {
         //     field: "a-input12",
@@ -372,7 +442,7 @@ export default defineComponent({
         // ]);
       };
 
-    coreForm.value.rule = makeDragRule(coreForm.value.rule);
+    coreForm.value.rule = [makeDrag("draggable", true)];
 
     onMounted(() => {
       document.body.ondrop = (e) => {

@@ -46,10 +46,6 @@ export default function factory() {
                 emit("update:modelValue", rf.modelValue)
             })
 
-            watch(modelValue, () => {
-                rf.updateModelValue(modelValue.value)
-            }, { deep: true })
-
             watch(option, () => {
                 rf.initOption()
                 vm.ctx.$forceUpdate()
@@ -62,6 +58,12 @@ export default function factory() {
             watch(rule, () => {
                 rf.initRule()
                 vm.ctx.$forceUpdate()
+            }, { deep: true })
+
+            watch(modelValue, () => {
+                nextTick(() => {
+                    rf.updateModelValue(modelValue.value)
+                })
             }, { deep: true })
 
             return () => rf.render()

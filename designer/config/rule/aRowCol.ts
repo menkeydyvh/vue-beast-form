@@ -24,7 +24,12 @@ const config: ConfigRuleType = {
                 type: "a-divider",
                 children: ["Props配置"],
             },
-            { type: 'a-slider', field: 'span', title: '栅格占位格数' },
+            {
+                type: 'a-slider', field: 'span', props: {
+                    min: 0,
+                    max: 24,
+                }, title: '栅格占位格数'
+            },
             { type: 'a-input', field: 'flex', title: 'flex 布局填充' },
             { type: 'a-input-number', field: 'offset', title: '栅格左侧的间隔格数' },
             { type: 'a-input-number', field: 'pull', title: '栅格向左移动格数' },

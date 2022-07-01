@@ -89,6 +89,8 @@ export const loopRule = (rules: RuleType[], value: any, callback: Function, key 
     })
 }
 
+interface CallbackItemType<T> { item: T, index: number, ary: T[] }
+
 /**
  * 动态循环遍历
  * @param ary 
@@ -96,14 +98,16 @@ export const loopRule = (rules: RuleType[], value: any, callback: Function, key 
  * @param callback 
  * @param search 
  */
-export const searchLoop = <T>(ary: T[], value: any, callback: Function, search = { key: "field", children: "children" }) => {
+export const searchLoop = <T>(ary: T[], value: any, callback: (curData: CallbackItemType<T>, parentData: CallbackItemType<T>) => void, parent: CallbackItemType<T>, search = { key: "field", children: "children" }) => {
     ary.forEach((item, index) => {
         if (item[search.key] === value) {
-            return callback({ item, index, ary })
+            return callback({ item, index, ary }, parent)
         }
 
         if (item?.[search.children]) {
-            return searchLoop(item[search.children] as T[], value, callback, search)
+            return searchLoop(item[search.children] as T[], value, callback, {
+                item, index, ary
+            }, search)
         }
     })
 }
@@ -162,7 +166,6 @@ export const newValue = (value: any): any => {
         return value
     }
 }
-
 
 /**
  * 首字母大写
