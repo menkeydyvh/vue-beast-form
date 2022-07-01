@@ -63,7 +63,6 @@ export default function factory() {
 
             watch(modelValue, () => {
                 nextTick(() => {
-                    console.log(JSON.stringify(modelValue.value))
                     rf.updateModelValue(modelValue.value)
                 })
             }, { deep: true })
