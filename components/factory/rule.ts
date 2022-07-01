@@ -52,7 +52,7 @@ export class RuleFactory {
 
         this.display = ref(this.rule.display)
 
-        if (typeof this.rule.title === "object") {
+        if (this.rule.title && typeof this.rule.title === "object") {
             this.titleRule = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
         }
 
@@ -529,7 +529,7 @@ export class RuleFactory {
 
         if (typeof this.rule.title === 'string') {
             props[config.defaultName.formItemPropLabel] = this.rule.title;
-        } else if (typeof this.rule.title === 'object') {
+        } else if (this.rule.title && typeof this.rule.title === 'object') {
             slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }
 

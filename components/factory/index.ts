@@ -56,12 +56,16 @@ export default function factory() {
             }, { deep: true })
 
             watch(rule, () => {
+                rf.initModelValue();
                 rf.initRule()
                 vm.ctx.$forceUpdate()
             }, { deep: true })
 
             watch(modelValue, () => {
-                rf.updateModelValue(modelValue.value)
+                nextTick(() => {
+                    console.log(JSON.stringify(modelValue.value))
+                    rf.updateModelValue(modelValue.value)
+                })
             }, { deep: true })
 
             return () => rf.render()
