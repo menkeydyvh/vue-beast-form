@@ -1,5 +1,3 @@
-import type { RuleType } from "../../../components/types/rule"
-
 export default class Base {
 
     public ruleFieldPrefix = "ruleKey-"
