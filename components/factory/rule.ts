@@ -211,17 +211,31 @@ export class RuleFactory {
     /**
      * 禁用
      * @param disabled 
+     * @param isChild 
      */
-    setDisabled(disabled: boolean) {
+    setDisabled(disabled: boolean, isChild?: boolean) {
         if (this._config.disabled) {
             if (this.vm.props.disabled === true) {
                 this.setProps(this._config.disabled, true)
             } else {
-                this.setProps(this._config.disabled, disabled === true)
+                this.setProps(this._config.disabled, disabled === true ? true : undefined)
             }
+        }
+
+        if (isChild) {
+            this.children.forEach(child => {
+                if (typeof child === 'object') {
+                    child.setDisabled(disabled, isChild)
+                }
+            })
         }
     }
 
+    /**
+     * 设置props
+     * @param key 
+     * @param value 
+     */
     setProps(key: string, value: any) {
         this.props[key] = value
     }

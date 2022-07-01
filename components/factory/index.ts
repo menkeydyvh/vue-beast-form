@@ -25,7 +25,7 @@ export default function factory() {
         emits,
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
-                { modelValue, rule, option } = toRefs(props);
+                { modelValue, rule, option, disabled } = toRefs(props);
 
             const rf = new FormFactory(vm)
 
@@ -49,6 +49,10 @@ export default function factory() {
             watch(option, () => {
                 rf.initOption()
                 vm.ctx.$forceUpdate()
+            }, { deep: true })
+
+            watch(disabled, () => {
+                rf.initDisabled()
             }, { deep: true })
 
             watch(rf.modelValue, () => {

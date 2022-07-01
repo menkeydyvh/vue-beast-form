@@ -28,6 +28,8 @@ export default class FormFactory {
 
     public rules: RuleFactory[] = []
 
+    public disabled: boolean
+
     public api: Api
 
     static formRefsName = "form"
@@ -77,6 +79,15 @@ export default class FormFactory {
             item => new RuleFactory(item, this.modelValue, this.api, this.vm)
         )
         this.api.setRfs(this.rules)
+    }
+
+    initDisabled() {
+        const { disabled } = toRefs(this.vm.props)
+        this.disabled = (disabled.value as boolean)
+
+        this.rules.forEach(rule => {
+            rule.setDisabled(this.disabled, true)
+        })
     }
 
     initOption() {
