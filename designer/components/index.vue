@@ -150,7 +150,6 @@ export default defineComponent({
       },
       dragAdd = (e, children) => {
         // 从菜单添加进来
-        debugger;
         const { newIndex, to } = e,
           curItem = e.item._underlying_vm_;
         if (curItem?.name) {
@@ -171,8 +170,8 @@ export default defineComponent({
             });
           }
         }
-        console.log("dragAdd");
         actionRule.isAdd = true;
+        // console.log("dragAdd");
       },
       dragEnd = (e) => {
         // 拖动换位结束
@@ -187,16 +186,16 @@ export default defineComponent({
         actionRule.moveRule = null;
         actionRule.addRule = null;
         actionRule.isAdd = false;
-        console.log("dragEnd");
+        // console.log("dragEnd");
       },
       dragStart = (e) => {
         actionRule.isAdd = false;
         actionRule.moveRule = e;
-        console.log("dragStart");
+        // console.log("dragStart");
       },
       dartUnchoose = (e) => {
         actionRule.addRule = e;
-        console.log("dartUnchoose");
+        // console.log("dartUnchoose");
       },
       makeRule = (config, _cRule) => {
         const confRule = _cRule || config.rule(),
@@ -306,9 +305,6 @@ export default defineComponent({
 
           const baseRules = baseConfig.baseRules(),
             propsRules = actionRule.activeRule._conf.props();
-          // 获取所有定义好的参数规则
-          propsForm.value.rule = [...baseRules, ...propsRules];
-
           // 赋值处理
           const propsValue = {};
 
@@ -326,6 +322,7 @@ export default defineComponent({
           });
 
           propsForm.value.value = propsValue;
+          propsForm.value.rule = [...baseRules, ...propsRules];
         } else {
           actionRule.activeRule = null;
         }
@@ -374,18 +371,20 @@ export default defineComponent({
 
           const _conf = siderMenu.getRule(rule.type),
             _child = rule.children;
-          rule.children = null;
-
-          // TODO:处理child
+          rule.children = [];
 
           if (_conf) {
             rule = makeRule(_conf, rule);
             if (_child) {
+              let children = rule.children[0].children;
+              if (_conf.drag) {
+                children = children[0].children;
+              }
+              children.push(...loadRule(_child));
             }
           } else if (_child) {
             rule.children = loadRule(_child);
           }
-
           nrs.push(rule);
         });
 
@@ -428,18 +427,36 @@ export default defineComponent({
         );
       },
       onClick = () => {
-        console.log(coreForm.value.rule);
+        // console.log(coreForm.value.rule);
         // console.log(getRule());
-        // setRule([
-        //   {
-        //     field: "a-input12",
-        //     type: "a-input",
-        //     title: "输入框2",
-        //     props: {
-        //       placeholder: "3",
-        //     },
-        //   },
-        // ]);
+        setRule([
+          {
+            type: "a-row",
+            children: [
+              {
+                type: "a-col",
+                props: {
+                  span: 12,
+                },
+                children: [
+                  {
+                    field: "a-input1",
+                    type: "a-input",
+                    title: "输入框",
+                    props: {},
+                  },
+                ],
+              },
+            ],
+            props: {},
+          },
+          {
+            field: "a-select1",
+            type: "a-select",
+            title: "选择框",
+            props: {},
+          },
+        ]);
       };
 
     coreForm.value.rule = [makeDrag("draggable", true)];

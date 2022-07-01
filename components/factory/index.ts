@@ -61,9 +61,7 @@ export default function factory() {
             }, { deep: true })
 
             watch(modelValue, () => {
-                nextTick(() => {
-                    rf.updateModelValue(modelValue.value)
-                })
+                rf.updateModelValue(modelValue.value)
             }, { deep: true })
 
             return () => rf.render()

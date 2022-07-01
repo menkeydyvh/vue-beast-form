@@ -1,4 +1,4 @@
-import { h, reactive, unref, toRef, resolveDirective, withDirectives } from 'vue'
+import { h, reactive, unref, ref, resolveDirective, withDirectives } from 'vue'
 import { globalCache, LoaderFactory } from './loader'
 import type Api from './api'
 import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
@@ -50,7 +50,7 @@ export class RuleFactory {
         this.modelValue = modelValue;
         this.api = api;
 
-        this.display = toRef(this.rule, "display")
+        this.display = ref(this.rule.display)
 
         if (typeof this.rule.title === "object") {
             this.titleRule = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
@@ -64,7 +64,7 @@ export class RuleFactory {
     }
 
     private getTag() {
-        return LoaderFactory.getComponents(this.rule.type) as any
+        return this.rule ? LoaderFactory.getComponents(this.rule.type) as any : null
     }
 
     initConfigCache() {

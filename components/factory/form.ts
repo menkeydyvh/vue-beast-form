@@ -71,7 +71,11 @@ export default class FormFactory {
 
     initRule() {
         const { rule } = toRefs(this.vm.props)
-        this.rules = (rule.value as RuleType[]).map(item => new RuleFactory(item, this.modelValue, this.api, this.vm))
+        this.rules = (rule.value as RuleType[]).filter(
+            item => !!item
+        ).map(
+            item => new RuleFactory(item, this.modelValue, this.api, this.vm)
+        )
         this.api.setRfs(this.rules)
     }
 
