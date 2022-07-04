@@ -1,10 +1,8 @@
-# json-layout
+# vue-beast-form
 
 #### 介绍
 
 通过 vue3 用json方式布局并提供布局表单
-
-ps:正在努力研发中...... 后续会已1.0.0为稳定版发布
 
 #### 现支持框架
 
@@ -16,7 +14,7 @@ ps:正在努力研发中...... 后续会已1.0.0为稳定版发布
 #### 安装教程
 
 ```
-npm i -S json-layout
+npm i -S vue-beast-form
 ```
 
 
