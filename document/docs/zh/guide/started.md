@@ -39,7 +39,7 @@ xxx.vue
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import BeastForm from "vue-beast-form";
+import { BeastForm } from "vue-beast-form";
 import type { RuleType, ApiType, PropsOptionType } from "vue-beast-form";
 
 export default defineComponent({

@@ -1,8 +1,9 @@
 <template>
-  <beast-form :rule="rule" :isForm="false" />
+  <beast-form :rule="rule"  />
 </template>
 
 <script>
+debugger;
 import { ref } from "vue";
 import { BeastForm } from "vue-beast-form";
 

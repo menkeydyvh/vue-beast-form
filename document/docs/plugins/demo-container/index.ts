@@ -5,7 +5,7 @@ import type { Plugin, PluginObject } from '@vuepress/core'
 
 import demoBlockContainers from "./common/containers"
 import { hash, path } from '@vuepress/utils'
-import prepareClientAppEnhanceFile from './prepareClientAppEnhanceFile'
+import prepareClientAppEnhanceFile from './prepareClient'
 import chokidar from 'chokidar'
 
 interface OptionsType {
@@ -28,7 +28,7 @@ export const demoContainer = (options: OptionsType): Plugin => {
 
   const plugin: PluginObject = {
     name: 'vuepress-plugin-demo-container',
-    clientAppEnhanceFiles: (app) => prepareClientAppEnhanceFile(app, options, optionsHash),
+    clientConfigFile: (app) => prepareClientAppEnhanceFile(app, options, optionsHash),
 
     extendsMarkdown: (md) => {
       md.use(demoBlockContainers(options))

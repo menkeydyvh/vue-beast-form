@@ -20,7 +20,7 @@ export default async (app, options, identifier = '') => {
 
     const componentsFromDir = await getComponentsFromDir(options)
     const baseComponents = {
-        DemoBlock: path.resolve(__dirname, './DemoBlock.vue')
+        DemoBlock: path.resolve(__dirname, './demoBlock.vue')
     }
     const componentsMap = {
         ...componentsFromDir,
