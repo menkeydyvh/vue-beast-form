@@ -1,7 +1,7 @@
-import type { RuleType } from './rule';
+import type { ConfigRuleType } from './rule';
 
 export type MenuType = {
     tag: string
     title: string
-    list: RuleType[]
+    list: ConfigRuleType[]
 }

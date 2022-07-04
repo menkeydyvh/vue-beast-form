@@ -9,3 +9,4 @@ index.html
 tsconfig.json
 webpack.config.js
 .env.local
+index.ts

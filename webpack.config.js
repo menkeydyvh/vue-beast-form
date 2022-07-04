@@ -1,4 +1,5 @@
 const path = require('path');
+const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
     resolve: {
@@ -7,13 +8,13 @@ module.exports = {
     devtool: 'inline-source-map',
     mode: 'production',
     entry: {
-        index: "./components/index.ts"
+        index: "./index.ts"
     },
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
-        library: "JsonLayout",
-        libraryTarget: "umd"
+        // library: "BeastForm",
+        // libraryTarget: "umd"
     },
     module: {
         rules: [
@@ -21,8 +22,15 @@ module.exports = {
                 test: /\.ts$/,
                 use: 'ts-loader',
                 exclude: /node-modules/,
+            },
+            {
+                test: /\.vue$/,
+                use: 'vue-loader',
             }
         ]
-    }
+    },
+    plugins: [
+        new VueLoaderPlugin()
+    ]
 
 };
