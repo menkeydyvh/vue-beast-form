@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="upload组件">
-    <json-layout
+    <beast-form
       :rule="rule"
       v-model="value"
       v-model:api="jApi"
@@ -15,11 +15,13 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { InboxOutlined } from "@ant-design/icons-vue";
-import { JsonLayout } from "../../../components";
-import type { RuleType, ApiFnType } from "../../../components/types";
+import bf, { BeastForm } from "../../../components";
+import type { RuleType, ApiFnType } from "../../../components";
+
+bf.components({ InboxOutlined });
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref({
@@ -36,8 +38,6 @@ export default defineComponent({
         ],
       }),
       jApi = ref<ApiFnType>();
-
-    JsonLayout.components = { InboxOutlined };
 
     rule.value = [
       {

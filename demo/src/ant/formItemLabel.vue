@@ -4,21 +4,21 @@
     :bordered="false"
     title="title是json的解析 | 指令调试 | style | class | attrs "
   >
-    <json-layout v-model="value" :rule="rule" :option="option" />
+    <beast-form v-model="value" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
   </a-card>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import jlc, { JsonLayout } from "../../../components";
-import type { RuleType } from "../../../components/types";
+import bf, { BeastForm } from "../../../components";
+import type { RuleType } from "../../../components";
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     // 指令
-    jlc.directive("test2", {
+    bf.directive("test2", {
       mounted() {
         console.log("directive:test2");
       },

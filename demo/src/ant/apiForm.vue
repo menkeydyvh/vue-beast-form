@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="api测试用例">
-    <json-layout
+    <beast-form
       :rule="rule"
       v-model="value"
       v-model:api="jApi"
@@ -18,13 +18,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { JsonLayout } from "../../../components";
+import { BeastForm } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
-JsonLayout.emits.push("divBtnClick");
+// TODO：emits的设置还是会提示 non-emits event listeners (divBtnClick) 后续需要处理
+BeastForm.emits.push("divBtnClick");
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref({}),
@@ -53,7 +54,7 @@ export default defineComponent({
         children: ["这是一个div"],
       },
       {
-        type: "json-layout",
+        type: "beast-form",
         title: "subForm",
         field: "subForm",
         props: {
@@ -73,7 +74,7 @@ export default defineComponent({
         },
       },
       {
-        type: "json-layout",
+        type: "beast-form",
         title: "subForm1",
         field: "subForm1",
         props: {

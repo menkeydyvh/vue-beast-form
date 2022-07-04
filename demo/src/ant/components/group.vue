@@ -4,7 +4,7 @@
   </div>
   <a-row v-for="(item, index) in groupRule">
     <a-col flex="auto">
-      <json-layout
+      <beast-form
         :rule="item.rule"
         :option="item.option"
         v-model="value[index]"
@@ -20,9 +20,9 @@
 import { defineComponent, ref, toRefs, watch } from "vue";
 import type { PropType } from "vue";
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue";
-import { deepCopy } from "json-layout/lib/tool";
-import { JsonLayout } from "../../../../components";
-import type { RuleType, PropsOptionType } from "../../../../components/types";
+import { BeastForm } from "../../../../components";
+import { deepCopy } from "../../../../components/tool";
+import type { RuleType, PropsOptionType } from "../../../../components";
 
 interface GroupRule {
   rule: Array<RuleType>;
@@ -31,7 +31,7 @@ interface GroupRule {
 
 export default defineComponent({
   name: "Group",
-  components: { JsonLayout, PlusSquareOutlined, MinusSquareOutlined },
+  components: { BeastForm, PlusSquareOutlined, MinusSquareOutlined },
   props: {
     field: { type: String },
     rule: { type: Array as PropType<Array<RuleType>>, required: true },

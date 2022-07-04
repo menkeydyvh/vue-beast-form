@@ -22,7 +22,7 @@
       </a-collapse>
     </div>
     <div class="designer-content">
-      <json-layout
+      <beast-form
         :rule="coreForm.rule"
         :option="coreForm.option"
         @changeField="coreChangeField"
@@ -31,7 +31,7 @@
     <div class="designer-right">
       <a-tabs v-model:activeKey="activeKey" type="card">
         <a-tab-pane key="props" tab="组件" :disabled="!recordAcitve.active">
-          <json-layout
+          <beast-form
             v-model="propsForm.value"
             :rule="propsForm.rule"
             :option="propsForm.option"
@@ -39,7 +39,7 @@
           />
         </a-tab-pane>
         <a-tab-pane key="form" tab="表单">
-          <json-layout
+          <beast-form
             v-model="coreForm.option.form"
             :rule="formProps.rule"
             :option="formProps.option"
@@ -52,7 +52,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, provide, watch } from "vue";
-import jlc, { JsonLayout } from "../../components/index";
+import bf, { BeastForm } from "../../components/index";
 import { deepCopy, searchLoop, randomId } from "../../components/tool";
 import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";
@@ -61,12 +61,12 @@ import Menu from "../config/menu";
 import Base from "../config/base";
 import "../styles/index.less";
 
-jlc.components({ Drag, DragTool });
+bf.components({ Drag, DragTool });
 let slotNotation = 0;
 
 export default defineComponent({
   name: "Designer",
-  components: { draggable, JsonLayout },
+  components: { draggable, BeastForm },
   setup(props) {
     const recordAcitve = ref({
         active: null,

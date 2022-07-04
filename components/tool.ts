@@ -40,11 +40,11 @@ const realizeCloneDeep = (obj: any, hash = new WeakMap()) => {
  * @returns 
  */
 export const isObject = (data: any): boolean => {
-    return Object.prototype.toString.call(data) === '[object Object]'
+    return typeof data === "object" && Object.prototype.toString.call(data) === '[object Object]'
 }
 
 /**
- * 获取父级JsonLayout
+ * 获取父级 name
  * @param parent 
  * @param name 
  * @returns 

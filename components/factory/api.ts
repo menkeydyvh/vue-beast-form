@@ -61,6 +61,8 @@ const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
     }
 }
 
+
+
 export default class apiFactory {
 
     public vm: ComponentInternalInstance
@@ -140,253 +142,262 @@ export default class apiFactory {
 
 
     /**
-     * 修改值
-     * @param field 
-     * @param value 
-     * @param key 
-     */
-    setValue(field: string, value: any, key?: string) {
-        const rf = this.getRule(field)
-        if (rf) {
-            rf.setValue(value, key)
-        }
-    }
-
-    /**
-     * 设置class
-     * @param field 
-     * @param value 
-     */
-    setClass(field: string, value: any) {
-        this.setProps(field, "class", value)
-    }
-
-    /**
-     * 设置style
-     * @param field 
-     * @param value 
-     */
-    setStyle(field: string, value: any) {
-        this.setProps(field, "style", value)
-    }
-
-    /**
-     * 设置attrs
-     * @param field 
-     * @param attrs
-     */
-    setAttrs(field: string, attrs: { [key: string]: any }) {
-        const rf = this.getRule(field)
-        if (rf) {
-            for (let key in attrs) {
-                rf.setAttrs(key, attrs[key])
-            }
-        }
-    }
-
-    /**
-     * 设置props
-     * @param field 
-     * @param value 
-     */
-    setProps(field: string, key: string, value: any) {
-        const rf = this.getRule(field)
-        if (rf) {
-            rf.setProps(key, value)
-        }
-    }
-
-    /**
-     * 设置是否显示
-     * @param field 
-     * @param display 
-     */
-    setDisplay(field: string, display: boolean) {
-        const rf = this.getRule(field)
-        if (rf) {
-            rf.display.value = display === true
-        }
-    }
-
-    /**
-     * 设置禁用
-     * @param field 
-     * @param isBool 
-     */
-    setDisabled(field: string, isBool: boolean) {
-        const rf = this.getRule(field)
-        if (rf) {
-            rf.setDisabled(isBool)
-        }
-    }
-
-    /**
-     * 插入子节点
-     * @param field 
-     * @param rule 
-     * @param index 
-     */
-    pushChildren(field: string, rule: string | RuleType, index?: number) {
-        const rf = this.getRule(field)
-        if (rf) {
-            // 统一插入处理
-            rf.addChildren(rule, index)
-        }
-    }
-
-    /**
-     * 删除子节点
-     * @param field 
-     * @param index 
-     */
-    delChildren(field: string, index?: number) {
-        const rf = this.getRule(field)
-        if (rf) {
-            rf.delChildren(index)
-        }
-    }
-
-    /**
-     * 检测是不是model的key
-     * @param field 
+     * 对外发布api
      * @returns 
      */
-    isModelKey(field: string) {
-        return Object.keys(this.modelValue).includes(field)
-    }
-
-    /**
-     * 获取表单数据集
-     * @param field 
-     * @returns 
-     */
-    getFormData(field?: string) {
-        if (field) {
-            if (this.isModelKey(field)) {
-                const rf = this.getRule(field)
+    publishApi() {
+        let self = this;
+        return {
+            /**
+            * 修改值
+            * @param field 
+            * @param value 
+            * @param key 
+            */
+            setValue(field: string, value: any, key?: string) {
+                const rf = self.getRule(field)
                 if (rf) {
-                    return rf.getValue()
+                    rf.setValue(value, key)
                 }
-            }
-        } else {
-            const data = {};
-            for (let key in this.modelValue) {
-                data[key] = this.getFormData(key)
-            }
-            return data;
-        }
-    }
+            },
 
-    /**
-     * 重置为组件空值
-     * @param field 
-     */
-    resetFormData(field?: string) {
-        if (field) {
-            if (this.isModelKey(field)) {
-                const rf = this.getRule(field)
+            /**
+             * 设置class
+             * @param field 
+             * @param value 
+             */
+            setClass(field: string, value: any) {
+                this.setProps(field, "class", value)
+            },
+
+            /**
+             * 设置style
+             * @param field 
+             * @param value 
+             */
+            setStyle(field: string, value: any) {
+                this.setProps(field, "style", value)
+            },
+
+            /**
+             * 设置attrs
+             * @param field 
+             * @param attrs
+             */
+            setAttrs(field: string, attrs: { [key: string]: any }) {
+                const rf = self.getRule(field)
                 if (rf) {
-                    return rf.setValue(undefined)
-                }
-            }
-        } else {
-            for (let key in this.modelValue) {
-                this.resetFormData(key);
-            }
-        }
-    }
-
-    /**
-     * 验证字段规则
-     * @param callback 
-     * @param fields 
-     */
-    async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[], formVm?: ComponentInternalInstance) {
-        let valid = true, data = null
-        if (formVm) {
-            if (!await formValidate(formVm.refs[FormFactory.formRefsName], fields)) {
-                valid = false
-            }
-        } else {
-            if (this.allVms) {
-                let i = 0, len = this.allVms.length;
-                for (i; i < len; i++) {
-                    if (!await formValidate(this.allVms[i].refs[FormFactory.formRefsName], fields)) {
-                        valid = false
+                    for (let key in attrs) {
+                        rf.setAttrs(key, attrs[key])
                     }
                 }
-            }
-        }
-        if (valid) {
-            if (fields) {
-                if (Array.isArray(fields)) {
-                    data = {};
-                    fields.forEach(field => {
-                        data[field] = this.getFormData(field);
-                    })
-                } else {
-                    data = this.getFormData(fields);
+            },
+
+            /**
+             * 设置props
+             * @param field 
+             * @param value 
+             */
+            setProps(field: string, key: string, value: any) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    rf.setProps(key, value)
                 }
-            } else {
-                data = this.getFormData();
+            },
+
+            /**
+             * 设置是否显示
+             * @param field 
+             * @param display 
+             */
+            setDisplay(field: string, display: boolean) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    rf.display.value = display === true
+                }
+            },
+
+            /**
+             * 设置禁用
+             * @param field 
+             * @param isBool 
+             */
+            setDisabled(field: string, isBool: boolean) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    rf.setDisabled(isBool)
+                }
+            },
+
+            /**
+             * 插入子节点
+             * @param field 
+             * @param rule 
+             * @param index 
+             */
+            pushChildren(field: string, rule: string | RuleType, index?: number) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    // 统一插入处理
+                    rf.addChildren(rule, index)
+                }
+            },
+
+            /**
+             * 删除子节点
+             * @param field 
+             * @param index 
+             */
+            delChildren(field: string, index?: number) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    rf.delChildren(index)
+                }
+            },
+
+            /**
+             * 检测是不是model的key
+             * @param field 
+             * @returns 
+             */
+            isModelKey(field: string) {
+                return Object.keys(self.modelValue).includes(field)
+            },
+
+            /**
+             * 获取表单数据集
+             * @param field 
+             * @returns 
+             */
+            getFormData(field?: string) {
+                if (field) {
+                    if (this.isModelKey(field)) {
+                        const rf = self.getRule(field)
+                        if (rf) {
+                            return rf.getValue()
+                        }
+                    }
+                } else {
+                    const data = {};
+                    for (let key in self.modelValue) {
+                        data[key] = this.getFormData(key)
+                    }
+                    return data;
+                }
+            },
+
+            /**
+             * 重置为组件空值
+             * @param field 
+             */
+            resetFormData(field?: string) {
+                if (field) {
+                    if (this.isModelKey(field)) {
+                        const rf = self.getRule(field)
+                        if (rf) {
+                            return rf.setValue(undefined)
+                        }
+                    }
+                } else {
+                    for (let key in self.modelValue) {
+                        this.resetFormData(key);
+                    }
+                }
+            },
+
+            /**
+            * 验证字段规则
+            * @param callback 
+            * @param fields 
+            */
+            async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[], formVm?: ComponentInternalInstance) {
+                let valid = true, data = null
+                if (formVm) {
+                    if (!await formValidate(formVm.refs[FormFactory.formRefsName], fields)) {
+                        valid = false
+                    }
+                } else {
+                    if (self.allVms) {
+                        let i = 0, len = self.allVms.length;
+                        for (i; i < len; i++) {
+                            if (!await formValidate(self.allVms[i].refs[FormFactory.formRefsName], fields)) {
+                                valid = false
+                            }
+                        }
+                    }
+                }
+                if (valid) {
+                    if (fields) {
+                        if (Array.isArray(fields)) {
+                            data = {};
+                            fields.forEach(field => {
+                                data[field] = this.getFormData(field);
+                            })
+                        } else {
+                            data = this.getFormData(fields);
+                        }
+                    } else {
+                        data = this.getFormData();
+                    }
+                }
+                callback(valid, data)
+            },
+
+            /**
+            * 清理字段验证
+            * @param fields 
+            */
+            clearValidate(fields?: string | string[], formVm?: ComponentInternalInstance) {
+                if (formVm) {
+                    clearFormValidate(formVm.refs[FormFactory.formRefsName], fields);
+                } else {
+                    if (self.allVms) {
+                        self.allVms.forEach(item => {
+                            clearFormValidate(item.refs[FormFactory.formRefsName], fields);
+                        })
+                    }
+                }
+            },
+
+            /**
+            * 添加事件
+            * @param field 
+            * @param event 
+            * @param callback 
+            * @returns 
+            */
+            addOn(field: string, event: string, callback?: Function) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    return rf.addOn(event, callback)
+                }
+            },
+
+            /**
+            * 添加事件监听
+            * @param field 
+            * @param emit 
+            * @returns 
+            */
+            addEmit(field: string, emit: EmitType) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    return rf.addEmit(emit)
+                }
+            },
+
+            /**
+            * 删除事件或监听
+            * @param field 
+            * @param event 
+            * @returns 
+            */
+            delOnOrEmit(field: string, event: string) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    return rf.delOnOrEmit(event)
+                }
             }
-        }
-        callback(valid, data)
-    }
-
-    /**
-     * 清理字段验证
-     * @param fields 
-     */
-    clearValidate(fields?: string | string[], formVm?: ComponentInternalInstance) {
-        if (formVm) {
-            clearFormValidate(formVm.refs[FormFactory.formRefsName], fields);
-        } else {
-            if (this.allVms) {
-                this.allVms.forEach(item => {
-                    clearFormValidate(item.refs[FormFactory.formRefsName], fields);
-                })
-            }
-        }
-    }
-
-    /**
-     * 添加事件
-     * @param field 
-     * @param event 
-     * @param callback 
-     * @returns 
-     */
-    addOn(field: string, event: string, callback?: Function) {
-        const rf = this.getRule(field)
-        if (rf) {
-            return rf.addOn(event, callback)
-        }
-    }
-
-    /**
-     * 添加事件监听
-     * @param field 
-     * @param emit 
-     * @returns 
-     */
-    addEmit(field: string, emit: EmitType) {
-        const rf = this.getRule(field)
-        if (rf) {
-            return rf.addEmit(emit)
-        }
-    }
-
-    /**
-     * 删除事件或监听
-     * @param field 
-     * @param event 
-     * @returns 
-     */
-    delOnOrEmit(field: string, event: string) {
-        const rf = this.getRule(field)
-        if (rf) {
-            return rf.delOnOrEmit(event)
         }
     }
 }

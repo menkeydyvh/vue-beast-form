@@ -8,11 +8,11 @@ import 'ant-design-vue/dist/antd.css';
 
 const app = createApp(App)
 
-const jsonLayoutConfig: GlobalConfigType = {
+const bfConfig: GlobalConfigType = {
     base: 'ant-design-vue',
 }
 
-app.config.globalProperties.$jsonLayout = jsonLayoutConfig
+app.config.globalProperties.$beastForm = bfConfig
 
 app.use(Antd).directive('test1', {
     mounted() {

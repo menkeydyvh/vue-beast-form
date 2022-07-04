@@ -106,7 +106,7 @@ export default class FormFactory {
         if (modelValue) {
             for (let key in modelValue) {
                 if (this.modelValue[key] !== modelValue[key]) {
-                    this.api.setValue(key, modelValue[key])
+                    this.api.publishApi().setValue(key, modelValue[key])
                 }
             }
         }

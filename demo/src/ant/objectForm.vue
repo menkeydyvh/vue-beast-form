@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="object的处理">
-    <json-layout
+    <beast-form
       :rule="rule"
       v-model:api="jApi"
       :option="{
@@ -13,13 +13,13 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { JsonLayout } from "../../../components";
+import { BeastForm } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
-console.log(JsonLayout);
+console.log(BeastForm);
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       jApi = ref();
@@ -32,7 +32,7 @@ export default defineComponent({
         validate: [{ required: true, message: "必须填写" }],
       },
       {
-        type: "json-layout",
+        type: "BeastForm",
         title: "subForm",
         field: "subForm",
         props: {
@@ -49,7 +49,7 @@ export default defineComponent({
               field: "groupInput2",
             },
             {
-              type: "json-layout",
+              type: "beast-form",
               title: "subForm1",
               field: "subForm1",
               props: {

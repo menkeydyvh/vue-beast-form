@@ -1,4 +1,4 @@
-import { JsonLayout } from "../index"
+import { BeastForm } from "../index"
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
@@ -20,7 +20,7 @@ export class LoaderFactory {
         for (let key in vm.appContext.components) {
             globalCache.tagCacheComponents[key] = vm.appContext.components[key]
         }
-        globalCache.tagCacheComponents[JsonLayout.name] = JsonLayout
+        globalCache.tagCacheComponents[BeastForm.name] = BeastForm
     }
 
     static loaderComponents(components: { [key: string]: VNodeTypes }) {

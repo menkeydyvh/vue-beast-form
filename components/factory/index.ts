@@ -3,7 +3,7 @@ import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
-export const NAME = 'JsonLayout'
+export const NAME = 'BeastForm'
 
 const baseEmits = ["changeField", "update:modelValue", "update:api"];
 
@@ -42,7 +42,7 @@ export default function factory() {
             })
 
             nextTick(() => {
-                emit("update:api", rf.api)
+                emit("update:api", rf.api.publishApi())
                 emit("update:modelValue", rf.modelValue)
             })
 

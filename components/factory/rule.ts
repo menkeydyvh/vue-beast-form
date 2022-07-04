@@ -278,7 +278,7 @@ export class RuleFactory {
 
         this.modelValue[this.field] = this.getValue()
 
-        this.vm.emit('changeField', this.field, this.getValue(), this.api)
+        this.vm.emit('changeField', this.field, this.getValue(), this.api.publishApi())
     }
 
     getValue(key?: string) {
@@ -333,9 +333,9 @@ export class RuleFactory {
         const self = this;
         this.props[onToPropsName(event)] = function () {
             if (callback) {
-                callback(...arguments, self.api)
+                callback(...arguments, self.api.publishApi())
             } else {
-                self.rule.on[event](...arguments, self.api)
+                self.rule.on[event](...arguments, self.api.publishApi())
             }
         }
     }
@@ -348,7 +348,7 @@ export class RuleFactory {
         if (eType) {
             const self = this;
             this.props[onToPropsName(eType.event)] = function () {
-                self.vm.emit(eType.alias, ...arguments, self.api)
+                self.vm.emit(eType.alias, ...arguments, self.api.publishApi())
             }
         }
     }
@@ -425,12 +425,12 @@ export class RuleFactory {
                 self.setValue(arguments[0], key)
                 const onName = propsToOnName(self._config.modelKeyEvents[index]);
                 if (self.rule?.on?.[onName]) {
-                    self.rule.on[onName](...arguments, self.api)
+                    self.rule.on[onName](...arguments, self.api.publishApi())
                 }
                 if (self.rule?.emits) {
                     const emitItem = self.rule.emits.find(item => item.event === onName)
                     if (emitItem) {
-                        self.vm.emit(emitItem.alias, ...arguments, self.api)
+                        self.vm.emit(emitItem.alias, ...arguments, self.api.publishApi())
                     }
                 }
             }

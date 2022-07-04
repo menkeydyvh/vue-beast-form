@@ -1,7 +1,7 @@
 <template>
   <a-card class="content-card" :bordered="false" title="数组的处理，引入Group组件">
     <div>值:{{ value }}</div>
-    <json-layout
+    <beast-form
       :rule="rule"
       v-model="value"
       v-model:api="jApi"
@@ -16,13 +16,13 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
-import jlc, { JsonLayout } from "../../../components";
+import bf, { BeastForm } from "../../../components";
 import type { RuleType, FactoryOptionType } from "../../../components/types";
 
-jlc.components({ Group });
+bf.components({ Group });
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref(),

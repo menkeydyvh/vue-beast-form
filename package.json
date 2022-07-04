@@ -1,7 +1,7 @@
 {
   "name": "vue-beast-form",
   "version": "0.2.0",
-  "description": "通过json解析生成页面布局和表单布局",
+  "description": "vue3通过ui框架对json解析生成页面布局或表单布局",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -27,6 +27,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/yvh/json-layout.git"
+    "url": "https://gitee.com/yvh/vue-beast-form.git"
   }
 }

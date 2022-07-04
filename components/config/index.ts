@@ -60,9 +60,9 @@ export default class config {
      * 初始化全局配置
      */
     initGlobalConfig() {
-        const globalConfig = this.vm.appContext.config.globalProperties.$jsonLayout as GlobalConfigType
+        const globalConfig = this.vm.appContext.config.globalProperties.$beastForm as GlobalConfigType
         if (!globalConfig) {
-            console.error("error: You need set app.config.globalProperties.$jsonLayout")
+            console.error("error: You need set app.config.globalProperties.$beastForm")
             return
         }
         this.initConfig(globalConfig)

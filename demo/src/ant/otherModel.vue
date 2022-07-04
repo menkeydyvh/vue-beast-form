@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="其他支持多个v-model处理">
-    <json-layout
+    <beast-form
       :rule="rule"
       v-model="value"
       :option="{
@@ -14,11 +14,11 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { JsonLayout } from "../../../components";
+import { BeastForm } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref({});

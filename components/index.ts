@@ -8,11 +8,11 @@ import type { RuleType } from './types';
 
 export * from './types';
 
-export const JsonLayout = factory();
+export const BeastForm = factory();
 
 export default {
   install: (app: App) => {
-    app.component(JsonLayout.name, JsonLayout);
+    app.component(BeastForm.name, BeastForm);
     return app;
   },
   /**
@@ -30,10 +30,10 @@ export default {
    * @param directive 
    */
   directive: (key: string, directive: Directive) => {
-    JsonLayout.directives[key] = directive
+    BeastForm.directives[key] = directive
 
     onUnmounted(() => {
-      delete JsonLayout.directives[key]
+      delete BeastForm.directives[key]
     });
   },
   /**
