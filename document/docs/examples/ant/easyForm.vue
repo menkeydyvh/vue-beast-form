@@ -1,15 +1,15 @@
 <template>
   <div>表单值：{{ value }}</div>
   <br />
-  <json-layout :rule="rule" v-model="value" />
+  <beast-form :rule="rule" v-model="value" />
 </template>
 
 <script>
 import { ref } from "vue";
-import { JsonLayout } from "json-layout";
+import { BeastForm } from "vue-beast-form";
 
 export default {
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref([
         {

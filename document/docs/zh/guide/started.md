@@ -7,7 +7,7 @@
   <CodeGroupItem title="NPM" active>
 
 ```bash
-npm install --S json-layout
+npm install --S vue-beast-form
 ```
 
   </CodeGroupItem>
@@ -22,7 +22,7 @@ import App from './App.vue'
 
 const app = createApp(App)
 
-app.config.globalProperties.$jsonLayout = {
+app.config.globalProperties.$beastForm = {
     base: 'ant-design-vue'
 }
 ...
@@ -35,17 +35,17 @@ xxx.vue
 
 ```vue
 <template>
-    <json-layout v-model:api="jApi" v-model="value" :rule="rule" :option="option" />
+    <beast-form v-model:api="jApi" v-model="value" :rule="rule" :option="option" />
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import JsonLayout from "json-layout";
-import type { RuleType, ApiFnType, PropsOptionType } from "json-layout/lib/types";
+import BeastForm from "vue-beast-form";
+import type { RuleType, ApiType, PropsOptionType } from "vue-beast-form";
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
-    const jApi = ref<ApiFnType>(),      
+    const jApi = ref<ApiType>(),      
       rule = ref<RuleType[]>([]),
       option = ref<PropsOptionType>({}),  
       value = ref<any>();
@@ -66,14 +66,14 @@ export default defineComponent({
   
 ```vue
 <template>
-    <json-layout v-model:api="jApi" v-model="value" :rule="rule" :option="option" />
+    <beast-form v-model:api="jApi" v-model="value" :rule="rule" :option="option" />
 </template>
 <script>
 import { defineComponent, ref } from "vue";
-import JsonLayout from "json-layout";
+import { BeastForm } from "vue-beast-form";
 
 export default defineComponent({
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const jApi = ref(),      
       rule = ref([]),

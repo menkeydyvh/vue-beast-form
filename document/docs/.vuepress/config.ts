@@ -8,12 +8,12 @@ import { demoContainer } from '../plugins/demo-container'
 
 export default defineUserConfig({
     lang: 'zh-CN',
-    title: 'JsonLayout',
+    title: 'vue beast form',
     description: '一个通过JSON快速生成 VUE UI 的框架',
     locales: {
         '/zh/': {
             lang: 'zh-CN',
-            title: 'JsonLayout',
+            title: 'vue beast form',
             description: '一个通过JSON快速生成 VUE UI 的框架',
         },
     },

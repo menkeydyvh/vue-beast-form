@@ -13,7 +13,7 @@ TS开发中便捷提示
   <CodeGroupItem title="TS" active>
 
 ```ts
-import type { RuleType } from "json-layout/lib/types";
+import type { RuleType } from "vue-beast-form";
 
 const rule = ref<RuleType[]> = [
   {

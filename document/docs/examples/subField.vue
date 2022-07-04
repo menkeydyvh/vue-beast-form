@@ -1,13 +1,13 @@
 <template>
-  <json-layout :rule="rule" />
+  <beast-form :rule="rule" />
 </template>
 
 <script>
 import { ref } from "vue";
-import { JsonLayout } from "json-layout";
+import { BeastForm } from "vue-beast-form";
 
 export default {
-  components: { JsonLayout },
+  components: { BeastForm },
   setup() {
     const rule = ref([
         {

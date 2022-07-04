@@ -11,7 +11,7 @@ import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 
 const app = createApp(App)
-app.config.globalProperties.$jsonLayout = {
+app.config.globalProperties.$beastForm = {
     base: 'ant-design-vue',
 }
 app.use(Antd)

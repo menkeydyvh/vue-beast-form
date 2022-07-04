@@ -1,6 +1,6 @@
 # 全局配置
 
-$jsonLayout 用来告诉框架使用哪个框架的form和表单组件对应的一些配置项,同时也支持自定义配置form相关的配置项
+$beastForm 用来告诉框架使用哪个框架的form和表单组件对应的一些配置项,同时也支持自定义配置form相关的配置项
 
 <CodeGroup>
   <CodeGroupItem title="JS" active>
@@ -10,7 +10,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 const app = createApp(App)
-app.config.globalProperties.$jsonLayout = {
+app.config.globalProperties.$beastForm = {
     base: 'ant-design-vue'
 }
 ...
@@ -22,10 +22,10 @@ app.config.globalProperties.$jsonLayout = {
 ```ts{3,6-8}
 import { createApp } from 'vue'
 import App from './App.vue'
-import type { GlobalConfigType } from "json-layout"
+import type { GlobalConfigType } from "vue-beast-form"
 
 const app = createApp(App)
-app.config.globalProperties.$jsonLayout =  {
+app.config.globalProperties.$beastForm =  {
     base: 'ant-design-vue'
 } as GlobalConfigType
 ...

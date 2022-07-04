@@ -52,7 +52,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, nextTick, onMounted, provide, watch } from "vue";
-import bf, { BeastForm } from "../../components/index";
+import bf, { BeastForm } from "../../components";
 import { deepCopy, searchLoop, randomId } from "../../components/tool";
 import Drag from "./drag.vue";
 import DragTool from "./dragTool.vue";

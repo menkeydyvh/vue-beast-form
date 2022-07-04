@@ -7,12 +7,12 @@ xxx.vue
 
 ```js
 import { Input } from "ant-design-vue";
-import { JsonLayout } from "json-layout";
+import { BeastForm } from "vue-beast-form";
 
 // 同时引入ui库对应组件
-JsonLayout.components = {Input}
+BeastForm.components({Input})
 
 export default {
-  components: { JsonLayout, Input },
+  components: { BeastForm },
 };
 ```
