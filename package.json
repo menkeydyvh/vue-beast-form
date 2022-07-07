@@ -1,6 +1,6 @@
 {
   "name": "vue-beast-form",
-  "version": "0.2.0",
+  "version": "0.2.0-alpha.2",
   "description": "vue3通过ui框架对json解析生成页面布局或表单布局",
   "main": "dist/index.js",
   "types": "lib/index.d.ts",
@@ -10,6 +10,10 @@
     "layout",
     "ui",
     "framework"
+  ],
+  "files": [
+    "dist",
+    "lib"
   ],
   "scripts": {
     "build": "webpack"
