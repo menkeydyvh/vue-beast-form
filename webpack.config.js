@@ -1,6 +1,8 @@
 const path = require('path');
 const { VueLoaderPlugin } = require('vue-loader');
 
+const distFileBaseName = "vbf"
+
 module.exports = {
     resolve: {
         extensions: ['.js', '.ts', '.json'],
@@ -13,6 +15,8 @@ module.exports = {
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
+        library: distFileBaseName,
+        libraryTarget: "umd",
     },
     module: {
         rules: [

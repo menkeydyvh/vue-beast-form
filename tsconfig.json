@@ -28,7 +28,7 @@
     "components/*.ts",
     "designer/**/*.ts",
     "designer/*.ts",
-    "index.ts",
+    "index.ts"
   ],
   "exclude": [
     "node_modules",
