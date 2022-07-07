@@ -3,7 +3,6 @@
 </template>
 
 <script>
-debugger;
 import { ref } from "vue";
 import { BeastForm } from "vue-beast-form";
 

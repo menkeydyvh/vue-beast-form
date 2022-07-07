@@ -1,6 +1,9 @@
 import { globby, path } from '@vuepress/utils'
+import DemoBlock from './demoBlock'
 
 export default async (app, options, identifier = '') => {
+    app.component("DemoBlock", DemoBlock)
+
     const getComponentsFromDir = async ({ componentsDir, componentsPatterns, getComponentName }) => {
         if (!componentsDir) {
             return {}
@@ -19,13 +22,11 @@ export default async (app, options, identifier = '') => {
     }
 
     const componentsFromDir = await getComponentsFromDir(options)
-    const baseComponents = {
-        DemoBlock: path.resolve(__dirname, './demoBlock.vue')
-    }
+
     const componentsMap = {
         ...componentsFromDir,
         ...options.components,
-        ...baseComponents
+        DemoBlock,
     }
     const content = `\
     import { defineAsyncComponent } from 'vue'
@@ -39,9 +40,10 @@ export default async (app, options, identifier = '') => {
     )}
     }
     `
+    console.log("writeTemp:", identifier)
     // write temp file and return the file path
     return app.writeTemp(
-        `register-components/clientAppEnhance.${identifier}.js`,
+        `register-components/client.${identifier}.js`,
         content
     )
 }

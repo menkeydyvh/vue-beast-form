@@ -5,7 +5,7 @@ import type { Plugin, PluginObject } from '@vuepress/core'
 
 import demoBlockContainers from "./common/containers"
 import { hash, path } from '@vuepress/utils'
-import prepareClientAppEnhanceFile from './prepareClient'
+import prepareClient from './prepareClient'
 import chokidar from 'chokidar'
 
 interface OptionsType {
@@ -18,17 +18,18 @@ interface OptionsType {
 export const demoContainer = (options: OptionsType): Plugin => {
   options = {
     components: {},
-    componentsPatterns: ['**/*.vue'],
+    componentsPatterns: ['**/*.vue', "*.vue"],
     getComponentName: (filename: string) => path.trimExt(filename.replace(/\/|\\/g, '-')),
     ...options,
   }
 
   const optionsHash = hash(options)
+
   const { componentsDir, componentsPatterns } = options
 
   const plugin: PluginObject = {
     name: 'vuepress-plugin-demo-container',
-    clientConfigFile: (app) => prepareClientAppEnhanceFile(app, options, optionsHash),
+    clientConfigFile: (app) => prepareClient(app, options, optionsHash),
 
     extendsMarkdown: (md) => {
       md.use(demoBlockContainers(options))
@@ -41,10 +42,10 @@ export const demoContainer = (options: OptionsType): Plugin => {
           ignoreInitial: true,
         })
         componentsWatcher.on('add', () => {
-          prepareClientAppEnhanceFile(app, options, optionsHash)
+          prepareClient(app, options, optionsHash)
         })
         componentsWatcher.on('unlink', () => {
-          prepareClientAppEnhanceFile(app, options, optionsHash)
+          prepareClient(app, options, optionsHash)
         })
         watchers.push(componentsWatcher)
       }

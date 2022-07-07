@@ -176,7 +176,7 @@ export default defineComponent({
       }
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.removeScrollHandler();
   },
 });
