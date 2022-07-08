@@ -10,7 +10,7 @@
  */
 const demoBlockContainers = require('./common/containers')
 const { hash, path } = require('@vuepress/utils')
-const prepareClientAppEnhanceFile = require('./prepareClientAppEnhanceFile')
+const prepareClient = require('./prepareClient')
 const chokidar = require('chokidar')
 
 module.exports = (options = {}) => {
@@ -26,8 +26,9 @@ module.exports = (options = {}) => {
   const { componentsDir, componentsPatterns } = options
   return {
     name: 'vuepress-plugin-demo-container',
-    clientConfigFile: (app) =>
-      prepareClientAppEnhanceFile(app, options, optionsHash),
+    clientConfigFile: path.join(__dirname, './client.js'),
+    onPrepared: (app) =>
+      prepareClient(app, options, optionsHash),
     extendsMarkdown: md => {
       md.use(demoBlockContainers(options))
     },
@@ -38,10 +39,10 @@ module.exports = (options = {}) => {
           ignoreInitial: true,
         })
         componentsWatcher.on('add', () => {
-          prepareClientAppEnhanceFile(app, options, optionsHash)
+          prepareClient(app, options, optionsHash)
         })
         componentsWatcher.on('unlink', () => {
-          prepareClientAppEnhanceFile(app, options, optionsHash)
+          prepareClient(app, options, optionsHash)
         })
         watchers.push(componentsWatcher)
       }
