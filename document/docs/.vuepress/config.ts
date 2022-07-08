@@ -2,9 +2,7 @@ import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { navbar, sidebar } from './configs'
 import { path } from '@vuepress/utils'
-import { demoContainer } from '../plugins/demo-container'
-
-
+import demoContainer from '../plugins/demo-container'
 
 export default defineUserConfig({
     lang: 'zh-CN',

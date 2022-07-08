@@ -23,12 +23,12 @@ app.use(Antd)
 ## div示例
 
 :::demo 
-ant/easyDiv
+ant/easydiv
 :::
 
 
 ## form示例
 
 :::demo 
-ant/easyForm
+ant/easyform
 :::

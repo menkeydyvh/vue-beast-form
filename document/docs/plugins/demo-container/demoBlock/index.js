@@ -1,1 +1,0 @@
-exports.modules = require('./index.vue')

@@ -1,17 +1,27 @@
-import { compileTemplate } from '@vue/compiler-sfc'
+/*
+ * @Author: 曹捷
+ * @Date: 2021-06-01 15:24:58
+ * @LastEditors: 曹捷
+ * @LastEditTime: 2021-06-01 17:28:51
+ * @Description: fileContent
+ */
+const { compileTemplate } = require('@vue/compiler-sfc');
 
-function stripScript(content: string) {
+// const compiler = require('vue-template-compiler');
+// const { compileTemplate } = require('@vue/component-compiler-utils');
+
+function stripScript (content) {
   const result = content.match(/<(script)>([\s\S]+)<\/\1>/);
   return result && result[2] ? result[2].trim() : '';
 }
 
-function stripStyle(content: string) {
+function stripStyle (content) {
   const result = content.match(/<(style)\s*>([\s\S]+)<\/\1>/);
   return result && result[2] ? result[2].trim() : '';
 }
 
 // 编写例子时不一定有 template。所以采取的方案是剔除其他的内容
-function stripTemplate(content: string) {
+function stripTemplate (content) {
   content = content.trim();
   if (!content) {
     return content;
@@ -19,16 +29,16 @@ function stripTemplate(content: string) {
   return content.replace(/<(script|style)[\s\S]+<\/\1>/g, '').trim();
 }
 
-function pad(source: string) {
+function pad (source) {
   return source
     .split(/\r?\n/)
     .map(line => `  ${line}`)
     .join('\n');
 }
 
-function genInlineComponentText(template: string, script: string) {
+function genInlineComponentText (template, script) {
   // https://github.com/vuejs/vue-loader/blob/423b8341ab368c2117931e909e2da9af74503635/lib/loaders/templateLoader.js#L46
-  const finalOptions: any = {
+  const finalOptions = {
     source: `<div>${template}</div>`,
     filename: 'inline-component', // TODO：这里有待调整
     // compiler
@@ -70,7 +80,7 @@ function genInlineComponentText(template: string, script: string) {
   return demoComponentContent;
 }
 
-export default {
+module.exports = {
   stripScript,
   stripStyle,
   stripTemplate,
