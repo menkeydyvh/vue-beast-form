@@ -49,7 +49,7 @@ module.exports = async (app, options, identifier = '') => {
     `
     // write temp file and return the file path
     return app.writeTemp(
-        `register-components/clientAppEnhance.${identifier}.js`,
+        `register-components/index.js`,
         content
     )
 }

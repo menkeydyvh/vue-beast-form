@@ -1,14 +1,17 @@
 import { defineClientConfig } from '@vuepress/client'
 import antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
-import DemoBlock from '../plugins/demo-container/DemoBlock.vue'
+import registerComponents from '@temp/register-components'
 
 export default defineClientConfig({
-    enhance({ app }) {
+    enhance(enhanceData) {
+        debugger;
+        registerComponents(enhanceData)
+        const { app } = enhanceData
+        app.use(antd);
         app.config.globalProperties.$beastForm = {
             base: "ant-design-vue",
         }
-        app.component("DemoBlock", DemoBlock)
-        app.use(antd);
     }
 })
+

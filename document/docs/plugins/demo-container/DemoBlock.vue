@@ -1,40 +1,56 @@
 <template>
-  <div class="demo-block" :class="[blockClass, { 'hover': hovering }]" @mouseenter="hovering = true" @mouseleave="hovering = false">
+  <div
+    class="demo-block"
+    :class="[blockClass, { hover: hovering }]"
+    @mouseenter="hovering = true"
+    @mouseleave="hovering = false"
+  >
     <div class="demo-content">
       <component :is="componentName" v-if="componentName" v-bind="$attrs" />
     </div>
     <div class="meta" ref="meta">
-      <div class="description" v-html="decodeDesc">
-      </div>
-      <div class="code-content" v-html="decoded">
-      </div>
+      <div class="description" v-html="decodeDesc"></div>
+      <div class="code-content" v-html="decoded"></div>
     </div>
-    <div class="demo-block-control" :class="{ 'is-fixed': fixedControl }" :style="{ 'width': fixedControl ? `${codeContentWidth}px` : 'unset' }" ref="control" @click="isExpanded = !isExpanded">
+    <div
+      class="demo-block-control"
+      :class="{ 'is-fixed': fixedControl }"
+      :style="{ width: fixedControl ? `${codeContentWidth}px` : 'unset' }"
+      ref="control"
+      @click="isExpanded = !isExpanded"
+    >
       <transition name="arrow-slide">
-        <i :class="[iconClass, { 'hovering': hovering }, 'icon']"></i>
+        <i :class="[iconClass, { hovering: hovering }, 'icon']"></i>
       </transition>
       <transition name="text-slide">
         <span v-show="hovering">{{ controlText }}</span>
       </transition>
-      <span v-show="!copied" :class="['copy-action', { 'copying ': copied }]" @click.stop="copyCode">{{ copiedText }}</span>
+      <span
+        v-show="!copied"
+        :class="['copy-action', { 'copying ': copied }]"
+        @click.stop="copyCode"
+        >{{ copiedText }}</span
+      >
       <transition name="bounce">
-        <span v-show="copied" class="copy-action copy-action-success">{{ copiedText }}</span>
+        <span v-show="copied" class="copy-action copy-action-success">{{
+          copiedText
+        }}</span>
       </transition>
     </div>
   </div>
 </template>
 
-<script >
-import defaultLang from './i18n/default_lang.json';
+<script>
+import defaultLang from "./i18n/default_lang.json";
 export default {
-  data () {
+  data() {
     return {
       hovering: false,
       copied: false,
       isExpanded: false,
       fixedControl: false,
       codeContentWidth: 0,
-      scrollParent: null
+      scrollParent: null,
     };
   },
   props: {
@@ -53,39 +69,46 @@ export default {
     options: {
       type: Object,
       default: () => {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   computed: {
-    decoded () {
-      return decodeURIComponent(this.source)
+    decoded() {
+      return decodeURIComponent(this.source);
     },
-    decodeDesc () {
-      return decodeURIComponent(this.description)
+    decodeDesc() {
+      return decodeURIComponent(this.description);
     },
-    compoLang () {
-      return this.options.locales || defaultLang
+    compoLang() {
+      return this.options.locales || defaultLang;
     },
-    langConfig () {
-      return this.compoLang.filter(config => config.lang === this.$lang)[0]['demo-block'];
+    langConfig() {
+      return this.compoLang.filter((config) => config.lang === this.$lang)[0][
+        "demo-block"
+      ];
     },
-    blockClass () {
-      return `demo-${this.$lang} demo-${this.$route.path.split("/").pop().replace('.html', '')}`;
+    blockClass() {
+      return `demo-${this.$lang} demo-${this.$route.path
+        .split("/")
+        .pop()
+        .replace(".html", "")}`;
     },
-    iconClass () {
+    iconClass() {
       return this.isExpanded ? "caret-top" : "caret-bottom";
     },
-    controlText () {
-      return this.isExpanded ? this.langConfig['hide-text'] : this.langConfig['show-text'];
+    controlText() {
+      return this.isExpanded
+        ? this.langConfig["hide-text"]
+        : this.langConfig["show-text"];
     },
-    copiedText () {
-      return this.copied ? this.langConfig['copy-success'] : this.langConfig['copy-text'];
+    copiedText() {
+      return this.copied ? this.langConfig["copy-success"] : this.langConfig["copy-text"];
     },
-    codeArea () {
+    codeArea() {
       return this.$el.getElementsByClassName("meta")[0];
     },
-    codeAreaHeight () {
+    codeAreaHeight() {
       if (this.$el.getElementsByClassName("description").length > 0) {
         return (
           this.$el.getElementsByClassName("description")[0].clientHeight +
@@ -94,10 +117,10 @@ export default {
         );
       }
       return this.$el.getElementsByClassName("code-content")[0].clientHeight;
-    }
+    },
   },
   methods: {
-    copyCode () {
+    copyCode() {
       if (this.copied) {
         return;
       }
@@ -111,20 +134,20 @@ export default {
         this.copied = false;
       }, 1500);
     },
-    scrollHandler () {
+    scrollHandler() {
       const { top, bottom, left } = this.$refs.meta.getBoundingClientRect();
       this.fixedControl =
         bottom > document.documentElement.clientHeight &&
         top + 44 <= document.documentElement.clientHeight;
       this.$refs.control.style.left = this.fixedControl ? `${left}px` : "0";
     },
-    removeScrollHandler () {
+    removeScrollHandler() {
       this.scrollParent &&
-        this.scrollParent.removeEventListener('scroll', this.scrollHandler);
-    }
+        this.scrollParent.removeEventListener("scroll", this.scrollHandler);
+    },
   },
   watch: {
-    isExpanded (val) {
+    isExpanded(val) {
       this.codeArea.style.height = val ? `${this.codeAreaHeight + 1}px` : "0";
       if (!val) {
         this.fixedControl = false;
@@ -135,24 +158,24 @@ export default {
       setTimeout(() => {
         this.scrollParent = document;
         this.scrollParent &&
-          this.scrollParent.addEventListener('scroll', this.scrollHandler);
+          this.scrollParent.addEventListener("scroll", this.scrollHandler);
         this.scrollHandler();
       }, 200);
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.$nextTick(() => {
-      let codeContent = this.$el.getElementsByClassName('code-content')[0];
-      this.codeContentWidth = this.$el.offsetWidth
-      if (this.$el.getElementsByClassName('description').length === 0) {
+      let codeContent = this.$el.getElementsByClassName("code-content")[0];
+      this.codeContentWidth = this.$el.offsetWidth;
+      if (this.$el.getElementsByClassName("description").length === 0) {
         codeContent.style.width = "100%";
         codeContent.borderRight = "none";
       }
     });
   },
-  beforeDestroy () {
+  beforeUnmount() {
     this.removeScrollHandler();
-  }
+  },
 };
 </script>
 <style scoped>
@@ -164,8 +187,7 @@ export default {
   margin-bottom: 15px;
 }
 .demo-block.hover {
-  box-shadow: 0 0 8px 0 rgba(232, 237, 250, 0.6),
-    0 2px 4px 0 rgba(232, 237, 250, 0.5);
+  box-shadow: 0 0 8px 0 rgba(232, 237, 250, 0.6), 0 2px 4px 0 rgba(232, 237, 250, 0.5);
 }
 .demo-block code {
   font-family: Menlo, Monaco, Consolas, Courier, monospace;
@@ -227,7 +249,7 @@ export default {
   -webkit-font-smoothing: antialiased;
 }
 .demo-block .demo-block-control .caret-top::before {
-  content: '';
+  content: "";
   position: absolute;
   right: 50%;
   width: 0;
@@ -237,7 +259,7 @@ export default {
   border-left: 6px solid transparent;
 }
 .demo-block .demo-block-control .caret-bottom::before {
-  content: '';
+  content: "";
   position: absolute;
   right: 50%;
   width: 0;

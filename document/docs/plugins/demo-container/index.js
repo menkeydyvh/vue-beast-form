@@ -28,8 +28,6 @@ module.exports = (options = {}) => {
     name: 'vuepress-plugin-demo-container',
     clientConfigFile: (app) =>
       prepareClientAppEnhanceFile(app, options, optionsHash),
-    // clientAppEnhanceFiles: (app) =>
-    //   prepareClientAppEnhanceFile(app, options, optionsHash),
     extendsMarkdown: md => {
       md.use(demoBlockContainers(options))
     },
