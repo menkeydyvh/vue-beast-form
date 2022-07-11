@@ -1,6 +1,6 @@
 <template>
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
-    <beast-form v-model="value" :rule="rule" :option="option" />
+    <beast-form ref="bfRef" v-model="value" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
     <a-button @click="onAdd">add</a-button>
   </a-card>
@@ -11,13 +11,14 @@ import { defineComponent, ref, onMounted } from "vue";
 import { BeastForm } from "../../../components";
 import { ruleStringify, ruleParse } from "../../../components/tool";
 import type { RuleType } from "../../../components/types";
-
+console.log(BeastForm);
 export default defineComponent({
   components: { BeastForm },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),
       rule = ref<RuleType[]>([]),
+      bfRef = ref(),
       option = ref({
         form: {
           layout: "vertical",
@@ -77,7 +78,6 @@ export default defineComponent({
                 children: ["设置1"],
                 on: {
                   click: (e, api) => {
-                    debugger;
                     api.setValue("name", "1");
                   },
                 },
@@ -103,9 +103,12 @@ export default defineComponent({
     // console.log(ruleParse(str));
 
     rule.value = ruleParse(str);
-    onMounted(() => {});
+    onMounted(() => {
+      console.log(bfRef.value);
+    });
 
     return {
+      bfRef,
       jApi,
       value,
       rule,
