@@ -1,12 +1,12 @@
 <template>
-  <beast-form :rule="rule"  />
+  <beast-form :rule="rule" />
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, defineComponent } from "vue";
 import { BeastForm } from "vue-beast-form";
 
-export default {
+export default defineComponent({
   components: { BeastForm },
   setup() {
     const rule = ref([
@@ -25,5 +25,5 @@ export default {
       rule,
     };
   },
-};
+});
 </script>
