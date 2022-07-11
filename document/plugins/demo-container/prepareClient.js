@@ -8,7 +8,7 @@
 const { globby, path } = require('@vuepress/utils')
 
 module.exports = async (app, options, identifier = '') => {
-    
+
     const getComponentsFromDir = async ({ componentsDir, componentsPatterns, getComponentName }) => {
         if (!componentsDir) {
             return {}
@@ -27,13 +27,10 @@ module.exports = async (app, options, identifier = '') => {
     }
 
     const componentsFromDir = await getComponentsFromDir(options)
-    const baseComponents = {
-        DemoBlock: path.resolve(__dirname, './DemoBlock.vue')
-    }
+
     const componentsMap = {
         ...componentsFromDir,
         ...options.components,
-        ...baseComponents
     }
     const content = `\
     import { defineAsyncComponent } from 'vue'

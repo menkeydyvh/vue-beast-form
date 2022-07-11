@@ -41,8 +41,10 @@
 </template>
 
 <script>
+import { ref, defineComponent } from "vue";
 import defaultLang from "./i18n/default_lang.json";
-export default {
+
+export default defineComponent({
   data() {
     return {
       hovering: false,
@@ -176,7 +178,7 @@ export default {
   beforeUnmount() {
     this.removeScrollHandler();
   },
-};
+});
 </script>
 <style scoped>
 .demo-block {
