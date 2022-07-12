@@ -91,16 +91,6 @@ export default defineComponent({
             },
           ],
         },
-        {
-          title: "designer",
-          base: "designer",
-          children: [
-            {
-              title: "设计器",
-              component: "index.vue",
-            },
-          ],
-        },
       ]),
       selectData = ref<MenuItem>();
 

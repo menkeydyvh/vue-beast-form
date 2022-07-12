@@ -235,3 +235,12 @@ export const ruleStringify = (rules: RuleType | RuleType[], space?: number) => {
         return v;
     }, space)
 }
+
+
+export default {
+    deepCopy,
+    searchLoop,
+    randomId,
+    ruleParse,
+    ruleStringify,
+}
