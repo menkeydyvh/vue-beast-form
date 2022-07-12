@@ -33,6 +33,8 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin()
-    ]
-
+    ],
+    externals: {
+        vue: "Vue"
+    }
 };
