@@ -1,5 +1,5 @@
 <template>
-  <beast-form :rule="rule" />
+  <beast-form :rule="rule" :option="{ isForm: false }" />
 </template>
 
 <script>

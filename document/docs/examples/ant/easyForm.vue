@@ -22,7 +22,7 @@ export default {
           children: [],
         },
         {
-          type: "a-form-item",
+          type: "a-space",
           children: [
             {
               type: "a-button",
