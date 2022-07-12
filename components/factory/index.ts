@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue'
+import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
@@ -23,65 +23,56 @@ export default function factory() {
             disabled: { type: Boolean },
         },
         emits,
-        data() {
-            return {
-                _rf: null
-            }
-        },
-        watch: {
-            disabled() {
-                this.$data._rf.initDisabled()
-            },
-            option: {
-                handler() {
-                    this.$data._rf.initOption()
-                    this.$forceUpdate()
-                },
-                deep: true
-            },
-            "rf.modelValue": {
-                handler() {
-                    this.$emit("update:modelValue", this.$data._rf.modelValue)
-                },
-                deep: true
-            },
-            "rule": {
-                handler() {
-                    this.$data._rf.initModelValue();
-                    this.$data._rf.initRule()
-                    this.$forceUpdate()
-                },
-                deep: true
-            },
-            modelValue: {
-                handler() {
-                    this.$nextTick(() => {
-                        this.$data._rf.updateModelValue(this.modelValue)
-                    })
-                },
-                deep: true
-            }
-        },
-        render() {
-            return this.$data._rf.render()
-        },
-        created() {
-            this.$data._rf = new FormFactory(this.$)
-        },
-        mounted() {
-            this.$data._rf.addVm()
-            this.$nextTick(() => {
-                this.$emit("update:api", this.$data._rf.api.publishApi())
-                this.$emit("update:modelValue", this.$data._rf.modelValue)
+        setup(props, { emit }) {
+            const vm = getCurrentInstance() as any,
+                { modelValue, rule, option, disabled } = toRefs(props);
+
+            const rf = new FormFactory(vm)
+
+            onMounted(() => {
+                rf.addVm()
+            });
+
+            onBeforeUnmount(() => {
+                emits.splice(0, emits.length)
+                baseEmits.forEach(item => {
+                    emits.push(item)
+                })
+                rf.delVm()
             })
-        },
-        beforeUnmount() {
-            emits.splice(0, emits.length)
-            baseEmits.forEach(item => {
-                emits.push(item)
+
+            nextTick(() => {
+                emit("update:api", rf.api.publishApi())
+                emit("update:modelValue", rf.modelValue)
             })
-            this.$data._rf.delVm()
-        }
+
+            watch(option, () => {
+                rf.initOption()
+                vm.proxy.$forceUpdate()
+            }, { deep: true })
+
+            watch(disabled, () => {
+                rf.initDisabled()
+            }, { deep: true })
+
+            watch(rf.modelValue, () => {
+                emit("update:modelValue", rf.modelValue)
+            }, { deep: true })
+
+            watch(rule, () => {
+                rf.initModelValue();
+                rf.initRule()
+                vm.ctx.$forceUpdate()
+            }, { deep: true })
+
+            watch(modelValue, () => {
+                nextTick(() => {
+                    rf.updateModelValue(modelValue.value)
+                })
+            }, { deep: true })
+
+            return () => rf.render()
+        },
     });
     return component
 }
