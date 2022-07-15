@@ -1,23 +1,29 @@
 const path = require('path');
-const { VueLoaderPlugin } = require('vue-loader');
+// const { VueLoaderPlugin } = require('vue-loader');
 
 const distFileBaseName = "vbf"
 
 module.exports = {
     resolve: {
-        extensions: ['.js', '.ts', '.json'],
+        extensions: ['.ts', '.js'],
     },
-    devtool: 'inline-source-map',
-    mode: 'production',
+    devtool: 'inline-cheap-module-source-map',
+    mode: 'development',
+    // devtool: 'source-map',
+    // mode: 'production',
     entry: {
         index: "./index.ts",
         tools: "./components/tool.ts",
     },
     output: {
-        filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
-        library: distFileBaseName,
-        libraryTarget: "umd",
+        filename: '[name].js',
+        library: {
+            name: distFileBaseName,
+            type: 'umd',
+            export: "default",
+            umdNamedDefine: true
+        }
     },
     module: {
         rules: [
@@ -26,16 +32,14 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node-modules/,
             },
-            {
-                test: /\.vue$/,
-                use: 'vue-loader',
-            }
         ]
     },
-    plugins: [
-        new VueLoaderPlugin()
-    ],
     externals: {
-        vue: "Vue"
+        vue: {
+            root: 'Vue',
+            commonjs2: 'vue',
+            commonjs: 'vue',
+            amd: 'vue',
+        }
     }
 };

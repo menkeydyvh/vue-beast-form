@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "lib",
     "strictNullChecks": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -23,7 +22,6 @@
     ],
   },
   "include": [
-    "components/**/*.d.ts",
     "components/**/*.ts",
     "components/*.ts",
     "index.ts"
