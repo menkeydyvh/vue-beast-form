@@ -1,10 +1,3 @@
-/*
- * @Author: 曹捷
- * @Date: 2021-06-01 15:24:58
- * @LastEditors: 曹捷
- * @LastEditTime: 2021-06-01 17:28:51
- * @Description: fileContent
- */
 const { compileTemplate } = require('@vue/compiler-sfc');
 
 // const compiler = require('vue-template-compiler');

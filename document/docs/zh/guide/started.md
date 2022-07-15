@@ -29,69 +29,10 @@ app.config.globalProperties.$beastForm = {
 ```
 
 ## 使用
+
 xxx.vue
-<CodeGroup>
-  <CodeGroupItem title="TS" active>
 
-```vue
-<template>
-    <beast-form v-model:api="jApi" v-model="value" :rule="rule" :option="option" />
-</template>
-<script lang="ts">
-import { defineComponent, ref } from "vue";
-import { BeastForm } from "vue-beast-form";
-import type { RuleType, ApiType, PropsOptionType } from "vue-beast-form";
-
-export default defineComponent({
-  components: { BeastForm },
-  setup() {
-    const jApi = ref<ApiType>(),      
-      rule = ref<RuleType[]>([]),
-      option = ref<PropsOptionType>({}),  
-      value = ref<any>();
-    return {
-      jApi,
-      value,
-      rule,
-      option,
-    };
-  },
-});
-</script>
-```
-
- </CodeGroupItem>
-
- <CodeGroupItem title="JS">
-  
-```vue
-<template>
-    <beast-form v-model:api="jApi" v-model="value" :rule="rule" :option="option" />
-</template>
-<script>
-import { defineComponent, ref } from "vue";
-import { BeastForm } from "vue-beast-form";
-
-export default defineComponent({
-  components: { BeastForm },
-  setup() {
-    const jApi = ref(),      
-      rule = ref([]),
-      option = ref({}),  
-      value = ref();
-    return {
-      jApi,
-      value,
-      rule,
-      option,
-    };
-  },
-});
-</script>
-```
-
- </CodeGroupItem>
-</CodeGroup>
+[参考在线示例](./demo.md)
 
 
 ## 参数

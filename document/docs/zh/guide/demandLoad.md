@@ -7,12 +7,12 @@ xxx.vue
 
 ```js
 import { Input } from "ant-design-vue";
-import { BeastForm } from "vue-beast-form";
+import vbf from "vue-beast-form";
 
-// 同时引入ui库对应组件
-BeastForm.components({Input})
+// 按需引入ui库对应组件
+vbf.components({Input})
 
 export default {
-  components: { BeastForm },
+  ...
 };
 ```

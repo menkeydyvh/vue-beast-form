@@ -44,11 +44,14 @@ app.config.globalProperties.$beastForm =  {
 | formDataComponentKey            | object   | [查看说明](#formdatacomponentkey)            |
 | formDataComponentDefaultValue   | object   | [查看说明](#formdatacomponentdefaultvalue)   |
 | formDataComponentChangeKeyEvent | object   | [查看说明](#formdatacomponentchangekeyevent) |
+| formDataComponentDisabled       | object   | [查看说明](#formDataComponentDisabled)       |
+
+**建议必填base,当然也可以设置清晰的defaultName也能正常显示**
 
 #### base
-- 类型: string <Badge text="建议必填" />
+- 类型: string 
 - 说明：填写使用的主框架名称
-- 支持情况: ant-design-vue 
+- 支持情况: **ant-design-vue**
 
 #### frameworks
 - 类型: []string 
@@ -67,6 +70,7 @@ app.config.globalProperties.$beastForm =  {
 | formItem               | 框架form组件的formItem名称     | string | a-form-item   |
 | formItemPropName       | formItem对应model上的key       | string | name          |
 | formItemPropLabel      | formItem对应标题label的key     | string | label         |
+| formItemPropRules      | formItem对应验证规则的key      | string | rules         |
 | formItemSlotTitle      | formItem对应标题label的插槽key | string | label         |
 | formEventValidate      | form组件的验证事件             | string | validate      |
 | formEventClearValidate | form组件的清除验证事件         | string | clearValidate |
@@ -111,5 +115,20 @@ app.config.globalProperties.$beastForm =  {
     ...
 }
 ```
+
+#### formDataComponentDisabled
+- 类型: Object = { [ComponentName: string]: string  }
+- 默认值：{default: 'disabled'}
+- 说明：组件对应的禁用key 有些组件是用disabled 有些组件是用readonly 或者其他
+- 注意 **与默认值不一致时候需要配置**
+```js{2-3}
+{
+    default:"disabled",
+    xx: "readonly",
+    ...
+}
+```
+<br/>
+<hr/>
 
 注意：如果formDataComponentKey配置的是数组 [formDataComponentDefaultValue、formDataComponentChangeKeyEvent] **必定也是数组** ,同时顺序是绑定的

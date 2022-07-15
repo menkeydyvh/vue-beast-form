@@ -1,10 +1,3 @@
-/*
- * @Author: 曹捷
- * @Date: 2021-11-11 17:29:49
- * @LastEditors: 曹捷
- * @LastEditTime: 2022-01-20 21:20:39
- * @Description: fileContent
- */
 let mdContainer = require('markdown-it-container')
 const MarkdownIt = require('markdown-it')
 const localMd = MarkdownIt()
