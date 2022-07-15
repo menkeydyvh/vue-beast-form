@@ -30,7 +30,6 @@ export default {
                 type: "primary",
               },
               children: ["保存"],
-              style: "margin-right:10px",
               on: {
                 click: (e, api) => {
                   alert(JSON.stringify(api.getFormData()));
