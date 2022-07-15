@@ -15,6 +15,7 @@
   ],
   "files": [
     "dist",
+    "lib",
     "LICENSE"
   ],
   "license": "MIT",

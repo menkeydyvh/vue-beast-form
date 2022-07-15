@@ -1,11 +1,11 @@
 import { onUnmounted } from 'vue';
-import { LoaderFactory } from './components/factory/loader';
-import factory from './components/factory';
-import { ruleParse, ruleStringify } from './components/tool';
+import { LoaderFactory } from './factory/loader';
+import factory from './factory';
+import { ruleParse, ruleStringify } from './tool';
 import type { App, Component, Directive } from 'vue';
-import type { RuleType } from './components/types';
+import type { RuleType } from './types';
 
-export * from './components/types';
+export * from './types';
 
 export const BeastForm = factory();
 

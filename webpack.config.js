@@ -6,10 +6,10 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js'],
     },
-    // devtool: 'source-map',
+    devtool: 'source-map',
     mode: 'production',
     entry: {
-        index: "./index.ts",
+        index: "./components/index.ts",
     },
     output: {
         path: path.resolve(__dirname, 'dist'),

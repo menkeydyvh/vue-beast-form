@@ -25,7 +25,6 @@
   "include": [
     "components/**/*.ts",
     "components/*.ts",
-    "index.ts"
   ],
   "exclude": [
     "node_modules",

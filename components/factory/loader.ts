@@ -1,4 +1,4 @@
-import { BeastForm } from "../../index"
+import { BeastForm } from "../index"
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
