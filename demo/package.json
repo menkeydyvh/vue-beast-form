@@ -12,7 +12,7 @@
     "@ant-design/icons-vue": "^6.1.0",
     "ant-design-vue": "^3.2.9",
     "vue": "^3.2.33",
-    "vue-beast-form": "^0.2.0-alpha.10",
+    "vue-beast-form": "^0.2.0-alpha.11",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {

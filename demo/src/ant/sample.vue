@@ -8,9 +8,9 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { BeastForm } from "../../../components";
-import { ruleStringify, ruleParse } from "../../../components/tool";
-import type { RuleType } from "../../../components/types";
+import { BeastForm } from "vue-beast-form";
+import { ruleStringify, ruleParse } from "vue-beast-form/lib/tool";
+import type { RuleType } from "vue-beast-form";
 
 export default defineComponent({
   components: { BeastForm },
