@@ -3,6 +3,7 @@
   "version": "0.2.0-alpha.10",
   "description": "vue3通过ui框架对json解析生成页面布局或表单布局",
   "main": "lib/index.js",
+  "module": "lib/index.js",
   "unpkg": "dist/index.js",
   "typings": "lib/index.d.ts",
   "keywords": [
@@ -18,9 +19,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build-webpack": "webpack",
-    "build-ts": "tsc",
-    "build": "npm-run-all build-webpack build-ts"
+    "build": "tsc && webpack"
   },
   "dependencies": {
     "vue": "^3.2.37"

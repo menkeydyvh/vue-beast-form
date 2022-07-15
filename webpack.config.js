@@ -1,5 +1,4 @@
 const path = require('path');
-// const { VueLoaderPlugin } = require('vue-loader');
 
 const distFileBaseName = "vbf"
 
@@ -7,13 +6,10 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js'],
     },
-    devtool: 'inline-cheap-module-source-map',
-    mode: 'development',
     // devtool: 'source-map',
-    // mode: 'production',
+    mode: 'production',
     entry: {
         index: "./index.ts",
-        tools: "./components/tool.ts",
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
