@@ -1,11 +1,11 @@
-import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, onUnmounted, watch, nextTick } from 'vue'
 import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType } from '../types'
 
 export const NAME = 'BeastForm'
 
-const baseEmits = ["changeField", "update:modelValue", "update:api"];
+const baseEmits = ["changeField", "update:modelValue", "update:api", "mounted", 'unmounted'];
 
 export default function factory() {
 
@@ -31,6 +31,7 @@ export default function factory() {
 
             onMounted(() => {
                 rf.addVm()
+                emit('mounted', rf.api.publishApi())
             });
 
             onBeforeUnmount(() => {
@@ -39,6 +40,10 @@ export default function factory() {
                     emits.push(item)
                 })
                 rf.delVm()
+            })
+
+            onUnmounted(() => {
+                emit('unmounted')
             })
 
             nextTick(() => {
