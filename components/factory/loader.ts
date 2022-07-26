@@ -2,17 +2,20 @@ import { BeastForm } from "../index"
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
+import type { PropsOptionType } from "../types"
 
 export const globalCache: {
     tagCacheComponents: {
         [key: string]: VNodeTypes
     },
     config: Config,
-    t: any
+    t: any,
+    basePropsOption: PropsOptionType
 } = {
     tagCacheComponents: {},
     config: null,
-    t: null
+    t: null,
+    basePropsOption: null
 }
 
 export class LoaderFactory {
@@ -28,6 +31,14 @@ export class LoaderFactory {
         const vmProxy = vm?.proxy as any
         if (vmProxy.$t) {
             globalCache.t = vmProxy.$t
+        }
+    }
+
+    static setbasePropsOption(propsOption: PropsOptionType) {
+        if (propsOption && Object.keys(propsOption).length) {
+            globalCache.basePropsOption = propsOption
+        } else {
+            globalCache.basePropsOption = null
         }
     }
 

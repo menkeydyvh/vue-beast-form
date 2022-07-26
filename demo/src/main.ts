@@ -6,7 +6,14 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 
 import i18n from './lang/index';
+import vbf from '../../components';
 
+vbf.setBasePropsOption({
+    form: {
+        layout: "vertical",
+    },
+    // isI18n: true
+})
 
 const app = createApp(App)
 

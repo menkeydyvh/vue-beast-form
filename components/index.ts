@@ -3,13 +3,18 @@ import { LoaderFactory } from './factory/loader';
 import factory from './factory';
 import { ruleParse, ruleStringify } from './tool';
 import type { App, Component, Directive } from 'vue';
-import type { RuleType } from './types';
+import type { RuleType, PropsOptionType } from './types';
 
 export * from './types';
 
 export const BeastForm = factory();
 
 export default {
+  /**
+   * vue.use 的时候使用
+   * @param app 
+   * @returns 
+   */
   install: (app: App) => {
     app.component(BeastForm.name, BeastForm);
     return app;
@@ -51,5 +56,12 @@ export default {
    */
   ruleStringify: (rules: RuleType | RuleType[], space?: number) => {
     return ruleStringify(rules, space)
+  },
+  /**
+   * 设置基础的PropsOption 避免重复设置多次
+   * @param po 
+   */
+  setBasePropsOption: (po: PropsOptionType) => {
+    LoaderFactory.setbasePropsOption(po);
   }
 }

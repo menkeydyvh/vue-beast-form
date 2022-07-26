@@ -9,10 +9,18 @@ export interface ModelValueType {
     [field: string]: any
 }
 
+interface VmPropsType {
+    modelValue: {
+        [key: string]: any
+    }
+    rule: RuleType[]
+    disabled: boolean
+    option: PropsOptionType
+}
+
 /**
  * TODO:
  * 补充element ui 和 iview ui的支持配置
- * 支持国际化
  * 注意设置值的时候，如果是对象，需要处理
  * 
  * 还是需要计入form的层级结构
@@ -65,25 +73,29 @@ export default class FormFactory {
     }
 
     initModelValue() {
-        const { modelValue } = toRefs(this.vm.props)
+        const { modelValue } = toRefs<VmPropsType>(this.vm.props as any)
+
         this.modelValue = reactive({ ...modelValue.value as any })
 
         this.api.setModelValue(this.modelValue)
     }
 
     initRule() {
-        const { rule } = toRefs(this.vm.props)
-        this.rules = (rule.value as RuleType[]).filter(
+        const { rule } = toRefs<VmPropsType>(this.vm.props as any)
+
+        this.rules = (rule.value).filter(
             item => !!item
         ).map(
-            item => new RuleFactory(item, this.modelValue, this.api, this.vm)
+            item => new RuleFactory(item, this.modelValue, this.api, this.vm, this.option.isI18n)
         )
+
         this.api.setRfs(this.rules)
     }
 
     initDisabled() {
-        const { disabled } = toRefs(this.vm.props)
-        this.disabled = (disabled.value as boolean)
+        const { disabled } = toRefs<VmPropsType>(this.vm.props as any)
+
+        this.disabled = disabled.value
 
         this.rules.forEach(rule => {
             rule.setDisabled(this.disabled, true)
@@ -91,15 +103,11 @@ export default class FormFactory {
     }
 
     initOption() {
-        const { option } = toRefs(this.vm.props)
-        this.option = option.value as PropsOptionType
-        if (!this.option?.form) {
-            const baseVmOption = this.baseVm.props?.option as PropsOptionType
-            this.option = reactive({
-                isForm: baseVmOption?.isForm === false ? false : true,
-                form: baseVmOption?.form
-            })
-        }
+        const { option } = toRefs<VmPropsType>(this.vm.props as any),
+            baseVmOption = this.baseVm.props?.option as PropsOptionType,
+            formProps = { ...globalCache?.basePropsOption?.form, ...baseVmOption?.form, ...option.value?.form }
+
+        this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option.value, form: formProps }
     }
 
     updateModelValue(modelValue: ModelValueType) {
@@ -146,8 +154,12 @@ export default class FormFactory {
      */
     renderForm() {
         const { config } = globalCache;
+        let formTag = LoaderFactory.getComponents(config.defaultName.form);
+        if (!formTag) {
+            formTag = 'div'
+        }
         return [
-            h(LoaderFactory.getComponents(config.defaultName.form) as any, {
+            h(formTag as any, {
                 ref: FormFactory.formRefsName,
                 model: this.modelValue,
                 ...this.option?.form,

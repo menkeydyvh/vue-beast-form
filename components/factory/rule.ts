@@ -18,6 +18,8 @@ export class RuleFactory {
 
     public api: Api
 
+    public isI18n: boolean
+
     public modelValue: ModelValueType
 
     /**
@@ -45,16 +47,17 @@ export class RuleFactory {
             modelKeyDefaultValues: [],
         }
 
-    constructor(rule: RuleType, modelValue: any, api: Api, vm: ComponentInternalInstance) {
+    constructor(rule: RuleType, modelValue: any, api: Api, vm: ComponentInternalInstance, isI18n: boolean) {
         this.vm = vm
         this.rule = rule;
         this.modelValue = modelValue;
         this.api = api;
+        this.isI18n = isI18n;
 
         this.display = ref(this.rule.display)
 
         if (this.rule.title && typeof this.rule.title === "object") {
-            this.titleRule = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
+            this.titleRule = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm, isI18n)
         }
 
 
@@ -313,7 +316,7 @@ export class RuleFactory {
     addChildren(rule: RuleType | string, index?: number) {
         if (rule) {
             const startIndex = index === undefined || index === null ? this.children.length : index
-            this.children.splice(startIndex, 0, typeof rule === "object" ? new RuleFactory(rule, this.modelValue, this.api, this.vm) : rule)
+            this.children.splice(startIndex, 0, typeof rule === "object" ? new RuleFactory(rule, this.modelValue, this.api, this.vm, this.isI18n) : rule)
         }
     }
 
@@ -440,6 +443,19 @@ export class RuleFactory {
     }
 
     /**
+     * 处理i18n
+     * @param str 
+     * @returns 
+     */
+    setI18n(str: string): string {
+        if (this.isI18n && globalCache.t) {
+            return globalCache.t(str)
+        } else {
+            return str
+        }
+    }
+
+    /**
      * 事件处理集合
      * @returns 
      */
@@ -457,11 +473,7 @@ export class RuleFactory {
 
         this.children.forEach(rc => {
             if (typeof rc === "string") {
-                if (globalCache.t) {
-                    solt.default.push(globalCache.t(rc))
-                } else {
-                    solt.default.push(rc)
-                }
+                solt.default.push(this.setI18n(rc))
             } else {
                 if (rc.rule.slot) {
                     if (!solt[rc.rule.slot]) {
@@ -545,15 +557,15 @@ export class RuleFactory {
                 props.required = true
             }
             props[config.defaultName.formItemPropRules] = this.rule.validate.map(v => {
-                if (v.message && globalCache.t) {
-                    v.message = globalCache.t(v.message)
+                if (v.message) {
+                    v.message = this.setI18n(v.message)
                 }
                 return v
             })
         }
 
         if (typeof this.rule.title === 'string') {
-            props[config.defaultName.formItemPropLabel] = globalCache.t ? globalCache.t(this.rule.title) : this.rule.title;
+            props[config.defaultName.formItemPropLabel] = this.setI18n(this.rule.title);
         } else if (this.titleRule) {
             slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }

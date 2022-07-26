@@ -23,6 +23,7 @@ export default defineComponent({
         form: {
           layout: "vertical",
         },
+        isI18n: true,
       });
 
     const testRule = [
