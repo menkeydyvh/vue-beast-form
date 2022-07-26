@@ -1,4 +1,6 @@
 export type PropsOptionType = {
-    form: any
+    form: {
+        [key: string]: any
+    }
     isForm: boolean
 }

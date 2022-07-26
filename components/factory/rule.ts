@@ -1,11 +1,12 @@
 import { h, reactive, unref, ref, resolveDirective, withDirectives } from 'vue'
 import { globalCache, LoaderFactory } from './loader'
+import { onToPropsName, propsToOnName } from '../tool'
+import { deepCopy } from '../tool'
 import type Api from './api'
 import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
 import type { RuleType, EmitType } from '../types'
-import { onToPropsName, propsToOnName } from '../tool'
-import { deepCopy } from '../tool'
+
 
 export class RuleFactory {
 

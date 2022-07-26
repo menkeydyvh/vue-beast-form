@@ -1,7 +1,7 @@
 import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, onUnmounted, watch, nextTick } from 'vue'
 import FormFactory from './form'
 import type { PropType } from 'vue'
-import type { RuleType, PropsOptionType } from '../types'
+import type { RuleType, PropsOptionType, ApiType } from '../types'
 
 export const NAME = 'BeastForm'
 
@@ -16,7 +16,7 @@ export default function factory() {
         components: {},
         directives: {},
         props: {
-            api: { type: Object },
+            api: { type: Object as PropType<ApiType> },
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
             option: { type: Object as PropType<PropsOptionType> },

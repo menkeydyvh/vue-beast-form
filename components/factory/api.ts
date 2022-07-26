@@ -3,7 +3,7 @@ import FormFactory from "./form"
 import type { ModelValueType } from "./form"
 import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'
-import type { RuleType, EmitType } from '../types'
+import type { RuleType, EmitType, ApiType } from '../types'
 
 /**
  * 
@@ -145,7 +145,7 @@ export default class apiFactory {
      * 对外发布api
      * @returns 
      */
-    publishApi() {
+    publishApi(): ApiType {
         let self = this;
         return {
             /**
@@ -295,7 +295,7 @@ export default class apiFactory {
                     if (this.isModelKey(field)) {
                         const rf = self.getRule(field)
                         if (rf) {
-                            return rf.setValue(undefined)
+                            rf.setValue(undefined)
                         }
                     }
                 } else {
@@ -364,12 +364,11 @@ export default class apiFactory {
             * @param field 
             * @param event 
             * @param callback 
-            * @returns 
             */
             addOn(field: string, event: string, callback?: Function) {
                 const rf = self.getRule(field)
                 if (rf) {
-                    return rf.addOn(event, callback)
+                    rf.addOn(event, callback)
                 }
             },
 
@@ -382,7 +381,7 @@ export default class apiFactory {
             addEmit(field: string, emit: EmitType) {
                 const rf = self.getRule(field)
                 if (rf) {
-                    return rf.addEmit(emit)
+                    rf.addEmit(emit)
                 }
             },
 
@@ -390,12 +389,11 @@ export default class apiFactory {
             * 删除事件或监听
             * @param field 
             * @param event 
-            * @returns 
             */
             delOnOrEmit(field: string, event: string) {
                 const rf = self.getRule(field)
                 if (rf) {
-                    return rf.delOnOrEmit(event)
+                    rf.delOnOrEmit(event)
                 }
             }
         }
