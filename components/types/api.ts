@@ -105,4 +105,9 @@ export interface ApiType {
      * @param event 
      */
     delOnOrEmit(field: string, event: string): void
+    /**
+     * 提供多语言支持方法
+     * @param str 
+     */
+    $t(str: string): string
 }

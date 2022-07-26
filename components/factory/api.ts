@@ -395,7 +395,19 @@ export default class apiFactory {
                 if (rf) {
                     rf.delOnOrEmit(event)
                 }
-            }
+            },
+            /**
+             * 多语言处理支持
+             * @param str 
+             * @returns 
+             */
+            $t(str: string) {
+                if (globalCache.t) {
+                    return globalCache.t(str)
+                } else {
+                    return str
+                }
+            },
         }
     }
 }

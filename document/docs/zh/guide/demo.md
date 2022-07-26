@@ -2,7 +2,7 @@
 
 当前示例使用 ant-design-vue 的在线示例
 
-main
+main.js
 
 ```js
 import { createApp } from 'vue'

@@ -8,20 +8,23 @@ export const zh: SidebarConfig = {
         '/zh/guide/install.md',
         '/zh/guide/started.md',
         '/zh/guide/demo.md',
-        '/zh/guide/config.md',
         '/zh/guide/demandLoad.md',
       ],
     },
     {
-      text: '参数说明',
+      text: '全局配置',
       children: [
-        '/zh/props/rule.md',
-        '/zh/props/api.md',
+        '/zh/global/beastForm.md',
+        '/zh/global/i18n.md',
+        '/zh/global/api.md',
       ],
     },
     {
-      text: '细节教程',
+      text: 'beast-form',
       children: [
+        '/zh/props/index.md',
+        '/zh/props/rule.md',
+        '/zh/props/api.md',
       ],
     },
   ],

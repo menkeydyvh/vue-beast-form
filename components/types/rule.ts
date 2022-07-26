@@ -100,7 +100,7 @@ export type RuleType = {
 }
 
 
-interface RuleValidateType {
+export interface RuleValidateType {
     type?: string;
     required?: boolean;
     message?: string;

@@ -13,6 +13,15 @@ import vbf from "vue-beast-form";
 vbf.components({Input})
 
 export default {
-  ...
+  setup(){
+    // 按需加载指令
+    vbf.directive("test2", {
+      mounted() {
+        console.log("directive:test2");
+      },
+    });
+
+    // 继续编写代码
+  }
 };
 ```
