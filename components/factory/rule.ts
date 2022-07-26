@@ -57,6 +57,7 @@ export class RuleFactory {
             this.titleRule = new RuleFactory(this.rule.title, this.modelValue, this.api, this.vm)
         }
 
+
         this.initConfigCache()
         this.initProps()
         this.initValue()
@@ -456,7 +457,11 @@ export class RuleFactory {
 
         this.children.forEach(rc => {
             if (typeof rc === "string") {
-                solt.default.push(rc)
+                if (globalCache.t) {
+                    solt.default.push(globalCache.t(rc))
+                } else {
+                    solt.default.push(rc)
+                }
             } else {
                 if (rc.rule.slot) {
                     if (!solt[rc.rule.slot]) {
@@ -539,11 +544,16 @@ export class RuleFactory {
             if (this.rule.validate.find(item => item.required)) {
                 props.required = true
             }
-            props[config.defaultName.formItemPropRules] = this.rule.validate
+            props[config.defaultName.formItemPropRules] = this.rule.validate.map(v => {
+                if (v.message && globalCache.t) {
+                    v.message = globalCache.t(v.message)
+                }
+                return v
+            })
         }
 
         if (typeof this.rule.title === 'string') {
-            props[config.defaultName.formItemPropLabel] = this.rule.title;
+            props[config.defaultName.formItemPropLabel] = globalCache.t ? globalCache.t(this.rule.title) : this.rule.title;
         } else if (this.titleRule) {
             slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }

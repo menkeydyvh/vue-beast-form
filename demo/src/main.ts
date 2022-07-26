@@ -5,6 +5,8 @@ import type { GlobalConfigType } from "../../components"
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 
+import i18n from './lang/index';
+
 
 const app = createApp(App)
 
@@ -13,6 +15,8 @@ const bfConfig: GlobalConfigType = {
 }
 
 app.config.globalProperties.$beastForm = bfConfig
+
+app.use(i18n)
 
 app.use(Antd).directive('test1', {
     mounted() {

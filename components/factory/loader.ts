@@ -7,20 +7,28 @@ export const globalCache: {
     tagCacheComponents: {
         [key: string]: VNodeTypes
     },
-    config: Config
+    config: Config,
+    t: any
 } = {
     tagCacheComponents: {},
     config: null,
+    t: null
 }
 
 export class LoaderFactory {
 
     constructor(vm: ComponentInternalInstance) {
         globalCache.config = new Config(vm)
+
         for (let key in vm.appContext.components) {
             globalCache.tagCacheComponents[key] = vm.appContext.components[key]
         }
         globalCache.tagCacheComponents[BeastForm.name] = BeastForm
+
+        const vmProxy = vm?.proxy as any
+        if (vmProxy.$t) {
+            globalCache.t = vmProxy.$t
+        }
     }
 
     static loaderComponents(components: { [key: string]: VNodeTypes }) {

@@ -108,14 +108,16 @@ export default defineComponent({
           }
         });
         if (data) {
-          const nData = { ...data },
-            result: any = await getComponent(base, data.component);
-          nData.component = markRaw(result.default);
-          selectData.value = nData;
+          getComponent(base, data);
         }
       },
-      getComponent = async (base: string, component: string) => {
-        return await import(`./${base}/${component}`);
+      getComponent = (base, data) => {
+        import(`./${base}/${data.component}`).then((result) => {
+          selectData.value = {
+            title: data.title,
+            component: markRaw(result.default),
+          };
+        });
       };
 
     return {
