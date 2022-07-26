@@ -544,7 +544,7 @@ export class RuleFactory {
 
         if (typeof this.rule.title === 'string') {
             props[config.defaultName.formItemPropLabel] = this.rule.title;
-        } else if (this.rule.title && typeof this.rule.title === 'object') {
+        } else if (this.titleRule) {
             slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }
 
