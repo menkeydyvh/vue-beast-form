@@ -22,6 +22,38 @@ export default {
           validate: [{ required: true, message: "必须填写" }],
         },
         {
+          title: "大于10",
+          type: "a-input-number",
+          field: "num",
+          props: {
+            placeholder: "请输入",
+          },
+          validate: [
+            { required: true, message: "必须填写" },
+            { type: "number", min: 10, message: "必须大于10" },
+          ],
+        },
+        {
+          title: "和上头一致",
+          type: "a-input-number",
+          field: "num-top",
+          props: {
+            placeholder: "请输入",
+          },
+          validate: [
+            { required: true, message: "必须填写" },
+            {
+              validator: (_r, v) => {
+                if (value.value.num === v) {
+                  return Promise.resolve();
+                } else {
+                  return Promise.reject("与上头数字不一致");
+                }
+              },
+            },
+          ],
+        },
+        {
           type: "a-space",
           children: [
             {

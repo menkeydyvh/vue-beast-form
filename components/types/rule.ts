@@ -10,7 +10,9 @@ export type RuleType = {
     /**
      * 对应type的组件 props设置
      */
-    props?: any;
+    props?: {
+        [key: string]: any
+    };
     /**
      * 可用于api使用时候的检索功能
      * 
@@ -48,7 +50,9 @@ export type RuleType = {
      *    key2:xxx,
      * }
      */
-    value?: any;
+    value?: {
+        [field: string]: any
+    };
     /**
      * 验证规则
      * 
@@ -60,19 +64,23 @@ export type RuleType = {
      * 
      * 诺为表单输入组件会设置在form-item的class上
      */
-    class?: any;
+    class?: string | string[];
     /**
      * 设置在type对应的style上
      * 
      * 诺为表单输入组件会设置在form-item的style上
      */
-    style?: any;
+    style?: string | {
+        [key: string]: string
+    };
     /**
      * 设置在type对应的attrs上
      * 
      * 诺为表单输入组件会设置在form-item的attrs上
      */
-    attrs?: any;
+    attrs?: {
+        [key: string]: any
+    };
     /**
      * 子规则或子文本内容
      */
@@ -92,7 +100,9 @@ export type RuleType = {
     /**
      * 事件会覆盖props内同名事件处理
      */
-    on?: any
+    on?: {
+        [onName: string]: Function
+    }
     /**
      * 会抛出事件
      */
@@ -105,6 +115,7 @@ export interface RuleValidateType {
     required?: boolean;
     message?: string;
     trigger?: string;
+    validator?: Function;
 }
 export interface EmitType {
     event: string;

@@ -35,9 +35,9 @@ const rule = ref<RuleType[]> = [
 | [vModelKeyDefaultValue](#vmodel示例) | String, Array&lt;String&gt;       | 组件v-model:key="value" 对应的value的默认空值,有些组件默认空值需要配置为[]的情况可进行配置使用 |
 | [value](#value示例)                  | any                               | 组件值                                                                                         |
 | [validate](#validate示例)            | Array                             | 组件验证规则,例如：[{required: true, message: '请输入内容'}]                                   |
-| class                                | String, Array                     | 针对组件设置className                                                                          |
-| style                                | String, Object                    | 针对组件设置style                                                                              |
-| attrs                                | String, Object                    | 针对组件设置attr                                                                               |
+| [class](#三个示例)                   | String, Array                     | 针对组件设置className                                                                          |
+| [style](#三个示例)                   | String, Object                    | 针对组件设置style                                                                              |
+| [attrs](#三个示例)                   | Object                    | 针对组件设置attr                                                                               |
 | [children](#children示例)            | Array&lt;String&#124;RuleType&gt; | 子集渲染,默认渲染在default插槽                                                                 |
 | slot                                 | String                            | 渲染在指定插槽下                                                                               |
 | display                              | Boolean                           | 是否显示                                                                                       |
@@ -86,6 +86,12 @@ ant/ruleVmodel
 
 :::demo 
 ant/ruleValidate
+:::
+#### 三个示例
+style、class、attrs 示例
+
+:::demo 
+ant/ruleStyle
 :::
 
 #### children示例

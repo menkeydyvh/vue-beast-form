@@ -533,6 +533,7 @@ export class RuleFactory {
      * @returns 
      */
     renderFormItem() {
+        const self = this;
         if (!this.field) {
             return
         }
@@ -559,6 +560,12 @@ export class RuleFactory {
             props[config.defaultName.formItemPropRules] = this.rule.validate.map(v => {
                 if (v.message) {
                     v.message = this.setI18n(v.message)
+                }
+                if (v.validator) {
+                    const vvFn = v.validator
+                    v.validator = function () {
+                        vvFn(...arguments, self.api.publishApi())
+                    }
                 }
                 return v
             })
