@@ -35,15 +35,15 @@ const rule = ref<RuleType[]> = [
 | [vModelKeyDefaultValue](#vmodel示例) | String, Array&lt;String&gt;       | 组件v-model:key="value" 对应的value的默认空值,有些组件默认空值需要配置为[]的情况可进行配置使用 |
 | [value](#value示例)                  | any                               | 组件值                                                                                         |
 | [validate](#validate示例)            | Array                             | 组件验证规则,例如：[{required: true, message: '请输入内容'}]                                   |
-| [class](#三个示例)                   | String, Array                     | 针对组件设置className                                                                          |
-| [style](#三个示例)                   | String, Object                    | 针对组件设置style                                                                              |
-| [attrs](#三个示例)                   | Object                    | 针对组件设置attr                                                                               |
+| [class](#sca示例)                    | String, Array                     | 针对组件设置className                                                                          |
+| [style](#sca示例)                    | String, Object                    | 针对组件设置style                                                                              |
+| [attrs](#sca示例)                    | Object                            | 针对组件设置attr                                                                               |
 | [children](#children示例)            | Array&lt;String&#124;RuleType&gt; | 子集渲染,默认渲染在default插槽                                                                 |
-| slot                                 | String                            | 渲染在指定插槽下                                                                               |
-| display                              | Boolean                           | 是否显示                                                                                       |
-| directives                           | Array&lt;Directives&gt;           | 指令配置                                                                                       |
-| on                                   | Object                            | 组件事件监听，on事件监听的事件会默认在最后一个参数绑定一个api对象方便使用api                   |
-| emits                                | Array&lt;EmitType&gt;             | 会抛出事件到最顶层                                                                             |
+| [slot](#slot示例)                    | String                            | 渲染在指定插槽下                                                                               |
+| [display](#display示例)              | Boolean                           | 是否显示                                                                                       |
+| [directives](#事件处理示例)          | Array&lt;Directives&gt;           | 指令配置                                                                                       |
+| [on](#事件处理示例)                  | Object                            | 组件事件监听，on事件监听的事件会默认在最后一个参数绑定一个api对象方便使用api                   |
+| [emits](#事件处理示例)               | Array&lt;EmitType&gt;             | 会抛出事件到最顶层                                                                             |
 
 
 #### type示例
@@ -87,8 +87,11 @@ ant/ruleVmodel
 :::demo 
 ant/ruleValidate
 :::
-#### 三个示例
+#### sca示例
+
 style、class、attrs 示例
+
+**注意有formItem层级时候 外层对应的是formItem props对应的是设置组件**
 
 :::demo 
 ant/ruleStyle
@@ -98,5 +101,22 @@ ant/ruleStyle
 
 :::demo 
 ant/ruleChildren
+:::
+
+#### slot示例
+
+:::demo 
+ant/ruleSlot
+:::
+#### display示例
+
+:::demo 
+ant/ruleDisplay
+:::
+
+#### 事件处理示例
+
+:::demo 
+ant/ruleOn
 :::
 

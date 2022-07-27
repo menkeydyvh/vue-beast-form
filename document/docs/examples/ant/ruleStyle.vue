@@ -22,12 +22,12 @@ export default {
       },
       {
         type: "div",
-        style: "background:#f1f1f1",
+        style: "background:green",
         children: ["div string add style"],
       },
       {
         type: "div",
-        style: { border: "#f1f1f1 1px soild" },
+        style: { border: "red 1px solid" },
         children: ["div object add style"],
       },
       {
@@ -36,6 +36,24 @@ export default {
           a: 1,
         },
         children: ["div add attrs"],
+      },
+      {
+        type: "a-input",
+        title: "输入框组件设置formItem层",
+        field: "t1",
+        style: { border: "red 1px solid" },
+        class: ["itemClass"],
+        attrs: { itemAttr: 1 },
+      },
+      {
+        type: "a-input",
+        title: "输入框组件设置Input",
+        field: "t2",
+        props: {
+          style: { border: "red 1px solid" },
+          class: ["inputClass"],
+          inputAttr: 1,
+        },
       },
     ]);
     return {
