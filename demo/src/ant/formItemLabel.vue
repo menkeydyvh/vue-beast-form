@@ -28,7 +28,6 @@ export default defineComponent({
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
-          // wrapperCol: { span: 14 },
           layout: "vertical",
         },
       });
@@ -46,7 +45,19 @@ export default defineComponent({
           type: "text",
         },
         children: [{ type: "span", slot: "prefix", children: ["前面"] }],
-        validate: [{ required: true, message: "请输入name", trigger: "blur" }],
+        validate: [
+          { required: true, message: "请输入name", trigger: "blur" },
+          {
+            validator: (_r, v, c, api) => {
+              if (v === "123") {
+                return Promise.resolve();
+              } else {
+                return Promise.reject("请填入123");
+              }
+            },
+            trigger: "blur",
+          },
+        ],
       },
       {
         type: "a-input",

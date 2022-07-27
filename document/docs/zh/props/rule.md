@@ -58,12 +58,12 @@ ant/ruleType
 ant/ruleProps
 :::
 
-#### field示例
+ #### field示例
 
 :::demo 
 ant/easyForm
 :::
-#### title示例
+ #### title示例
 
 :::demo 
 ant/ruleTitle
@@ -75,19 +75,19 @@ ant/ruleTitle
 ant/ruleValue
 :::
 
-#### vModel示例
+ #### vModel示例
 vModelKey和vModelKeyDefaultValue
 
 :::demo 
 ant/ruleVmodel
 :::
 
-#### validate示例
+ #### validate示例
 
 :::demo 
 ant/ruleValidate
 :::
-#### sca示例
+ #### sca示例
 
 style、class、attrs 示例
 
@@ -119,4 +119,3 @@ ant/ruleDisplay
 :::demo 
 ant/ruleOn
 :::
-

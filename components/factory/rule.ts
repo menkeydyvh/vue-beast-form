@@ -608,16 +608,16 @@ export class RuleFactory {
                 props['required'] = true
             }
             props[config.defaultName.formItemPropRules] = this.rule.validate.map(v => {
-                if (v.message) {
-                    v.message = this.setI18n(v.message)
+                const nv = { ...v };
+                if (nv.message) {
+                    nv.message = this.setI18n(nv.message)
                 }
                 if (v.validator) {
-                    const vvFn = v.validator
-                    v.validator = function () {
-                        vvFn(...arguments, self.api.publishApi())
+                    nv.validator = function () {
+                        return v.validator(...arguments, self.api.publishApi())
                     }
                 }
-                return v
+                return nv
             })
         }
 
