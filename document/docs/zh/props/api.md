@@ -1,88 +1,91 @@
 # api
 
-提供获取、设置、验证的一些相关方法
+提供获取、设置、验证的一些相关方法 [api例子](#demo)
 
+## ts中使用
+```ts
+import type { ApiType } from "vue-beast-form";
+
+const api = ref<ApiType>()
+```
+
+
+## field介绍
 下方api方法的参数field支持"field.subfield"形式检索，但上级field必须是唯一的
-
-## field示例
 
 :::demo 
 subField
 :::
 
-
-## 规则相关
-### setValue
+## setValue
 
 用于给表单组件设置值
 
 | 参数  | 必填 | 类型   | 说明                                                 |
 | ----- | ---- | ------ | ---------------------------------------------------- |
-| field | 是   | string | rule中的filed                                        |
+| field | 是   | string | 规则中的filed                                        |
 | value | 是   | any    | 值                                                   |
 | key   | 否   | string | 当值是对象且只想修改对象中的某个值可传入这个值的name |
 
+## setClass
 
-<CodeGroup>
-  <CodeGroupItem title="正常赋值" active>
+用于设置class
 
-```js
-api.setValue("name","Tony")
-```
+| 参数  | 必填 | 类型                 | 说明          |
+| ----- | ---- | -------------------- | ------------- |
+| field | 是   | string               | 规则中的filed |
+| value | 是   | string&#124;string[] | 值            |
 
-  </CodeGroupItem>
-  <CodeGroupItem title="key参数的使用" >
+## setStyle
 
-```js
-const obj = {
-  name: "Tony",
-  age: 12
-}
+用于设置style
 
-api.setValue("name",obj,"name")
+| 参数  | 必填 | 类型                    | 说明          |
+| ----- | ---- | ----------------------- | ------------- |
+| field | 是   | string                  | 规则中的filed |
+| value | 是   | string&#124;{key:value} | 值            |
 
-```
-  </CodeGroupItem>
-</CodeGroup>
+## setAttrs
 
-### setTitle
+用于设置attrs
 
-给rule中title的设置值
+| 参数  | 必填 | 类型        | 说明          |
+| ----- | ---- | ----------- | ------------- |
+| field | 是   | string      | 规则中的filed |
+| attrs | 是   | {key:value} | 值            |
 
-| 参数  | 必填 | 类型                                       | 说明          |
-| ----- | ---- | ------------------------------------------ | ------------- |
-| field | 是   | string                                     | rule中的filed |
-| value | 是   | string,objcet<RuleType[](./rule.md)>,false | 值            |
+## setProps
+
+用于设置props 某个key的值
+
+| 参数  | 必填 | 类型   | 说明          |
+| ----- | ---- | ------ | ------------- |
+| field | 是   | string | 规则中的filed |
+| key   | 是   | string | props的key    |
+| value | 是   | any    | 值            |
 
 
-<CodeGroup>
-  <CodeGroupItem title="value:string" active>
+## setFormItemClass
 
-```js
-api.setTitle("name","Tony")
-```
+用于设置formItem的class
 
-  </CodeGroupItem>
-  <CodeGroupItem title="value:object" >
+| 参数  | 必填 | 类型                 | 说明          |
+| ----- | ---- | -------------------- | ------------- |
+| field | 是   | string               | 规则中的filed |
+| value | 是   | string&#124;string[] | 值            |
 
-```js
-api.setTitle("name",{
-    type:"span",
-    children:["Tony teacher"]
-})
-```
 
-  </CodeGroupItem>
-  <CodeGroupItem title="value:false" >
 
-```js
-api.setTitle("name",false)
-```
+## setFormItemStyle
 
-  </CodeGroupItem>
-</CodeGroup>
+用于设置formItem的style
 
-### setDisplay
+| 参数  | 必填 | 类型                    | 说明          |
+| ----- | ---- | ----------------------- | ------------- |
+| field | 是   | string                  | 规则中的filed |
+| value | 是   | string&#124;{key:value} | 值            |
+
+## setDisplay
 设置隐藏显示  false为隐藏
 
 | 参数    | 必填 | 类型    | 说明          |
@@ -90,11 +93,7 @@ api.setTitle("name",false)
 | field   | 是   | string  | rule中的filed |
 | display | 是   | boolean | 值            |
 
-```js
-api.setDisplay("name",false)
-```
-
-### setDisabled
+## setDisabled
 设置禁用 true为禁用
 
 | 参数     | 必填 | 类型    | 说明          |
@@ -102,211 +101,97 @@ api.setDisplay("name",false)
 | field    | 是   | string  | rule中的filed |
 | disabled | 是   | boolean | 值            |
 
-```js
-api.setDisabled("name",false)
-```
+## pushChildren
+设置children插入
 
-### setChildren
-设置children
+| 参数  | 必填 | 类型                 | 说明               |
+| ----- | ---- | -------------------- | ------------------ |
+| field | 是   | string               | rule中的filed      |
+| rule  | 是   | string&#124;RuleType | 值                 |
+| index | 否   | number               | 插入位置，默认最后 |
 
-| 参数     | 必填 | 类型                                     | 说明          |
-| -------- | ---- | ---------------------------------------- | ------------- |
-| field    | 是   | string                                   | rule中的filed |
-| children | 是   | []string,[]objcet<RuleType[](./rule.md)> | 值            |
+## delChildren
+设置children移出
 
-<CodeGroup>
-  <CodeGroupItem title="children:string" active>
+| 参数  | 必填 | 类型   | 说明               |
+| ----- | ---- | ------ | ------------------ |
+| field | 是   | string | rule中的filed      |
+| index | 否   | number | 插入位置，默认全删 |
 
-```js
-api.setChildren("name",["Tony"])
-```
-
-  </CodeGroupItem>
-  <CodeGroupItem title="children:object" >
-
-```js   
-api.setChildren("name",[{
-    type:"span",
-    children:["Tony teacher"]
-}])
-```
-
-  </CodeGroupItem>
-</CodeGroup>
-
-### getProps
-获取某个字段的props
-
-| 参数  | 必填 | 类型   | 说明          |
-| ----- | ---- | ------ | ------------- |
-| field | 是   | string | rule中的filed |
     
-```js
-// 假设规则是 {
-//   field:"name",
-//   type:"a-input",
-//   props:{
-//     placeholder:"请输入姓名"
-//   }
-// }
-const props = api.getProps("name")
-console.log("props:",props);
-//   props: {placeholder:"请输入姓名"}
-```
-
-## Form相关
-### getFormData
+## getFormData
 获取表单数据
 
-| 参数  | 必填 | 类型   | 说明          |
-| ----- | ---- | ------ | ------------- |
-| field | 否   | string | rule中的filed |
+| 参数  | 必填 | 类型   | 说明                                    |
+| ----- | ---- | ------ | --------------------------------------- |
+| field | 否   | string | 表单收集中的收集字段key，不填则默认全部 |
 
-<CodeGroup>
-  <CodeGroupItem title="获取表单数据" active>
+**返回值：filed未填写值为{...}、有填写值为对应的结果值**
 
-```js
-// 假设表单数据 {name:"Tony",age:12}
-const data = api.getFormData()
-console.log("data:",data);
-// data: {name:"Tony",age:12}
-```
 
-  </CodeGroupItem>
-  <CodeGroupItem title="获取某个字段的数据" >
-
-```js
-// 假设表单数据 {name:"Tony",age:12}
-const data = api.getFormData("name")
-console.log("data:",data);
-// data: "Tony"
-```
-
-  </CodeGroupItem>
-</CodeGroup>
-
-### resetFormData
+## resetFormData
 重置表单数据，重置回表单初始化时候的数据
 
-| 参数  | 必填 | 类型   | 说明          |
-| ----- | ---- | ------ | ------------- |
-| field | 否   | string | rule中的filed |
+| 参数  | 必填 | 类型   | 说明                                    |
+| ----- | ---- | ------ | --------------------------------------- |
+| field | 否   | string | 表单收集中的收集字段key，不填则默认全部 |
 
-<CodeGroup>
-  <CodeGroupItem title="重置表单数据" active>
-
-```js
-// 假设表单数据 {name:"Tony",age:12}
-api.resetFormData()
-// {}
-```
-
-  </CodeGroupItem>
-  <CodeGroupItem title="重置某个字段的数据" >
-
-```js
-// 假设表单数据 {name:"Tony",age:12}
-api.resetFormData("name")
-// {age:12}
-```
-
-  </CodeGroupItem>
-</CodeGroup>
-
-### clearValue
-清空表单值
-
-| 参数  | 必填 | 类型   | 说明          |
-| ----- | ---- | ------ | ------------- |
-| field | 否   | string | rule中的filed |
-
-<CodeGroup>
-  <CodeGroupItem title="清空表单值" active>
-
-```js
-// 假设表单数据 {name:"Tony",age:12}
-api.clearValue()
-// {}
-```
-
-  </CodeGroupItem>
-  <CodeGroupItem title="清空某个字段的值" >
-
-```js
-// 假设表单数据 {name:"Tony",age:12}
-api.clearValue("name")
-// {age:12}
-```
-
-  </CodeGroupItem>
-</CodeGroup>
-
-### validate
+## validate
 验证表单
+
+| 参数     | 必填 | 类型                 | 说明                         |
+| -------- | ---- | -------------------- | ---------------------------- |
+| callback | 是   | function             | 验证结果                     |
+| fields   | 否   | string&#124;string[] | rule中的filed,默认整表单验证 |
+
+
+
+## clearValidate
+清空验证结果
+
+| 参数   | 必填 | 类型                 | 说明                              |
+| ------ | ---- | -------------------- | --------------------------------- |
+| fields | 否   | string&#124;string[] | rule中的filed，默认清理整表单验证 |
+
+## addOn
+添加事件
 
 | 参数     | 必填 | 类型     | 说明          |
 | -------- | ---- | -------- | ------------- |
-| callback | 否   | function | 验证结果      |
-| field    | 否   | string   | rule中的filed |
+| field    | 是   | string   | rule中的filed |
+| event    | 是   | string   | 事件名称      |
+| callback | 否   | function | 事件回调      |
 
-<CodeGroup>
-  <CodeGroupItem title="验证表单" active>
+## addEmit
+添加事件监听
 
-```js
-api.validate((valid:boolean)=> {
-    console.log("valid:",valid?"验证通过":"验证失败");
-})
-```
+| 参数  | 必填 | 类型     | 说明          |
+| ----- | ---- | -------- | ------------- |
+| field | 是   | string   | rule中的filed |
+| emit  | 是   | EmitType | 事件名称      |
 
-  </CodeGroupItem>
-  <CodeGroupItem title="验证某个字段" >
-
-```js
-api.validate((valid:boolean)=>{
-    console.log("valid:",valid?"验证通过":"验证失败");
-},"name")
-```
-
-  </CodeGroupItem>
-</CodeGroup>
-
-### clearValidate
-清空验证结果
-
-| 参数  | 必填 | 类型   | 说明          |
-| ----- | ---- | ------ | ------------- |
-| field | 否   | string | rule中的filed |
-
-<CodeGroup>
-  <CodeGroupItem title="清空验证结果" active>
-
-```js
-api.clearValidate()
-```
-
-  </CodeGroupItem>
-  <CodeGroupItem title="清空某个字段的验证结果" >
-
-```js
-api.clearValidate("name")
-```
-
-  </CodeGroupItem>
-</CodeGroup>
-
-
-## 其他
-
-
-### isModelKey
-是否是表单组件记录值的key
+## delOnOrEmit
+删除事件或监听
 
 | 参数  | 必填 | 类型   | 说明          |
 | ----- | ---- | ------ | ------------- |
 | field | 是   | string | rule中的filed |
+| event | 是   | string | 事件名称      |
 
-```js
-// 假设表单数据 {name:"Tony",age:12}
-api.isModelKey("name")  // true
-api.isModelKey("tex")  // false
-```
+## $t
+多语言转换
+
+| 参数 | 必填 | 类型   | 说明           |
+| ---- | ---- | ------ | -------------- |
+| str  | 是   | string | 需转换的字符串 |
+
+**返回值：string**
+
+
+
+#### demo
+
+:::demo 
+ant/ruleApis
+:::
+

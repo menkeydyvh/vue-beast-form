@@ -5,25 +5,21 @@
 利用这个JSON规则来生成对应布局和相关层级结构，同时可针对style设置className设置
 
 
-## 字段介绍
 
-TS开发中便捷提示
 
-<CodeGroup>
-  <CodeGroupItem title="TS" active>
+## ts中使用
 
 ```ts
 import type { RuleType } from "vue-beast-form";
 
-const rule = ref<RuleType[]> = [
+const rule = ref<RuleType[]>([
   {
     // 引入type方便书写
   }
-]
+]) 
 ```
 
-  </CodeGroupItem>
-</CodeGroup>
+## 字段介绍
 
 | 名称                                 | 基础类型或者TS自定义类型          | 说明                                                                                           |
 | ------------------------------------ | --------------------------------- | ---------------------------------------------------------------------------------------------- |

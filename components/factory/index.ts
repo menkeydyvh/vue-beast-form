@@ -31,7 +31,10 @@ export default function factory() {
 
             onMounted(() => {
                 rf.addVm()
-                emit('mounted', rf.api.publishApi())
+                nextTick(() => {
+                    // 视图都被渲染之后
+                    emit('mounted', rf.api.publishApi())
+                })
             });
 
             onBeforeUnmount(() => {

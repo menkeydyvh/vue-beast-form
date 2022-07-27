@@ -28,19 +28,19 @@ export default {
           children: [
             {
               type: "a-button",
-              children: ["设置field=name2.one的title"],
+              children: ["设置field=name2.one的值"],
               on: {
                 click: (e, api) => {
-                  api.setTitle("name2.one", "title");
+                  api.setValue("name2.one", "title");
                 },
               },
             },
             {
               type: "a-button",
-              children: ["设置field=two的title"],
+              children: ["设置field=two的值"],
               on: {
                 click: (e, api) => {
-                  api.setTitle("two", "title");
+                  api.setValue("two", "title");
                 },
               },
             },

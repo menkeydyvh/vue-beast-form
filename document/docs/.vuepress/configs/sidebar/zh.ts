@@ -25,6 +25,7 @@ export const zh: SidebarConfig = {
         '/zh/props/index.md',
         '/zh/props/rule.md',
         '/zh/props/api.md',
+        '/zh/props/option.md',
       ],
     },
   ],

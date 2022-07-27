@@ -14,7 +14,7 @@ ant/easyForm
 | [rule](./rule.md)            | 渲染布局使用的数组      | Array    | Array< RuleType > |
 | [api](./api.md)(v-model:api) | 提供一个全局可绑定的api | Function | ApiType           |
 | modelValue(v-model)          | 双向绑定的值            | {}       | any               |
-| option                       | 提供一些设定            | {}       | PropsOptionType   |
+| [option](./option.md)        | 提供一些设定            | {}       | PropsOptionType   |
 | disabled                     | 禁用整个表单内的组件    | boolean  | Boolean           |
 
 ts类型均可以使用如下方式获取

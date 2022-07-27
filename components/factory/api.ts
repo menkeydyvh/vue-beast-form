@@ -192,10 +192,10 @@ export default class apiFactory {
                     rf.display.value = display === true
                 }
             },
-            setDisabled(field, isBool) {
+            setDisabled(field, disabled) {
                 const rf = self.getRule(field)
                 if (rf) {
-                    rf.setDisabled(isBool)
+                    rf.setDisabled(disabled)
                 }
             },
             pushChildren(field, rule, index) {
