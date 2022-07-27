@@ -3,7 +3,7 @@ import FormFactory from "./form"
 import type { ModelValueType } from "./form"
 import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'
-import type { RuleType, EmitType, ApiType } from '../types'
+import type { ApiType } from '../types'
 
 /**
  * 
@@ -148,43 +148,19 @@ export default class apiFactory {
     publishApi(): ApiType {
         let self = this;
         return {
-            /**
-            * 修改值
-            * @param field 
-            * @param value 
-            * @param key 
-            */
-            setValue(field: string, value: any, key?: string) {
+            setValue(field, value, key) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.setValue(value, key)
                 }
             },
-
-            /**
-             * 设置class
-             * @param field 
-             * @param value 
-             */
-            setClass(field: string, value: any) {
+            setClass(field, value) {
                 this.setProps(field, "class", value)
             },
-
-            /**
-             * 设置style
-             * @param field 
-             * @param value 
-             */
-            setStyle(field: string, value: any) {
+            setStyle(field, value) {
                 this.setProps(field, "style", value)
             },
-
-            /**
-             * 设置attrs
-             * @param field 
-             * @param attrs
-             */
-            setAttrs(field: string, attrs: { [key: string]: any }) {
+            setAttrs(field, attrs) {
                 const rf = self.getRule(field)
                 if (rf) {
                     for (let key in attrs) {
@@ -192,84 +168,53 @@ export default class apiFactory {
                     }
                 }
             },
-
-            /**
-             * 设置props
-             * @param field 
-             * @param value 
-             */
-            setProps(field: string, key: string, value: any) {
+            setProps(field, key, value) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.setProps(key, value)
                 }
             },
-
-            /**
-             * 设置是否显示
-             * @param field 
-             * @param display 
-             */
-            setDisplay(field: string, display: boolean) {
+            setFormItemClass(field, value) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    rf.setFormItemProps('class', value)
+                }
+            },
+            setFormItemStyle(field, value) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    rf.setFormItemProps('style', value)
+                }
+            },
+            setDisplay(field, display) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.display.value = display === true
                 }
             },
-
-            /**
-             * 设置禁用
-             * @param field 
-             * @param isBool 
-             */
-            setDisabled(field: string, isBool: boolean) {
+            setDisabled(field, isBool) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.setDisabled(isBool)
                 }
             },
-
-            /**
-             * 插入子节点
-             * @param field 
-             * @param rule 
-             * @param index 
-             */
-            pushChildren(field: string, rule: string | RuleType, index?: number) {
+            pushChildren(field, rule, index) {
                 const rf = self.getRule(field)
                 if (rf) {
                     // 统一插入处理
                     rf.addChildren(rule, index)
                 }
             },
-
-            /**
-             * 删除子节点
-             * @param field 
-             * @param index 
-             */
-            delChildren(field: string, index?: number) {
+            delChildren(field, index) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.delChildren(index)
                 }
             },
-
-            /**
-             * 检测是不是model的key
-             * @param field 
-             * @returns 
-             */
-            isModelKey(field: string) {
+            isModelKey(field) {
                 return Object.keys(self.modelValue).includes(field)
             },
-
-            /**
-             * 获取表单数据集
-             * @param field 
-             * @returns 
-             */
-            getFormData(field?: string) {
+            getFormData(field) {
                 if (field) {
                     if (this.isModelKey(field)) {
                         const rf = self.getRule(field)
@@ -285,12 +230,7 @@ export default class apiFactory {
                     return data;
                 }
             },
-
-            /**
-             * 重置为组件空值
-             * @param field 
-             */
-            resetFormData(field?: string) {
+            resetFormData(field) {
                 if (field) {
                     if (this.isModelKey(field)) {
                         const rf = self.getRule(field)
@@ -304,13 +244,7 @@ export default class apiFactory {
                     }
                 }
             },
-
-            /**
-            * 验证字段规则
-            * @param callback 
-            * @param fields 
-            */
-            async validate(callback: (valid: boolean, data: any) => void, fields?: string | string[], formVm?: ComponentInternalInstance) {
+            async validate(callback, fields, formVm) {
                 let valid = true, data = null
                 if (formVm) {
                     if (!await formValidate(formVm.refs[FormFactory.formRefsName], fields)) {
@@ -342,12 +276,7 @@ export default class apiFactory {
                 }
                 callback(valid, data)
             },
-
-            /**
-            * 清理字段验证
-            * @param fields 
-            */
-            clearValidate(fields?: string | string[], formVm?: ComponentInternalInstance) {
+            clearValidate(fields, formVm) {
                 if (formVm) {
                     clearFormValidate(formVm.refs[FormFactory.formRefsName], fields);
                 } else {
@@ -358,50 +287,25 @@ export default class apiFactory {
                     }
                 }
             },
-
-            /**
-            * 添加事件
-            * @param field 
-            * @param event 
-            * @param callback 
-            */
-            addOn(field: string, event: string, callback?: Function) {
+            addOn(field, event, callback) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.addOn(event, callback)
                 }
             },
-
-            /**
-            * 添加事件监听
-            * @param field 
-            * @param emit 
-            * @returns 
-            */
-            addEmit(field: string, emit: EmitType) {
+            addEmit(field, emit) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.addEmit(emit)
                 }
             },
-
-            /**
-            * 删除事件或监听
-            * @param field 
-            * @param event 
-            */
-            delOnOrEmit(field: string, event: string) {
+            delOnOrEmit(field, event) {
                 const rf = self.getRule(field)
                 if (rf) {
                     rf.delOnOrEmit(event)
                 }
             },
-            /**
-             * 多语言处理支持
-             * @param str 
-             * @returns 
-             */
-            $t(str: string) {
+            $t(str) {
                 if (globalCache.t) {
                     return globalCache.t(str)
                 } else {

@@ -131,13 +131,25 @@ export default defineComponent({
           },
           {
             type: "a-button",
-            children: [`设置input1 style和class`],
+            children: [`设置input1 input style和class`],
             on: {
               click: (e, api) => {
                 api.setStyle("input2", {
                   border: `${n++}px solid red`,
                 });
-                api.setClass("input2", ["testClass", "red"]);
+                api.setClass("input2", ["testInputClass", "red"]);
+              },
+            },
+          },
+          {
+            type: "a-button",
+            children: [`设置input1 formItem style和class`],
+            on: {
+              click: (e, api) => {
+                api.setFormItemStyle("input2", {
+                  border: `${n++}px solid yellow`,
+                });
+                api.setFormItemClass("input2", ["testItemClass", "yellow"]);
               },
             },
           },

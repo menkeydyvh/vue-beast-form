@@ -31,6 +31,10 @@ export class RuleFactory {
         [key: string]: any
     } = reactive({})
 
+    public formItemProps: {
+        [key: string]: any
+    } = reactive({})
+
     public display: Ref<boolean>
 
     public children: Array<RuleFactory | string> = reactive([])
@@ -170,27 +174,64 @@ export class RuleFactory {
 
     initProps() {
         const tag = this.getTag();
-        let tagPropsKeys = []
-        if (typeof tag === 'object' && tag.props) {
-            tagPropsKeys = Object.keys(tag.props)
-        }
 
-        if (this.rule.props) {
-            for (let key in this.rule.props) {
-                this.props[key] = this.rule.props[key]
+        if (typeof tag === 'object') {
+            let tagPropsKeys = []
+            // 是组件
+            if (tag.props) {
+                tagPropsKeys = Object.keys(tag.props)
             }
-        }
 
-        if (this._config.disabled && tagPropsKeys.includes(this._config.disabled)) {
-            this.props[this._config.disabled] = false
-        }
+            if (this.rule.props) {
+                for (let key in this.rule.props) {
+                    this.props[key] = this.rule.props[key]
+                }
+            }
 
-        if (!(this.rule.title === false || !this.field)) {
+            if (this._config.disabled && tagPropsKeys.includes(this._config.disabled)) {
+                this.props[this._config.disabled] = false
+            }
+
+            if (this.rule.title !== false) {
+                if (this.rule.attrs) {
+                    for (let key in this.rule.attrs) {
+                        if (!tagPropsKeys.includes(key)) {
+                            this.formItemProps[key] = this.rule.attrs[key]
+                        }
+                    }
+                }
+                if (this.rule.style) {
+                    this.formItemProps.style = this.rule.style
+                }
+                if (this.rule.class) {
+                    this.formItemProps.class = this.rule.class
+                }
+            } else {
+                if (this.rule.attrs) {
+                    for (let key in this.rule.attrs) {
+                        if (!tagPropsKeys.includes(key)) {
+                            this.props[key] = this.rule.attrs[key]
+                        }
+                    }
+                }
+                if (this.rule.style) {
+                    this.props.style = this.rule.style
+                }
+                if (this.rule.class) {
+                    this.props.class = this.rule.class
+                }
+            }
+
+        } else {
+            // 不是组件
+            if (this.rule.props) {
+                for (let key in this.rule.props) {
+                    this.props[key] = this.rule.props[key]
+                }
+            }
             if (this.rule.attrs) {
                 for (let key in this.rule.attrs) {
-                    if (!tagPropsKeys.includes(key)) {
-                        this.props[key] = this.rule.attrs[key]
-                    }
+                    this.props[key] = this.rule.attrs[key]
                 }
             }
             if (this.rule.style) {
@@ -199,8 +240,8 @@ export class RuleFactory {
             if (this.rule.class) {
                 this.props.class = this.rule.class
             }
-        }
 
+        }
     }
 
     initChildre() {
@@ -237,7 +278,7 @@ export class RuleFactory {
     }
 
     /**
-     * 设置props
+     * 对设置props处理
      * @param key 
      * @param value 
      */
@@ -245,6 +286,20 @@ export class RuleFactory {
         this.props[key] = value
     }
 
+    /**
+     * 对设置formItemProps处理
+     * @param key 
+     * @param value 
+     */
+    setFormItemProps(key: string, value: any) {
+        this.formItemProps[key] = value
+    }
+
+    /**
+     * 对设置attr处理
+     * @param key 
+     * @param value 
+     */
     setAttrs(key: string, value: any) {
         const tag = this.getTag();
         let tagPropsKeys = []
@@ -541,21 +596,16 @@ export class RuleFactory {
             return
         }
         const config = globalCache.config,
-            props = { ...this.rule.attrs },
+            props = {},
             slot = {
                 default: () => [this.renderType()],
             };
-        if (this.rule.class) {
-            props.class = this.rule.class;
-        }
-        if (this.rule.style) {
-            props.style = this.rule.style;
-        }
+
 
         props[config.defaultName.formItemPropName] = this.rule.field
         if (this.props[this._config.disabled] !== true && this.rule.validate) {
             if (this.rule.validate.find(item => item.required)) {
-                props.required = true
+                props['required'] = true
             }
             props[config.defaultName.formItemPropRules] = this.rule.validate.map(v => {
                 if (v.message) {
@@ -577,7 +627,7 @@ export class RuleFactory {
             slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
         }
 
-        return h(LoaderFactory.getComponents(config.defaultName.formItem) as any, props, slot)
+        return h(LoaderFactory.getComponents(config.defaultName.formItem) as any, { ...props, ...this.formItemProps }, slot)
     }
 
     /**

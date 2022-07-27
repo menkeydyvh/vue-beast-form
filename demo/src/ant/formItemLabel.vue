@@ -63,7 +63,7 @@ export default defineComponent({
           attr2: "input-prop-attr2",
           style: {
             color: "#0ff",
-            "border-bottom": "1px solid #000",
+            "border-top": "1px solid #00f",
           },
         },
         children: [{ type: "span", slot: "prefix", children: ["prefix"] }],
@@ -79,16 +79,6 @@ export default defineComponent({
       },
       {
         type: "div",
-        props: {
-          class: "test-div-props-class",
-          attr2: "props2",
-          attr3: "props3",
-          type: "text",
-          style: {
-            color: "#0ff",
-            "border-bottom": "1px solid #000",
-          },
-        },
         children: ["测试class、attr、style"],
         attrs: {
           attr1: "1",

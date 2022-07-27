@@ -14,13 +14,13 @@ export interface ApiType {
      * @param field 
      * @param value 
      */
-    setClass(field: string, value: any): void
+    setClass(field: string, value: string | string[]): void
     /**
      * 设置style
      * @param field 
      * @param value 
      */
-    setStyle(field: string, value: any): void
+    setStyle(field: string, value: string | { [key: string]: string }): void
     /**
      * 设置attrs
      * @param field 
@@ -33,6 +33,18 @@ export interface ApiType {
      * @param value 
      */
     setProps(field: string, key: string, value: any): void
+    /**
+      * 设置formItem class
+      * @param field 
+      * @param value 
+      */
+    setFormItemClass(field: string, value: string | string[]): void
+    /**
+     * 设置formItem style
+     * @param field 
+     * @param value 
+     */
+    setFormItemStyle(field: string, value: string | { [key: string]: string }): void
     /**
      * 设置是否显示
      * @param field 
