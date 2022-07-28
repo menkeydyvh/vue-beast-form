@@ -11,6 +11,7 @@ export default function factory() {
 
     const component = defineComponent({
         name: NAME,
+        useForm: '',
         components: {},
         directives: {},
         props: {
@@ -26,6 +27,8 @@ export default function factory() {
                 { modelValue, rule, option, disabled } = toRefs(props);
 
             const rf = new FormFactory(vm)
+
+            rf.updateForm(component.useForm)
 
             onMounted(() => {
                 rf.addVm()

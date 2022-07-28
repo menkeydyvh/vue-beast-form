@@ -110,6 +110,10 @@ export default class FormFactory {
         this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option.value, form: formProps }
     }
 
+    updateForm(framework: string) {
+        LoaderFactory.switchDefaultName(framework)
+    }
+
     updateModelValue(modelValue: ModelValueType) {
         if (modelValue) {
             for (let key in modelValue) {

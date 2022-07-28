@@ -134,6 +134,16 @@ export default class config {
     }
 
     /**
+     * 切换默认form配置的时候使用
+     * @param fName 对应配置好的框架名称
+     */
+    switchDefaultName = (fName: string) => {
+        if (framework[fName]?.defaultName) {
+            this.setKeyValue("defaultName", framework[fName].defaultName)
+        }
+    }
+
+    /**
      * 获取配置中的 formDataComponentKey
      * @param componentName 
      * @returns 

@@ -1,7 +1,8 @@
 <template>
   <a-layout style="min-height: 100vh">
     <a-layout-sider>
-      <a-menu :openKeys="['0', '1']" @click="onMenuItemClick" mode="inline" theme="dark">
+      <!-- :openKeys="['0', '1']" -->
+      <a-menu @click="onMenuItemClick" mode="inline" theme="dark">
         <div
           style="
             height: 36px;
@@ -41,57 +42,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, markRaw } from "vue";
-
-interface MenuItem {
-  title: string;
-  base?: string;
-  component?: any;
-  children?: MenuItem[];
-}
+import menuList, { MenuItem } from "./menu";
 
 export default defineComponent({
   components: {},
   setup() {
-    const menu = ref<MenuItem[]>([
-        {
-          title: "ant-design-vue",
-          base: "ant",
-          children: [
-            {
-              title: "示例表单",
-              component: "sample.vue",
-            },
-            {
-              title: "简易表单",
-              component: "easyForm.vue",
-            },
-            {
-              title: "FormItem-Label",
-              component: "formItemLabel.vue",
-            },
-            {
-              title: "Object",
-              component: "objectForm.vue",
-            },
-            {
-              title: "Group",
-              component: "groupForm.vue",
-            },
-            {
-              title: "Upload",
-              component: "uploadForm.vue",
-            },
-            {
-              title: "其他v-model组件",
-              component: "otherModel.vue",
-            },
-            {
-              title: "ApiTest",
-              component: "apiForm.vue",
-            },
-          ],
-        },
-      ]),
+    const menu = ref(menuList),
       selectData = ref<MenuItem>();
 
     const onMenuItemClick = async (itemData: any) => {

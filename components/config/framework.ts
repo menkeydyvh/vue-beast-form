@@ -44,7 +44,21 @@ export const framework = {
         formDataComponentDisabled: {
             ACollapsePanel: ""
         },
-
+    },
+    'element-plus': {
+        defaultName: {
+            form: 'el-form',
+            formItem: 'el-form-item',
+            formItemPropName: 'prop',
+            formItemPropLabel: 'label',
+            formItemPropRules: 'rules',
+            formItemSlotTitle: 'label',
+            formEventValidate: 'validate',
+            formEventClearValidate: 'clearValidate',
+        },
+        formDataComponentKey: {},
+        formDataComponentDefaultValue: {},
+        formDataComponentChangeKeyEvent: {},
+        formDataComponentDisabled: {},
     }
-    // 后续继续加框架
 }

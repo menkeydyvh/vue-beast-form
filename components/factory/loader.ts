@@ -34,6 +34,10 @@ export class LoaderFactory {
         }
     }
 
+    static switchDefaultName(name: string) {
+        globalCache.config.switchDefaultName(name);
+    }
+
     static setbasePropsOption(propsOption: PropsOptionType) {
         if (propsOption && Object.keys(propsOption).length) {
             globalCache.basePropsOption = propsOption
