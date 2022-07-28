@@ -141,6 +141,11 @@ export default defineComponent({
         }),
       },
       // 颜色值一直默认是#ff0000 ???  这个弹框如果出来过其他弹出框会出现bug
+      {
+        type: "div",
+        style: "color:#ff0000",
+        children: ["el-color-picker控件有bug无法正常展示先屏蔽掉了"],
+      },
       // {
       //   type: "el-color-picker",
       //   title: "colorPicker",
@@ -243,21 +248,6 @@ export default defineComponent({
             { key: "3", label: "title3" },
           ],
         },
-      },
-
-      {
-        type: "div",
-        children: [
-          {
-            type: "el-input",
-            field: "inputPassword",
-            props: {
-              type: "password",
-            },
-            display: false,
-          },
-          "input下方",
-        ],
       },
       {
         type: "el-form-item",
