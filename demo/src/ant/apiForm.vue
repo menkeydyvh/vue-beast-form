@@ -11,6 +11,7 @@
       }"
       :disabled="disabled"
       @divBtnClick="divBtnClick"
+      @changeField="changeField"
     />
     <br />
     <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
@@ -18,15 +19,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { BeastForm } from "../../../components";
+import vbf, { BeastForm } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
-
-// TODO：emits的设置还是会提示 non-emits event listeners (divBtnClick) 后续需要处理
-BeastForm.emits.push("divBtnClick");
 
 export default defineComponent({
   components: { BeastForm },
   setup() {
+    vbf.emits("divBtnClick");
+
     const rule = ref<RuleType[]>(),
       value = ref({}),
       disabled = ref(),
@@ -266,8 +266,11 @@ export default defineComponent({
       },
     ];
     const divBtnClick = (e, api) => {
-      console.log("divBtnClick:emits", api);
-    };
+        console.log("divBtnClick:emits", api);
+      },
+      changeField = (field, value, api) => {
+        // console.log("changeField:", field, value, api);
+      };
 
     return {
       jApi,
@@ -275,6 +278,7 @@ export default defineComponent({
       rule,
       disabled,
       divBtnClick,
+      changeField,
     };
   },
 });

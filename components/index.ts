@@ -41,6 +41,18 @@ export default {
     });
   },
   /**
+   * 无法动态处理emits依然会有下方警告 但可以正常使用
+   * [Vue warn]: Extraneous non-emits event 
+   * @param names 
+   */
+  emits: (names: string | string[]) => {
+    if (Array.isArray(names)) {
+      BeastForm.emits.push(...names)
+    } else {
+      BeastForm.emits.push(names)
+    }
+  },
+  /**
    * 规则字符串转换成规则对象
    * @param str 
    * @returns 

@@ -5,11 +5,9 @@ import type { RuleType, PropsOptionType, ApiType } from '../types'
 
 export const NAME = 'BeastForm'
 
-const baseEmits = ["changeField", "update:modelValue", "update:api", "mounted", 'unmounted'];
+const baseEmits = ["changeField", "update:modelValue", "update:api", "mounted", 'unmounted']
 
 export default function factory() {
-
-    const emits = [...baseEmits];
 
     const component = defineComponent({
         name: NAME,
@@ -22,7 +20,7 @@ export default function factory() {
             option: { type: Object as PropType<PropsOptionType> },
             disabled: { type: Boolean },
         },
-        emits,
+        emits: baseEmits,
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
                 { modelValue, rule, option, disabled } = toRefs(props);
@@ -38,10 +36,6 @@ export default function factory() {
             });
 
             onBeforeUnmount(() => {
-                emits.splice(0, emits.length)
-                baseEmits.forEach(item => {
-                    emits.push(item)
-                })
                 rf.delVm()
             })
 
@@ -82,5 +76,6 @@ export default function factory() {
             return () => rf.render()
         },
     });
+
     return component
 }
