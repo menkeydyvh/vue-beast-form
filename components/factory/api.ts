@@ -168,6 +168,12 @@ export default class apiFactory {
                     }
                 }
             },
+            getProps(field, key) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    return rf.props[key]
+                }
+            },
             setProps(field, key, value) {
                 const rf = self.getRule(field)
                 if (rf) {

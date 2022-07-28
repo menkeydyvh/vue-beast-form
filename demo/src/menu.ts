@@ -59,6 +59,19 @@ const menu: MenuItem[] = [
             },
         ],
     },
+    {
+        title: "vant",
+        base: "vant",
+        children: [
+            {
+                title: "示例表单",
+                component: "sample.vue",
+            }, {
+                title: "简易表单",
+                component: "easyForm.vue",
+            },
+        ],
+    },
 ]
 
 export default menu

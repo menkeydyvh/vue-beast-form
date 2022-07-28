@@ -28,6 +28,12 @@ export interface ApiType {
    */
   setAttrs(field: string, attrs: { [key: string]: any }): void
   /**
+   * 获取props的值
+   * @param field 
+   * @param key 
+   */
+  getProps(field: string, key: string): any
+  /**
    * 设置props
    * @param field 
    * @param value 

@@ -11,7 +11,16 @@ export default class config {
     /**
      * form 组件名称相关定义
      */
-    public defaultName: DefaultName = {};
+    public defaultName: DefaultName = {
+        form: '',
+        formItem: '',
+        formItemPropName: '',
+        formItemPropRules: '',
+        formItemPropLabel: '',
+        formItemSlotTitle: '',
+        formEventValidate: '',
+        formEventClearValidate: ''
+    };
 
     /**
      * 表单组件定义 v-model 的 :key
@@ -195,7 +204,10 @@ export default class config {
      * @returns 
      */
     getModelValueDefaultNullValues(componentName: string, keys: string[]) {
-        const fcdv = this.formDataComponentDefaultValue[componentName] || null
+        let fcdv = this.formDataComponentDefaultValue[componentName]
+        if (fcdv === undefined) {
+            fcdv = null;
+        }
         if (Array.isArray(fcdv) && fcdv.length) {
             return keys.map((_, i) => {
                 if (i < fcdv.length) {

@@ -48,33 +48,33 @@ export interface DefaultName {
     /**
      * 框架form组件的名称：例如'a-form'
      */
-    form?: string;
+    form: string;
     /**
     * 框架form组件的formItem名称：例如'a-form-item'
     */
-    formItem?: string;
+    formItem: string;
     /**
      * formItem对应model上的key：例如'name'
      */
-    formItemPropName?: string;
+    formItemPropName: string;
     /*
      * formItem对应model上的key：例如'name'
      */
-    formItemPropRules?: string;
+    formItemPropRules: string;
     /**
      * formItem对应标题label的key：例如'label'
      */
-    formItemPropLabel?: string;
+    formItemPropLabel: string;
     /**
      * formItem对应标题label的插槽key：例如'label'
      */
-    formItemSlotTitle?: string;
+    formItemSlotTitle: string;
     /**
      * form事件 表单验证事件名称
      */
-    formEventValidate?: string;
+    formEventValidate: string;
     /**
      * form事件 表单清除验证事件名称
      */
-    formEventClearValidate?: string;
+    formEventClearValidate: string;
 }

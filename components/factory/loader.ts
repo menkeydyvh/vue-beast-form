@@ -55,6 +55,9 @@ export class LoaderFactory {
     }
 
     static getComponents(key: string): VNodeTypes | string {
+        if (!key) {
+            return null;
+        }
         if (globalCache.tagCacheComponents[key]) {
             return globalCache.tagCacheComponents[key];
         }

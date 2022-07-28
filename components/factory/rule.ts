@@ -73,14 +73,14 @@ export class RuleFactory {
     }
 
     private getTag() {
-        return this.rule ? LoaderFactory.getComponents(this.rule.type) as any : null
+        return this.rule?.type ? LoaderFactory.getComponents(this.rule.type) as any : null
     }
 
     initConfigCache() {
-
         let rdc = this.getTag()
 
         if (typeof rdc === "object") {
+            // console.log(rdc)
             const config = globalCache.config, rdcName = rdc.name;
             // disabled
             this._config.disabled = config.getComponentDisabled(rdcName)
@@ -104,7 +104,7 @@ export class RuleFactory {
                 modelKeyEvents = config.getModelValueChangeEvents(rdcName, modelKeys)
 
                 // -- 默认空值配置
-                if (this.rule.vModelKeyDefaultValue) {
+                if (this.rule.vModelKeyDefaultValue !== undefined) {
                     if (Array.isArray(this.rule.vModelKeyDefaultValue)) {
                         if (modelKeys.length === 1) {
                             modelKeyDefaultValues[0] = this.rule.vModelKeyDefaultValue
@@ -176,6 +176,8 @@ export class RuleFactory {
         const tag = this.getTag();
 
         if (typeof tag === 'object') {
+
+
             let tagPropsKeys = []
             // 是组件
             if (tag.props) {
@@ -192,7 +194,7 @@ export class RuleFactory {
                 this.props[this._config.disabled] = false
             }
 
-            if (this.rule.title !== false) {
+            if (globalCache.config.defaultName.formItem && this.rule.title !== false) {
                 if (this.rule.attrs) {
                     for (let key in this.rule.attrs) {
                         if (!tagPropsKeys.includes(key)) {
@@ -481,7 +483,7 @@ export class RuleFactory {
 
         this._config.modelKeys.forEach((key, index) => {
             const self = this;
-            this.props[self._config.modelKeyEvents[index]] = function () {                
+            this.props[self._config.modelKeyEvents[index]] = function () {
                 self.setValue(arguments[0], key)
                 const onName = propsToOnName(self._config.modelKeyEvents[index]);
                 if (self.rule?.on?.[onName]) {
@@ -588,15 +590,20 @@ export class RuleFactory {
      * @returns 
      */
     renderFormItem() {
-        const self = this;
+        const self = this, config = globalCache.config;
         if (!this.field) {
             return
         }
         if (this.rule.title === false) {
             return
         }
-        const config = globalCache.config,
-            props = {},
+
+        if (!config.defaultName.formItem) {
+            return
+        }
+
+
+        const props = {},
             slot = {
                 default: () => [this.renderType()],
             };

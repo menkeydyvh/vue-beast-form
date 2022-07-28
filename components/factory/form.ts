@@ -157,17 +157,33 @@ export default class FormFactory {
      * @returns 
      */
     renderForm() {
-        const { config } = globalCache;
-        let formTag = LoaderFactory.getComponents(config.defaultName.form);
-        if (!formTag) {
+        const { config } = globalCache, formProps: any = {};
+        let formTag = LoaderFactory.getComponents(config.defaultName.form) as any;
+
+        if (config.defaultName.form && formTag) {
+            formProps.ref = FormFactory.formRefsName
+            const fpKeys = Object.keys(formTag.props);
+            if (fpKeys.includes("model")) {
+                formProps.model = this.modelValue
+            }
+            if (this.option?.form) {
+                for (let key in this.option.form) {
+                    if (fpKeys.includes(key)) {
+                        formProps[key] = this.option.form[key]
+                    }
+                }
+            }
+        } else {
             formTag = 'div'
+            if (this.option?.form) {
+                for (let key in this.option.form) {
+                    formProps[key] = this.option.form[key]
+                }
+            }
         }
+
         return [
-            h(formTag as any, {
-                ref: FormFactory.formRefsName,
-                model: this.modelValue,
-                ...this.option?.form,
-            }, {
+            h(formTag, formProps, {
                 default: () => this.renderRule()
             })
         ]
