@@ -57,8 +57,12 @@ export const framework = {
             formEventClearValidate: 'clearValidate',
         },
         formDataComponentKey: {},
-        formDataComponentDefaultValue: {},
-        formDataComponentChangeKeyEvent: {},
+        formDataComponentDefaultValue: {
+            ElCheckboxGroup: [],
+            ElTransfer: [],
+        },
+        formDataComponentChangeKeyEvent: {
+        },
         formDataComponentDisabled: {},
     }
 }

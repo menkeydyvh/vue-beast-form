@@ -50,7 +50,7 @@ export default defineComponent({
         type: "el-form-item",
         children: [
           {
-            type: "a-space",
+            type: "el-space",
             children: [
               {
                 type: "el-button",

@@ -53,6 +53,10 @@ const menu: MenuItem[] = [
                 title: "示例表单",
                 component: "sample.vue",
             },
+            {
+                title: "简易表单",
+                component: "easyForm.vue",
+            },
         ],
     },
 ]

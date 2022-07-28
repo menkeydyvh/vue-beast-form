@@ -27,13 +27,13 @@ export class RuleFactory {
      */
     public field: string
 
-    public props: {
+    public props = reactive<{
         [key: string]: any
-    } = reactive({})
+    }>({})
 
-    public formItemProps: {
+    public formItemProps = reactive<{
         [key: string]: any
-    } = reactive({})
+    }>({})
 
     public display: Ref<boolean>
 
@@ -481,7 +481,7 @@ export class RuleFactory {
 
         this._config.modelKeys.forEach((key, index) => {
             const self = this;
-            this.props[self._config.modelKeyEvents[index]] = function () {
+            this.props[self._config.modelKeyEvents[index]] = function () {                
                 self.setValue(arguments[0], key)
                 const onName = propsToOnName(self._config.modelKeyEvents[index]);
                 if (self.rule?.on?.[onName]) {
