@@ -28,8 +28,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { BeastForm } from "../../../components";
+import vbf, { BeastForm } from "../../../components";
 import type { RuleType } from "../../../components/types";
+
+vbf.useForm("ant-design-vue");
 
 export default defineComponent({
   components: { BeastForm },

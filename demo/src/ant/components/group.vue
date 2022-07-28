@@ -20,7 +20,7 @@
 import { defineComponent, ref, toRefs, watch } from "vue";
 import type { PropType } from "vue";
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue";
-import { BeastForm } from "../../../../components";
+import vbf, { BeastForm } from "../../../../components";
 import { deepCopy } from "../../../../components/tool";
 import type { RuleType, PropsOptionType } from "../../../../components";
 
@@ -28,6 +28,8 @@ interface GroupRule {
   rule: Array<RuleType>;
   option: PropsOptionType;
 }
+
+vbf.useForm("ant-design-vue");
 
 export default defineComponent({
   name: "Group",

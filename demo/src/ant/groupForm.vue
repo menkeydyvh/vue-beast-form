@@ -16,10 +16,11 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
-import bf, { BeastForm } from "../../../components";
+import vbf, { BeastForm } from "../../../components";
 import type { RuleType, FactoryOptionType } from "../../../components/types";
 
-bf.components({ Group });
+vbf.components({ Group });
+vbf.useForm("ant-design-vue");
 
 export default defineComponent({
   components: { BeastForm },

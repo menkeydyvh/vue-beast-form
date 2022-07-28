@@ -15,10 +15,11 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { InboxOutlined } from "@ant-design/icons-vue";
-import bf, { BeastForm } from "../../../components";
+import vbf, { BeastForm } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components";
 
-bf.components({ InboxOutlined });
+vbf.useForm("ant-design-vue");
+vbf.components({ InboxOutlined });
 
 export default defineComponent({
   components: { BeastForm },

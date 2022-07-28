@@ -140,6 +140,12 @@ export default class config {
     switchDefaultName = (fName: string) => {
         if (framework[fName]?.defaultName) {
             this.setKeyValue("defaultName", framework[fName].defaultName)
+        } else {
+            // 支持从配置中获取
+            const globalConfig = this.vm.appContext.config.globalProperties.$beastForm as GlobalConfigType
+            if (globalConfig.base === fName) {
+                this.setKeyValue("defaultName", globalConfig.defaultName)
+            }
         }
     }
 

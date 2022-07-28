@@ -11,14 +11,16 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import bf, { BeastForm } from "../../../components";
+import vbf, { BeastForm } from "../../../components";
 import type { RuleType } from "../../../components";
+
+vbf.useForm("ant-design-vue");
 
 export default defineComponent({
   components: { BeastForm },
   setup() {
     // 指令
-    bf.directive("test2", {
+    vbf.directive("test2", {
       mounted() {
         console.log("directive:test2");
       },

@@ -22,6 +22,8 @@ import { defineComponent, ref } from "vue";
 import vbf, { BeastForm } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
+vbf.useForm("ant-design-vue");
+
 export default defineComponent({
   components: { BeastForm },
   setup() {

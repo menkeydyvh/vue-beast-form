@@ -13,10 +13,11 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { BeastForm } from "../../../components";
+import vbf, { BeastForm } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
 console.log(BeastForm);
+vbf.useForm("ant-design-vue");
 
 export default defineComponent({
   components: { BeastForm },
