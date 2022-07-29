@@ -7,6 +7,7 @@ import { defineComponent, ref } from "vue";
 import vbf from "vue-beast-form";
 import { Toast } from "vant";
 
+// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
 vbf.useFramework("vant");
 
 export default defineComponent({

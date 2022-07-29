@@ -6,6 +6,7 @@
 import { defineComponent, ref, markRaw } from "vue";
 import vbf from "vue-beast-form";
 
+// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
 vbf.useFramework("element-plus");
 
 export default defineComponent({

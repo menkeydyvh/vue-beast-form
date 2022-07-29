@@ -7,12 +7,12 @@ import demoContainer from '../../plugins/demo-container'
 export default defineUserConfig({
     lang: 'zh-CN',
     title: 'vue beast form',
-    description: '一个通过JSON快速生成 VUE UI 的框架',
+    description: '低代码，支持多套UI框架，路子特别野的框架',
     locales: {
         '/zh/': {
             lang: 'zh-CN',
             title: 'vue beast form',
-            description: '一个通过JSON快速生成 VUE UI 的框架',
+            description: '低代码，支持多套UI框架，路子特别野的框架',
         },
     },
     theme: defaultTheme({
