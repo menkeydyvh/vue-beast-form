@@ -30,7 +30,9 @@ export const zh: SidebarConfig = {
     }, {
       text: '框架使用配置',
       children: [
-        "/zh/frameworks/antDesignVue.md"
+        "/zh/frameworks/antDesignVue.md",
+        "/zh/frameworks/elementPuls.md",
+        "/zh/frameworks/vant.md",
       ]
     }
   ],
