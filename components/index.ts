@@ -76,11 +76,4 @@ export default {
   setBasePropsOption: (po: PropsOptionType) => {
     LoaderFactory.setbasePropsOption(po);
   },
-  /**
-   * 多框架的时候切换使用框架的form配置
-   * @param framework 使用目前支持的框架包名称
-   */
-  useForm(framework: string) {
-    BeastForm.useForm = framework;
-  }
 }

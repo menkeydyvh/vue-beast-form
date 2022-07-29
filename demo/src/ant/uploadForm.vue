@@ -18,8 +18,8 @@ import { InboxOutlined } from "@ant-design/icons-vue";
 import vbf, { BeastForm } from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components";
 
-vbf.useForm("ant-design-vue");
 vbf.components({ InboxOutlined });
+BeastForm.useFramework = "ant-design-vue";
 
 export default defineComponent({
   components: { BeastForm },

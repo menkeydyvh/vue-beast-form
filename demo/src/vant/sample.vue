@@ -9,11 +9,12 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import vbf, { BeastForm } from "../../../components";
+import { BeastForm } from "../../../components";
 import { ruleStringify, ruleParse } from "vue-beast-form/lib/tool";
 import type { RuleType } from "vue-beast-form";
 
-vbf.useForm("vant");
+BeastForm.useFramework = "vant";
+
 
 export default defineComponent({
   components: { BeastForm },

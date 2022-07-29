@@ -1,4 +1,4 @@
-export const framework = {
+export default {
     // 对应ui框架
     'ant-design-vue': {
         defaultName: {
@@ -64,5 +64,25 @@ export const framework = {
         formDataComponentChangeKeyEvent: {
         },
         formDataComponentDisabled: {},
+    },
+    "vant": {
+        defaultName: {
+            form: 'van-form',
+            formItem: '',
+            formItemPropName: '',
+            formItemPropLabel: '',
+            formItemPropRules: '',
+            formItemSlotTitle: '',
+            formEventValidate: 'validate',
+            formEventClearValidate: 'resetValidation',
+        },
+        formDataComponentKey: {
+            "van-calendar": 'show',
+            "van-popup": 'show',
+        },
+        formDataComponentDefaultValue: {
+            "van-checkbox-group": [],
+            "van-number-keyboard": ''
+        }
     }
 }

@@ -20,7 +20,7 @@ import vbf, { BeastForm } from "../../../components";
 import type { RuleType, FactoryOptionType } from "../../../components/types";
 
 vbf.components({ Group });
-vbf.useForm("ant-design-vue");
+BeastForm.useFramework = "ant-design-vue";
 
 export default defineComponent({
   components: { BeastForm },

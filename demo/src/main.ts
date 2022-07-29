@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './app.vue'
 
 import type { GlobalConfigType } from "../../components"
+import frameworks from "../../components/config/frameworks"
 
 import i18n from './lang/index';
 import vbf from '../../components';
@@ -17,25 +18,8 @@ const app = createApp(App)
 
 const bfConfig: GlobalConfigType = {
     base: 'vant',
-    frameworks: ['ant-design-vue', 'element-plus', 'vant'],
-    defaultName: {
-        form: 'van-form',
-        formItem: '',
-        formItemPropName: '',
-        formItemPropLabel: '',
-        formItemPropRules: '',
-        formItemSlotTitle: '',
-        formEventValidate: 'validate',
-        formEventClearValidate: 'resetValidation',
-    },
-    formDataComponentKey: {
-        "van-calendar": 'show',
-        "van-popup": 'show',
-    },
-    formDataComponentDefaultValue: {
-        "van-checkbox-group": [],
-        "van-number-keyboard": ''
-    }
+    frameworks: frameworks,
+
 }
 
 app.config.globalProperties.$beastForm = bfConfig

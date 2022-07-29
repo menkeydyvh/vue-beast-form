@@ -1,4 +1,3 @@
-import { framework } from './framework'
 import type { DefaultName, GlobalConfigType } from '../types'
 import type { ComponentInternalInstance } from "vue"
 
@@ -48,32 +47,23 @@ export default class config {
     } = {}
 
     /**
-  * 表单组件定义 v-model 的 :key
-  */
+     * 表单组件定义 v-model 的 :key
+     */
     public formDataComponentDisabled: {
         [ComponentName: string]: string;
     } = {
             default: 'disabled'
         }
 
-    constructor(vm: ComponentInternalInstance, option?: GlobalConfigType) {
+    constructor(vm: ComponentInternalInstance) {
         this.vm = vm
-        if (option) {
-            this.initConfig(option)
-        } else {
-            this.initGlobalConfig()
-        }
-    }
 
-    /**
-     * 初始化全局配置
-     */
-    initGlobalConfig() {
         const globalConfig = this.vm.appContext.config.globalProperties.$beastForm as GlobalConfigType
         if (!globalConfig) {
             console.error("error: You need set app.config.globalProperties.$beastForm")
             return
         }
+
         this.initConfig(globalConfig)
     }
 
@@ -83,50 +73,25 @@ export default class config {
      * @returns 
      */
     initConfig(option: GlobalConfigType) {
-        if (!option) {
-            return
+        if (option.base && option.frameworks?.[option.base]?.defaultName) {
+            this.setKeyValue('defaultName', option.frameworks[option.base].defaultName)
         }
 
-        if (option.base) {
-            if (framework[option.base]) {
-                for (let key in framework[option.base]) {
-                    this.setKeyValue(key, framework[option.base][key])
+        if (option.frameworks) {
+            for (let fname in option.frameworks) {
+                if (option.frameworks[fname]?.formDataComponentKey) {
+                    this.setKeyValue("formDataComponentKey", option.frameworks[fname].formDataComponentKey)
+                }
+                if (option.frameworks[fname]?.formDataComponentDefaultValue) {
+                    this.setKeyValue("formDataComponentDefaultValue", option.frameworks[fname].formDataComponentDefaultValue)
+                }
+                if (option.frameworks[fname]?.formDataComponentChangeKeyEvent) {
+                    this.setKeyValue("formDataComponentChangeKeyEvent", option.frameworks[fname].formDataComponentChangeKeyEvent)
+                }
+                if (option.frameworks[fname]?.formDataComponentDisabled) {
+                    this.setKeyValue("formDataComponentDisabled", option.frameworks[fname].formDataComponentDisabled)
                 }
             }
-        }
-        if (option.frameworks) {
-            option.frameworks.forEach((item) => {
-                if (item != option.base && framework[item]) {
-                    if (!option.base) {
-                        option.base = item
-                        this.setKeyValue("defaultName", framework[item].defaultName)
-                    }
-                    for (let key in framework[item]) {
-                        if (key != "defaultName") {
-                            this.setKeyValue(key, framework[item][key])
-                        }
-                    }
-                }
-            })
-        }
-
-        if (option.defaultName) {
-            this.setKeyValue("defaultName", option.defaultName)
-        }
-
-        if (option.formDataComponentKey) {
-            this.setKeyValue("formDataComponentKey", option.formDataComponentKey)
-        }
-
-        if (option.formDataComponentDefaultValue) {
-            this.setKeyValue("formDataComponentDefaultValue", option.formDataComponentDefaultValue)
-        }
-
-        if (option.formDataComponentChangeKeyEvent) {
-            this.setKeyValue("formDataComponentChangeKeyEvent", option.formDataComponentChangeKeyEvent)
-        }
-        if (option.formDataComponentDisabled) {
-            this.setKeyValue("formDataComponentDisabled", option.formDataComponentDisabled)
         }
     }
 
@@ -147,14 +112,9 @@ export default class config {
      * @param fName 对应配置好的框架名称
      */
     switchDefaultName = (fName: string) => {
-        if (framework[fName]?.defaultName) {
-            this.setKeyValue("defaultName", framework[fName].defaultName)
-        } else {
-            // 支持从配置中获取
-            const globalConfig = this.vm.appContext.config.globalProperties.$beastForm as GlobalConfigType
-            if (globalConfig.base === fName) {
-                this.setKeyValue("defaultName", globalConfig.defaultName)
-            }
+        const globalConfig = this.vm.appContext.config.globalProperties.$beastForm as GlobalConfigType
+        if (globalConfig.frameworks[fName]?.defaultName) {
+            this.setKeyValue("defaultName", globalConfig.frameworks[fName].defaultName)
         }
     }
 

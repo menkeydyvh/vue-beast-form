@@ -28,10 +28,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, markRaw } from "vue";
-import vbf, { BeastForm } from "../../../components";
+import { BeastForm } from "../../../components";
 import type { RuleType } from "../../../components/types";
 
-vbf.useForm("element-plus");
+BeastForm.useFramework = "element-plus";
 
 export default defineComponent({
   components: { BeastForm },

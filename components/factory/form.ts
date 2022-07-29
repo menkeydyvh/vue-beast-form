@@ -46,9 +46,13 @@ export default class FormFactory {
     public baseVm: ComponentInternalInstance = null
     public allVms: ComponentInternalInstance[] = []
 
-    constructor(vm: any) {
+    constructor(vm: any, frameworkName?: string) {
         if (!globalCache?.config) {
             new LoaderFactory(vm)
+        }
+
+        if (frameworkName) {
+            LoaderFactory.switchDefaultName(frameworkName)
         }
 
         this.vm = vm
@@ -108,10 +112,6 @@ export default class FormFactory {
             formProps = { ...globalCache?.basePropsOption?.form, ...baseVmOption?.form, ...option.value?.form }
 
         this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option.value, form: formProps }
-    }
-
-    updateForm(framework: string) {
-        LoaderFactory.switchDefaultName(framework)
     }
 
     updateModelValue(modelValue: ModelValueType) {
