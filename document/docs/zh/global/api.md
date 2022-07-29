@@ -2,14 +2,29 @@
 
 ## 明细
 
-| 名称               | 参数            | 说明                  | 例子                            |
-| ------------------ | --------------- | --------------------- | ------------------------------- |
-| components         | (data)          | 加载组件              | [查看](../guide/demandLoad.md)  |
-| directive          | (key,directive) | 加载指令              | [查看](../guide/demandLoad.md)  |
-| ruleParse          | (str)           | 规则字符串转换成对象  | [查看](#规则的对象与字符串转换) |
-| ruleStringify      | (rules,space)   | 对象规则转化成字符串  | [查看](#规则的对象与字符串转换) |
-| setBasePropsOption | (po)            | 设置基础的PropsOption | [查看](#setbasepropsoption)     |
+| 名称                                      | 参数                                 | 说明                                           |
+| ----------------------------------------- | ------------------------------------ | ---------------------------------------------- |
+| [beastForm](#beastform)                   | -                                    | 本组件                                         |
+| [components](../guide/demandLoad.md)      | data: {}                             | 加载组件                                       |
+| [directive](../guide/demandLoad.md)       | key: string<br/>directive: Directive | 加载指令                                       |
+| [emits](../guide/demandLoad.md)           | names: string&#124;string[]          | 提前设置好组件emits                            |
+| [ruleParse](#规则的对象与字符串转换)      | str: string                          | 规则字符串转换成对象                           |
+| [ruleStringify](#规则的对象与字符串转换)  | rules:RuleType&#124;RuleType[]       | 对象规则转化成字符串                           |
+| [setBasePropsOption](#setbasepropsoption) | po: PropsOptionType                  | 设置基础的PropsOption                          |
+| useFramework                              | frameworkName: string                | 多框架下切换框架使用，本文档多处使用注意看示例 |
 
+
+## beastForm
+本框架组件在.vue文件中加载使用
+
+xxx.vue
+```js
+import vbf from 'vue-beast-form'
+
+export default {
+  components: { BeastForm: vbf.beastForm() }
+}
+```
 
 ## setBasePropsOption
 
@@ -47,8 +62,10 @@ const ruleTemp = [
     }
 ]
 
+// 转换成字符串
 const ruleStr = vbf.ruleStringify(ruleTemp)
 
+// 转换回对象
 const ruleObj = vbf.ruleParse(ruleStr)
 
 ...

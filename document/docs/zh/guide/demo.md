@@ -10,9 +10,13 @@ import App from './App.vue'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
 
+// 这是作者自己调试适合适配的三个框架配置 查看如何配置请看$beastForms说明
+import frameworks from 'vue-beast-form/lib/config/frameworks'
+
 const app = createApp(App)
 app.config.globalProperties.$beastForm = {
     base: 'ant-design-vue',
+    frameworks,
 }
 app.use(Antd)
 ...

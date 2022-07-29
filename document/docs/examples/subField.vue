@@ -4,10 +4,13 @@
 
 <script>
 import { ref } from "vue";
-import { BeastForm } from "vue-beast-form";
+import vbf from "vue-beast-form";
+
+// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+vbf.useFramework("ant-design-vue");
 
 export default {
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const rule = ref([
         {

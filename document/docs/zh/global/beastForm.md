@@ -2,6 +2,8 @@
 
 $beastForm 用来告诉框架使用哪个框架的form和表单组件对应的一些配置项,同时也支持自定义配置form相关的配置项
 
+**ant-design-vue为例子**
+
 <CodeGroup>
   <CodeGroupItem title="JS" active>
 
@@ -11,7 +13,8 @@ import App from './App.vue'
 
 const app = createApp(App)
 app.config.globalProperties.$beastForm = {
-    base: 'ant-design-vue'
+    base: '',
+    frameworks:{}
 }
 ...
 ```
@@ -26,7 +29,8 @@ import type { GlobalConfigType } from "vue-beast-form"
 
 const app = createApp(App)
 app.config.globalProperties.$beastForm =  {
-    base: 'ant-design-vue'
+    base: 'ant-design-vue',
+    frameworks:{}
 } as GlobalConfigType
 ...
 ```
@@ -36,39 +40,40 @@ app.config.globalProperties.$beastForm =  {
 
 ## 配置项
 
-| 参数                            | 类型     | 说明                                         |
-| ------------------------------- | -------- | -------------------------------------------- |
-| base                            | string   | [查看说明](#base)                            |
-| frameworks                      | string[] | [查看说明](#frameworks)                      |
-| defaultName                     | object   | [查看说明](#defaultname)                     |
-| formDataComponentKey            | object   | [查看说明](#formdatacomponentkey)            |
-| formDataComponentDefaultValue   | object   | [查看说明](#formdatacomponentdefaultvalue)   |
-| formDataComponentChangeKeyEvent | object   | [查看说明](#formdatacomponentchangekeyevent) |
-| formDataComponentDisabled       | object   | [查看说明](#formDataComponentDisabled)       |
+| 参数                      | 类型   | 说明             |
+| ------------------------- | ------ | ---------------- |
+| base                      | string | 使用默认框架名称 |
+| [frameworks](#frameworks) | {}     | 框架对应的配置   |
 
-## 注意
-- 使用本框架以支持的UI时可以直接设置好对应的 [base](#base)
-- 非支持框架需要定义好 [defaultName](#defaultname)
+## frameworks
 
-#### base
-- 类型: string 
-- 说明：填写使用的主框架名称
-- 支持情况: **ant-design-vue**
 
-#### frameworks
-- 类型: []string 
-- 说明：填入使用的框架名称，方便导入默认配置
-- 例如：["element-ui","ant-design-vue"]
+```ts
+const frameworks = {
+  "ant-design-vue":{
+    defaultName:{},
+    formDataComponentKey:{}
+    formDataComponentDefaultValue:{}
+    formDataComponentChangeKeyEvent:{}
+    formDataComponentDisabled:{}
+  }
+}
+```
+快速查看字段说名：
+[defaultName](#defaultname)、[formDataComponentKey](#formdatacomponentkey)、[formDataComponentDefaultValue](#formdatacomponentdefaultvalue)、[formDataComponentChangeKeyEvent](#formdatacomponentchangekeyevent)、[formDataComponentDisabled](#formdatacomponentdisabled)
+
 
 #### defaultName
-- 类型: Object
-- 注意：**base** 没配置时这个配置是必然要设置的否则form无法被构建出来
+- 类型: {}
+- 注意：下方key都是必填，如无值可设置为string默认值""
 - 说明：跟form与formItem相关的基础配置
-- 细项：下列用ant-design-vue为例
+
+**下列用ant-design-vue的配置为值举栗子**
   
 | key                    | 说明                           | 类型   | 值            |
 | :--------------------- | :----------------------------- | :----- | :------------ |
 | form                   | 框架form组件的名称             | string | a-form        |
+| formPropsModel         | 框架form组件的数据对象属性     | string | model         |
 | formItem               | 框架form组件的formItem名称     | string | a-form-item   |
 | formItemPropName       | formItem对应model上的key       | string | name          |
 | formItemPropLabel      | formItem对应标题label的key     | string | label         |
@@ -78,11 +83,12 @@ app.config.globalProperties.$beastForm =  {
 | formEventClearValidate | form组件的清除验证事件         | string | clearValidate |
 
 #### formDataComponentKey
-- 类型: Object = { [ComponentName: string]: string | string[] }
+- 类型: { [ComponentName: string]: string | string[] }
 - 默认值：{default: 'modelValue'}
 - 说明：组件对应的v-model:key中的key
-- 注意 **与默认值不一致时候需要配置**
-- 例如：
+
+**与默认值不一致时候需要配置**
+
 ```js{2-4}
 {
     default: 'modelValue',
@@ -92,11 +98,12 @@ app.config.globalProperties.$beastForm =  {
 }
 ```
 #### formDataComponentDefaultValue
-- 类型: Object = { [ComponentName: string]: any }
+- 类型: { [ComponentName: string]: any }
 - 默认值：{default: null}
 - 说明：组件对应的v-model:key中空值时候的默认值
-- 注意 **与默认值不一致时候需要配置**
-- 例如: 
+
+**与默认值不一致时候需要配置**
+
 ```js{2-3}
 {
     default: null,
@@ -105,11 +112,12 @@ app.config.globalProperties.$beastForm =  {
 }
 ```
 #### formDataComponentChangeKeyEvent
-- 类型: Object = { [ComponentName: string]: string | string[] }
+- 类型: { [ComponentName: string]: string | string[] }
 - 默认值：{default: 'onUpdate:modelValue'}
 - 说明：组件对应的v-model:key中的事件
-- 注意 **与默认值不一致时候需要配置**
-- 例如：
+
+**与默认值不一致时候需要配置**
+
 ```js{2-3}
 {
     default:"onUpdate:modelValue",
@@ -119,10 +127,12 @@ app.config.globalProperties.$beastForm =  {
 ```
 
 #### formDataComponentDisabled
-- 类型: Object = { [ComponentName: string]: string  }
+- 类型: { [ComponentName: string]: string  }
 - 默认值：{default: 'disabled'}
 - 说明：组件对应的禁用key 有些组件是用disabled 有些组件是用readonly 或者其他
-- 注意 **与默认值不一致时候需要配置**
+
+**与默认值不一致时候需要配置**
+
 ```js{2-3}
 {
     default:"disabled",
@@ -133,4 +143,8 @@ app.config.globalProperties.$beastForm =  {
 <br/>
 <hr/>
 
-注意：如果formDataComponentKey配置的是数组 [formDataComponentDefaultValue、formDataComponentChangeKeyEvent] **必定也是数组** ,同时顺序是绑定的
+**注意：如果formDataComponentKey配置的是数组 下方两个值配置也必定也是数组 ,同时顺序是一致的**
+- formDataComponentDefaultValue
+- formDataComponentChangeKeyEvent
+
+就如例子中的 ATransfer 配置
