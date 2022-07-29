@@ -1,4 +1,5 @@
-import { BeastForm } from "../index"
+import { resolveComponent } from 'vue'
+import { name } from '../index'
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
@@ -26,7 +27,8 @@ export class LoaderFactory {
         for (let key in vm.appContext.components) {
             globalCache.tagCacheComponents[key] = vm.appContext.components[key]
         }
-        globalCache.tagCacheComponents[BeastForm.name] = BeastForm
+
+        globalCache.tagCacheComponents[name] = resolveComponent(name);
 
         const vmProxy = vm?.proxy as any
         if (vmProxy.$t) {

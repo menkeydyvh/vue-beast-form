@@ -13,14 +13,13 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType } from "../../../components/types";
 
-console.log(BeastForm);
-BeastForm.useFramework = "ant-design-vue";
+vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const rule = ref<RuleType[]>(),
       jApi = ref();

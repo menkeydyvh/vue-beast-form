@@ -1,31 +1,44 @@
-import { onUnmounted } from 'vue';
 import { LoaderFactory } from './factory/loader';
-import factory from './factory';
+import createFactory from './factory';
 import { ruleParse, ruleStringify } from './tool';
+import type { CreateFactoryConfigType } from './factory';
 import type { App, Component, Directive } from 'vue';
 import type { RuleType, PropsOptionType } from './types';
 
 export * from './types';
 
-export const BeastForm = factory();
+export const name = "BeastForm";
+
+const config: CreateFactoryConfigType = {
+  name,
+  framework: '',
+  directives: {},
+  emits: [],
+}
 
 export default {
+  config,
+
   /**
    * vue.use 的时候使用
    * @param app 
    * @returns 
    */
-  install: (app: App) => {
-    app.component(BeastForm.name, BeastForm);
+  install(app: App) {
+    const bf = this.BeastForm();
+    app.component(bf.name, bf);
     return app;
+  },
+  beastForm() {
+    return createFactory(this.config)
   },
   /**
    * 导入组件缓存
    * @param data 
    */
-  components: (data: {
+  components(data: {
     [key: string]: Component
-  }) => {
+  }) {
     LoaderFactory.loaderComponents(data)
   },
   /**
@@ -33,23 +46,18 @@ export default {
    * @param key 
    * @param directive 
    */
-  directive: (key: string, directive: Directive) => {
-    BeastForm.directives[key] = directive
-
-    onUnmounted(() => {
-      delete BeastForm.directives[key]
-    });
+  directive(key: string, directive: Directive) {
+    this.config.directives[key] = directive
   },
   /**
    * 无法动态处理emits依然会有下方警告 但可以正常使用
-   * [Vue warn]: Extraneous non-emits event 
    * @param names 
    */
-  emits: (names: string | string[]) => {
+  emits(names: string | string[]) {
     if (Array.isArray(names)) {
-      BeastForm.emits.push(...names)
+      this.config.emits = names
     } else {
-      BeastForm.emits.push(names)
+      this.config.emits = [names]
     }
   },
   /**
@@ -57,7 +65,7 @@ export default {
    * @param str 
    * @returns 
    */
-  ruleParse: (str: string) => {
+  ruleParse(str: string) {
     return ruleParse(str)
   },
   /**
@@ -66,14 +74,21 @@ export default {
    * @param space 
    * @returns 
    */
-  ruleStringify: (rules: RuleType | RuleType[], space?: number) => {
+  ruleStringify(rules: RuleType | RuleType[], space?: number) {
     return ruleStringify(rules, space)
   },
   /**
    * 设置基础的PropsOption 避免重复设置多次
    * @param po 
    */
-  setBasePropsOption: (po: PropsOptionType) => {
+  setBasePropsOption(po: PropsOptionType) {
     LoaderFactory.setbasePropsOption(po);
   },
+  /**
+   * 使用哪个组件
+   * @param frameworkName 
+   */
+  useFramework(frameworkName: string) {
+    this.config.framework = frameworkName;
+  }
 }

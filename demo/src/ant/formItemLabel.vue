@@ -11,13 +11,13 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType } from "../../../components";
 
-BeastForm.useFramework = "ant-design-vue";
+vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     // 指令
     vbf.directive("test2", {

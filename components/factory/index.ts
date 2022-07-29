@@ -3,17 +3,21 @@ import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType, ApiType } from '../types'
 
-export const NAME = 'BeastForm'
 
 const baseEmits = ["changeField", "update:modelValue", "update:api", "mounted", 'unmounted']
 
-export default function factory() {
+export interface CreateFactoryConfigType {
+    name: string
+    framework: string
+    directives: any
+    emits: string[]
+}
 
+export default function createFactory(config: CreateFactoryConfigType) {
+    
     const component = defineComponent({
-        name: NAME,
-        useFramework: '',
-        components: {},
-        directives: {},
+        name: config.name,
+        directives: config.directives,
         props: {
             api: { type: Object as PropType<ApiType> },
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
@@ -21,13 +25,11 @@ export default function factory() {
             option: { type: Object as PropType<PropsOptionType> },
             disabled: { type: Boolean },
         },
-        emits: baseEmits,
+        emits: [...baseEmits, ...config.emits],
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
                 { modelValue, rule, option, disabled } = toRefs(props);
-
-            const rf = new FormFactory(vm, component.useFramework)
-
+            const rf = new FormFactory(vm, config.framework)
 
             onMounted(() => {
                 rf.addVm()

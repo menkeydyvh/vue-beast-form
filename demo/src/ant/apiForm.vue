@@ -19,16 +19,15 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType, ApiFnType } from "../../../components/types";
 
-BeastForm.useFramework = "ant-design-vue";
+vbf.emits("divBtnClick");
+vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
-    vbf.emits("divBtnClick");
-
     const rule = ref<RuleType[]>(),
       value = ref({}),
       disabled = ref(),

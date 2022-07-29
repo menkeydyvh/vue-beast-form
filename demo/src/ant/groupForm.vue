@@ -16,14 +16,14 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
-import vbf, { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType, FactoryOptionType } from "../../../components/types";
 
 vbf.components({ Group });
-BeastForm.useFramework = "ant-design-vue";
+vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref(),

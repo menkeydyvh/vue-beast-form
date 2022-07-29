@@ -8,14 +8,14 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import { ruleStringify, ruleParse } from "vue-beast-form/lib/tool";
 import type { RuleType } from "vue-beast-form";
 
-BeastForm.useFramework = "element-plus";
+vbf.useFramework("element-plus");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),

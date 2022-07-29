@@ -28,13 +28,13 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType } from "../../../components/types";
 
-BeastForm.useFramework = "ant-design-vue";
+vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const jApi = ref(),
       disabled = ref(false),

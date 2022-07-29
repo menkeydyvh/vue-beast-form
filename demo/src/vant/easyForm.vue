@@ -30,14 +30,14 @@
 
 <script lang="ts">
 import { defineComponent, ref, markRaw } from "vue";
-import { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType } from "../../../components/types";
 import { Toast } from "vant";
 
-BeastForm.useFramework = "vant";
+vbf.useFramework("vant");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const jApi = ref(),
       disabled = ref(false),

@@ -20,7 +20,6 @@ interface VmPropsType {
 
 /**
  * TODO:
- * 补充element ui 和 iview ui的支持配置
  * 注意设置值的时候，如果是对象，需要处理
  * 
  * 还是需要计入form的层级结构

@@ -28,13 +28,13 @@
 
 <script lang="ts">
 import { defineComponent, ref, markRaw } from "vue";
-import { BeastForm } from "../../../components";
+import vbf from "../../../components";
 import type { RuleType } from "../../../components/types";
 
-BeastForm.useFramework = "element-plus";
+vbf.useFramework("element-plus");
 
 export default defineComponent({
-  components: { BeastForm },
+  components: { BeastForm: vbf.beastForm() },
   setup() {
     const jApi = ref(),
       disabled = ref(false),
