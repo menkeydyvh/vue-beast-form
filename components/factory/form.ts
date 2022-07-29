@@ -18,13 +18,6 @@ interface VmPropsType {
     option: PropsOptionType
 }
 
-/**
- * TODO:
- * 注意设置值的时候，如果是对象，需要处理
- * 
- * 还是需要计入form的层级结构
- * props.rule变化时候需要重载处理
- */
 export default class FormFactory {
 
     public vm: ComponentInternalInstance
@@ -51,7 +44,7 @@ export default class FormFactory {
         }
 
         if (frameworkName) {
-            LoaderFactory.switchDefaultName(frameworkName)
+            globalCache.config.switchDefaultName(frameworkName);
         }
 
         this.vm = vm

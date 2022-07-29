@@ -14,7 +14,7 @@ export interface CreateFactoryConfigType {
 }
 
 export default function createFactory(config: CreateFactoryConfigType) {
-    
+
     const component = defineComponent({
         name: config.name,
         directives: config.directives,
@@ -40,7 +40,9 @@ export default function createFactory(config: CreateFactoryConfigType) {
             });
 
             onBeforeUnmount(() => {
-                rf.delVm()
+                rf.delVm();
+                config.directives = {}
+                config.emits = []
             })
 
             onUnmounted(() => {

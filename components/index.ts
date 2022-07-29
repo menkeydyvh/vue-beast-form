@@ -9,7 +9,7 @@ export * from './types';
 
 export const name = "BeastForm";
 
-const config: CreateFactoryConfigType = {
+const _config: CreateFactoryConfigType = {
   name,
   framework: '',
   directives: {},
@@ -17,7 +17,7 @@ const config: CreateFactoryConfigType = {
 }
 
 export default {
-  config,
+  _config,
 
   /**
    * vue.use 的时候使用
@@ -30,7 +30,7 @@ export default {
     return app;
   },
   beastForm() {
-    return createFactory(this.config)
+    return createFactory(this._config)
   },
   /**
    * 导入组件缓存
@@ -47,7 +47,7 @@ export default {
    * @param directive 
    */
   directive(key: string, directive: Directive) {
-    this.config.directives[key] = directive
+    this._config.directives[key] = directive
   },
   /**
    * 无法动态处理emits依然会有下方警告 但可以正常使用
@@ -55,9 +55,9 @@ export default {
    */
   emits(names: string | string[]) {
     if (Array.isArray(names)) {
-      this.config.emits = names
+      this._config.emits = names
     } else {
-      this.config.emits = [names]
+      this._config.emits = [names]
     }
   },
   /**
@@ -89,6 +89,6 @@ export default {
    * @param frameworkName 
    */
   useFramework(frameworkName: string) {
-    this.config.framework = frameworkName;
+    this._config.framework = frameworkName;
   }
 }
