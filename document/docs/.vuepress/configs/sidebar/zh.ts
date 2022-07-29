@@ -27,6 +27,11 @@ export const zh: SidebarConfig = {
         '/zh/props/api.md',
         '/zh/props/option.md',
       ],
-    },
+    }, {
+      text: '框架使用配置',
+      children: [
+        "/zh/frameworks/antDesignVue.md"
+      ]
+    }
   ],
 }

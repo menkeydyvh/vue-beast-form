@@ -1,14 +1,5 @@
 <template>
-  <a-card class="content-card" :bordered="false" title="JSON解析表单或解析成布局">
-    <a-row>
-      <a-col :span="18">
-        <beast-form v-model="value" :rule="rule" :option="option" :disabled="disabled" />
-      </a-col>
-      <a-col :span="6">
-        <pre v-text="JSON.stringify(value, null, 4)" />
-      </a-col>
-    </a-row>
-  </a-card>
+  <beast-form v-model="value" :rule="rule" :option="option" :disabled="disabled" />
 </template>
 
 <script>
@@ -139,9 +130,12 @@ export default defineComponent({
         title: "input-number",
         field: "inputNumber",
         props: {
-          formatter: (value: string) =>
-            `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ","),
-          parser: (value: string) => value.replace(/\$\s?|(,*)/g, ""),
+          formatter: (value) => {
+            return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          },
+          parser: (value) => {
+            return value.replace(/\$\s?|(,*)/g, "");
+          },
         },
       },
       {
@@ -199,7 +193,7 @@ export default defineComponent({
         field: "transfer",
         props: {
           // 必须配置
-          render: (item: any) => item.title,
+          render: (item) => item.title,
           // key 必须是字符串
           dataSource: [
             { key: "1", title: "title1" },
@@ -235,20 +229,6 @@ export default defineComponent({
         },
       },
       {
-        type: "div",
-        children: [
-          {
-            type: "a-input",
-            field: "inputPassword",
-            props: {
-              type: "password",
-            },
-            display: false,
-          },
-          "input下方",
-        ],
-      },
-      {
         type: "a-form-item",
         children: [
           {
@@ -275,6 +255,15 @@ export default defineComponent({
                   click: (e, api) => {
                     api.resetFormData();
                     api.clearValidate();
+                  },
+                },
+              },
+              {
+                type: "a-button",
+                children: ["全部禁用"],
+                on: {
+                  click: (e, api) => {
+                    disabled.value = !disabled.value;
                   },
                 },
               },
