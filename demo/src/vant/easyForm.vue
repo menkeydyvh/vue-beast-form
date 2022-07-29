@@ -3,7 +3,7 @@
     <div>JSON解析表单或解析成布局</div>
 
     <a-row>
-      <a-col :span="18" style="height: 1000px">
+      <a-col :span="18" style="height: 2000px">
         <a-space>
           <a-radio-group v-model:value="option.isForm" button-style="solid">
             <a-radio-button :value="true">解析成表单</a-radio-button>
@@ -32,6 +32,7 @@
 import { defineComponent, ref, markRaw } from "vue";
 import vbf, { BeastForm } from "../../../components";
 import type { RuleType } from "../../../components/types";
+import { Toast } from "vant";
 
 vbf.useForm("vant");
 
@@ -139,17 +140,75 @@ export default defineComponent({
           },
           {
             type: "van-field",
-            field: "value-keyNumber",
+            field: "nameKeyNumber",
             props: {
               placeholder: "点击开关键盘输入",
               readonly: true,
             },
             on: {
               click: (e, api) => {
-                let keyShow = api.getProps("showKeyboard", "show");
-                api.setProps("showKeyboard", "show", keyShow === true ? false : true);
+                api.setProps("value-keyboard", "show", true);
               },
             },
+          },
+          {
+            type: "van-password-input",
+            field: "namePassword",
+            props: {
+              focused: false,
+            },
+            on: {
+              focus: (e, api) => {
+                api.setProps("namePassword", "focused", true);
+                api.setProps("value-password", "show", true);
+              },
+            },
+          },
+          {
+            type: "van-picker",
+            props: {
+              columns: ["杭州", "宁波", "温州", "绍兴", "湖州", "嘉兴", "金华"],
+            },
+            on: {
+              change: (value, index, api) => {
+                Toast(`当前值: ${value}, 当前索引: ${index}`);
+              },
+            },
+          },
+          { type: "br" },
+          {
+            type: "van-radio-group",
+            field: "value-radio",
+            children: [
+              { type: "van-radio", props: { name: "1" }, children: ["选择1"] },
+              { type: "van-radio", props: { name: "2" }, children: ["选择2"] },
+              { type: "van-radio", props: { name: "3" }, children: ["选择3"] },
+            ],
+          },
+          { type: "br" },
+          {
+            type: "van-rate",
+            field: "value-rate",
+          },
+          { type: "br" },
+          {
+            type: "van-search",
+            field: "value-search",
+          },
+          { type: "br" },
+          {
+            type: "van-slider",
+            field: "value-slider",
+          },
+          { type: "br" },
+          {
+            type: "van-stepper",
+            field: "value-stepper",
+          },
+          { type: "br" },
+          {
+            type: "van-switch",
+            field: "value-switch",
           },
         ],
       },
@@ -206,13 +265,31 @@ export default defineComponent({
           },
         ],
       },
-      //
+      //键盘
       {
         type: "van-number-keyboard",
-        field: "showKeyboard",
+        field: "value-keyboard",
         on: {
-          input: (key, api) => {
-            api.setValue("value-keyNumber", key);
+          "update:modelValue": (value, api) => {
+            api.setValue("nameKeyNumber", value);
+            api.setValue("value-keyboard", value);
+          },
+          blur: (api) => {
+            api.setProps("value-keyboard", "show", false);
+          },
+        },
+      },
+      {
+        type: "van-number-keyboard",
+        field: "value-password",
+        on: {
+          "update:modelValue": (value, api) => {
+            api.setProps("namePassword", "value", `${value}`);
+            api.setValue("value-password", value);
+          },
+          blur: (api) => {
+            api.setProps("namePassword", "focused", false);
+            api.setProps("value-password", "show", false);
           },
         },
       },
