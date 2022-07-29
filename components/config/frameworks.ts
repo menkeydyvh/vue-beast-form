@@ -3,6 +3,7 @@ export default {
     'ant-design-vue': {
         defaultName: {
             form: 'a-form',
+            formPropsModel: 'model',
             formItem: 'a-form-item',
             formItemPropName: 'name',
             formItemPropLabel: 'label',
@@ -48,6 +49,7 @@ export default {
     'element-plus': {
         defaultName: {
             form: 'el-form',
+            formPropsModel: 'model',
             formItem: 'el-form-item',
             formItemPropName: 'prop',
             formItemPropLabel: 'label',
@@ -68,6 +70,7 @@ export default {
     "vant": {
         defaultName: {
             form: 'van-form',
+            formPropsModel: '',
             formItem: '',
             formItemPropName: '',
             formItemPropLabel: '',

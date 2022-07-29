@@ -9,8 +9,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
 import vbf from "../../../components";
-import { ruleStringify, ruleParse } from "vue-beast-form/lib/tool";
-import type { RuleType } from "vue-beast-form";
+import type { RuleType } from "../../../components";
 
 vbf.useFramework("ant-design-vue");
 
@@ -100,11 +99,11 @@ export default defineComponent({
 
     // rule.value = testRule;
 
-    const str = ruleStringify(testRule);
+    const str = vbf.ruleStringify(testRule);
     // console.log(str);
-    // console.log(ruleParse(str));
+    // console.log(vbf.ruleParse(str));
 
-    rule.value = ruleParse(str);
+    rule.value = vbf.ruleParse(str);
     onMounted(() => {});
 
     return {

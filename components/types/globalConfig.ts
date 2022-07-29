@@ -56,6 +56,10 @@ export interface DefaultName {
      */
     form: string;
     /**
+     * 表单数据对象：例如ant-design-vue的model
+     */
+    formPropsModel: string;
+    /**
     * 框架form组件的formItem名称：例如'a-form-item'
     */
     formItem: string;

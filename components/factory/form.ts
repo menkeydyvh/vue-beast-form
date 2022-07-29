@@ -155,8 +155,8 @@ export default class FormFactory {
         if (config.defaultName.form && formTag) {
             formProps.ref = FormFactory.formRefsName
             const fpKeys = Object.keys(formTag.props);
-            if (fpKeys.includes("model")) {
-                formProps.model = this.modelValue
+            if (config.defaultName.formPropsModel && fpKeys.includes(config.defaultName.formPropsModel)) {
+                formProps[config.defaultName.formPropsModel] = this.modelValue
             }
             if (this.option?.form) {
                 for (let key in this.option.form) {

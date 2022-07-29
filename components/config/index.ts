@@ -12,6 +12,7 @@ export default class config {
      */
     public defaultName: DefaultName = {
         form: '',
+        formPropsModel: '',
         formItem: '',
         formItemPropName: '',
         formItemPropRules: '',

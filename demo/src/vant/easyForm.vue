@@ -41,7 +41,7 @@ export default defineComponent({
   setup() {
     const jApi = ref(),
       disabled = ref(false),
-      value = ref({ input: "input" }),
+      value = ref({}),
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {},
@@ -79,6 +79,7 @@ export default defineComponent({
             field: "value-input",
             props: {
               label: "输入框",
+              rules: [{ required: true, message: "请填写用户名" }],
             },
           },
           {
@@ -294,39 +295,40 @@ export default defineComponent({
         },
       },
 
-      // {
-      //   type: "div",
-      //   children: [
-      //     {
-      //       type: "van-button",
-      //       props: {
-      //         type: "primary",
-      //         onClick: () => {
-      //           if (option.value.isForm) {
-      //             jApi.value.validate((valid: boolean) => {
-      //               console.log(valid, jApi.value.getFormData(), value.value);
-      //             });
-      //           } else {
-      //             // 不是form的时候获取数据
-      //             console.log("formData:", jApi.value.getFormData());
-      //           }
-      //         },
-      //       },
-      //       children: ["提交"],
-      //     },
-      //     {
-      //       type: "van-button",
-      //       props: {
-      //         onClick: () => {
-      //           value.value = {
-      //             input: "onReset",
-      //           };
-      //         },
-      //       },
-      //       children: ["重置"],
-      //     },
-      //   ],
-      // },
+      {
+        type: "div",
+        children: [
+          {
+            type: "van-button",
+            props: {
+              type: "primary",
+            },
+            children: ["提交"],
+            on: {
+              click: (e, api) => {
+                if (option.value.isForm) {
+                  api.validate((valid: boolean, data: any) => {
+                    console.log(valid, data);
+                  });
+                } else {
+                  // 不是form的时候获取数据
+                  console.log("formData:", api.getFormData());
+                }
+              },
+            },
+          },
+          {
+            type: "van-button",
+            children: ["重置"],
+            on: {
+              click: (e, api) => {
+                api.resetFormData();
+                api.clearValidate();
+              },
+            },
+          },
+        ],
+      },
     ];
 
     return {
