@@ -526,6 +526,10 @@ export class RuleFactory {
      * @returns 
      */
     renderChildrenSolt() {
+        if (this.children.length === 0) {
+            return undefined
+        }
+
         const solt = { default: [] }, result = {};
 
         this.children.forEach(rc => {
@@ -546,7 +550,6 @@ export class RuleFactory {
             result[key] = () => solt[key]
         }
         return result
-
     }
 
 

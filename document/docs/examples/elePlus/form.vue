@@ -84,14 +84,6 @@ export default defineComponent({
           },
         },
       },
-      // 弹出框不显示label问题
-      {
-        type: "div",
-        style: "color:#ff0000",
-        children: [
-          "使用时注意  el-cascader 使用props.options 设置的时候label无法显示？等待后续修复",
-        ],
-      },
       {
         type: "el-cascader",
         title: "cascader",

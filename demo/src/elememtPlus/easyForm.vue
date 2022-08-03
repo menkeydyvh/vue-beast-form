@@ -110,7 +110,6 @@ export default defineComponent({
           },
         },
       },
-      // 弹出框不显示label问题
       {
         type: "el-cascader",
         title: "cascader",
