@@ -42,7 +42,7 @@ export default defineComponent({
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
-          "label-position": "top",
+          "labelPosition": "top",
         },
         isForm: true,
       });
