@@ -72,6 +72,16 @@ const menu: MenuItem[] = [
             },
         ],
     },
+    {
+        title: "vuedraggable",
+        base: "vuedraggable",
+        children: [
+            {
+                title: "示例",
+                component: "index.vue",
+            },
+        ],
+    },
 ]
 
 export default menu
