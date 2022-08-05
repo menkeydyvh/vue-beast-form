@@ -30,12 +30,14 @@ export default function createFactory(config: CreateFactoryConfigType) {
             const vm = getCurrentInstance() as any,
                 { modelValue, rule, option, disabled } = toRefs(props);
             const rf = new FormFactory(vm, config.framework)
+            // const setupTime = Date.now();
 
             onMounted(() => {
                 rf.addVm()
                 nextTick(() => {
                     // 视图都被渲染之后
                     emit('mounted', rf.api.publishApi())
+                    // console.log(`渲染结束时间：${Date.now() - setupTime}`)
                 })
             });
 

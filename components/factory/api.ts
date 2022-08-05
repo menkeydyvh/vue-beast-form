@@ -12,12 +12,12 @@ import type { ApiType } from '../types'
  * @param callback 
  */
 const searchLoop = (
-    ary: RuleFactory[],
+    ary: Array<RuleFactory | string>,
     value: any,
     callback: (data: {
         item: RuleFactory,
         index: number,
-        ary: RuleFactory[]
+        ary: Array<RuleFactory | string>
     }
     ) => void) => {
     ary.forEach((item, index) => {
@@ -26,8 +26,9 @@ const searchLoop = (
                 return callback({ item, index, ary })
             }
             for (const slot in item.childrenSlot) {
-                if (item.childrenSlot[slot].length) {
-                    return searchLoop(item.childrenSlot[slot] as RuleFactory[], value, callback)
+                const childSlot = item.childrenSlot[slot]
+                if (Array.isArray(childSlot) && childSlot.length) {
+                    return searchLoop(childSlot, value, callback)
                 }
             }
         }
@@ -121,8 +122,9 @@ export default class apiFactory {
                     })
                 } else if (result) {
                     for (const slot in result.childrenSlot) {
-                        if (result.childrenSlot[slot].length) {
-                            searchLoop(result.childrenSlot[slot] as RuleFactory[], fields[idx], ({ item }) => {
+                        const childSlot = result.childrenSlot[slot]
+                        if (Array.isArray(childSlot) && childSlot.length) {
+                            searchLoop(childSlot, fields[idx], ({ item }) => {
                                 if (item) {
                                     result = item;
                                 } else {

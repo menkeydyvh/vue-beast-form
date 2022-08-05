@@ -39,7 +39,7 @@ export class RuleFactory {
 
 
     public childrenSlot: {
-        [slot: string]: Array<RuleFactory | string>
+        [slot: string]: Array<RuleFactory | string> | Function
     } = {}
 
     private _config: {
@@ -72,7 +72,7 @@ export class RuleFactory {
         this.initProps()
         this.initValue()
         this.listenEvent()
-        this.initChildre()
+        this.initChildren()
     }
 
     private getTag() {
@@ -180,7 +180,6 @@ export class RuleFactory {
 
         if (typeof tag === 'object') {
 
-
             let tagPropsKeys = []
             // 是组件
             if (tag.props) {
@@ -249,11 +248,34 @@ export class RuleFactory {
         }
     }
 
-    initChildre() {
-        if (this.rule.children && this.rule.children.length) {
-            this.rule.children.map(rule => {
-                this.addChildren(rule)
-            })
+    initChildren() {
+        const slef = this;
+        if (this.rule.children) {
+            if (Array.isArray(this.rule.children)) {
+                this.rule.children.map(rule => {
+                    this.addChildren(rule)
+                })
+            } else {
+                for (const slot in this.rule.children) {
+                    const childSlot = this.rule.children[slot]
+                    this.childrenSlot[slot] = function () {
+                        const csr: Array<string | RuleType> = childSlot(...arguments)
+                        try {
+                            if (Array.isArray(csr)) {
+                                return csr.map(csrItem => {
+                                    if (typeof csrItem === 'string') {
+                                        return csrItem
+                                    } else {
+                                        return (new RuleFactory(csrItem, slef.modelValue, slef.api, slef.vm, slef.isI18n)).render()
+                                    }
+                                })
+                            }
+                        } catch (error) {
+                            return csr
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -275,11 +297,14 @@ export class RuleFactory {
 
         if (isChild) {
             for (let key in this.childrenSlot) {
-                this.childrenSlot[key].forEach(child => {
-                    if (typeof child === 'object') {
-                        child.setDisabled(disabled, isChild)
-                    }
-                })
+                const childSlot = this.childrenSlot[key]
+                if (Array.isArray(childSlot)) {
+                    childSlot.forEach(child => {
+                        if (typeof child === 'object') {
+                            child.setDisabled(disabled, isChild)
+                        }
+                    })
+                }
             }
         }
     }
@@ -385,15 +410,22 @@ export class RuleFactory {
                 if (!this.childrenSlot[slot]) {
                     this.childrenSlot[slot] = []
                 }
+                const childSlot = this.childrenSlot[slot]
 
-                const startIndex = typeof index === 'number' ? index : this.childrenSlot[slot].length
-                const newRf = new RuleFactory(rule, this.modelValue, this.api, this.vm, this.isI18n);
-
-                this.childrenSlot[slot].splice(startIndex, 0, newRf)
+                if (Array.isArray(childSlot)) {
+                    const startIndex = typeof index === 'number' ? index : childSlot.length
+                    const newRf = new RuleFactory(rule, this.modelValue, this.api, this.vm, this.isI18n);
+                    childSlot.splice(startIndex, 0, newRf)
+                }
 
             } else {
-                const startIndex = typeof index === 'number' ? index : this.childrenSlot.default.length
-                this.childrenSlot.default.splice(startIndex, 0, rule)
+                if (!this.childrenSlot.default) {
+                    this.childrenSlot.default = []
+                }
+                if (Array.isArray(this.childrenSlot.default)) {
+                    const startIndex = typeof index === 'number' ? index : this.childrenSlot.default.length
+                    this.childrenSlot.default.splice(startIndex, 0, rule)
+                }
             }
         }
     }
@@ -403,8 +435,11 @@ export class RuleFactory {
      * @param index 
      */
     delChildren(index?: number, slot: string = 'default') {
-        const endIndex = typeof index === 'number' ? 1 : this.childrenSlot[slot].length
-        this.childrenSlot[slot].splice(index, endIndex)
+        const childSlot = this.childrenSlot[slot]
+        if (Array.isArray(childSlot)) {
+            const endIndex = typeof index === 'number' ? 1 : childSlot.length
+            childSlot.splice(index, endIndex)
+        }
     }
 
     /**
@@ -549,14 +584,17 @@ export class RuleFactory {
     renderChildrenSolt() {
         const result = {}
         for (let slot in this.childrenSlot) {
-            if (this.childrenSlot[slot].length) {
-                result[slot] = () => this.childrenSlot[slot].map(rc => {
+            const childSlot = this.childrenSlot[slot];
+            if (Array.isArray(childSlot) && childSlot.length) {
+                result[slot] = () => childSlot.map(rc => {
                     if (typeof rc === 'string') {
                         return this.setI18n(rc)
-                    } else {
+                    } else if (typeof rc === 'object') {
                         return rc.render()
                     }
                 })
+            } else if (typeof childSlot === 'function') {
+                result[slot] = childSlot
             }
         }
         return Object.keys(result).length ? result : undefined

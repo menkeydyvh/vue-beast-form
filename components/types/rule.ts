@@ -84,7 +84,7 @@ export type RuleType = {
     /**
      * 子规则或子文本内容
      */
-    children?: Array<RuleType | string>;
+    children?: Array<RuleType | string> | { [slot: string]: Function };
     /**
      * 插槽名称
      */

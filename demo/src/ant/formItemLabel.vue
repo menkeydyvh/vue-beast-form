@@ -15,17 +15,16 @@ import vbf from "../../../components";
 import type { RuleType } from "../../../components";
 
 vbf.useFramework("ant-design-vue");
+vbf.directive("test2", {
+  mounted() {
+    console.log("directive:test2");
+  },
+});
 
 export default defineComponent({
   components: { BeastForm: vbf.beastForm() },
   setup() {
     // 指令
-    vbf.directive("test2", {
-      mounted() {
-        console.log("directive:test2");
-      },
-    });
-
     const value = ref({ goods_name: "123", name: "123" }),
       rule = ref<RuleType[]>([]),
       option = ref({

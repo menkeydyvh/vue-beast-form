@@ -6,22 +6,24 @@
 xxx.vue
 
 ```js
+import { defineComponent } from "vue";
 import { Input } from "ant-design-vue";
 import vbf from "vue-beast-form";
 
 // 按需引入ui库对应组件
 vbf.components({Input})
 
-export default {
+// 按需加载指令
+vbf.directive("test2", {
+  mounted() {
+    console.log("directive:test2");
+  },
+});
+
+export default defineComponent({
   setup(){
-    // 按需加载指令
-    vbf.directive("test2", {
-      mounted() {
-        console.log("directive:test2");
-      },
-    });
 
     // 继续编写代码
   }
-};
+});
 ```
