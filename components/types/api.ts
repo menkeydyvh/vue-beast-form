@@ -69,13 +69,13 @@ export interface ApiType {
   * @param rule 
   * @param index 
   */
-  pushChildren(field: string, rule: string | RuleType, index?: number): void
+  pushChildren(field: string, rule: string | RuleType, index?: number, slot?: string): void
   /**
    * 删除子节点
    * @param field 
    * @param index 
    */
-  delChildren(field: string, index?: number): void
+  delChildren(field: string, index?: number, slot?: string): void
   /**
   * 检测是不是model的key
   * @param field 

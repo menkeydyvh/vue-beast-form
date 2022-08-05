@@ -109,6 +109,7 @@ subField
 | field | 是   | string               | rule中的filed      |
 | rule  | 是   | string&#124;RuleType | 值                 |
 | index | 否   | number               | 插入位置，默认最后 |
+| slot  | 否   | string               | 默认default        |
 
 ## delChildren
 设置children移出
@@ -117,7 +118,7 @@ subField
 | ----- | ---- | ------ | ------------------ |
 | field | 是   | string | rule中的filed      |
 | index | 否   | number | 插入位置，默认全删 |
-
+| slot  | 否   | string | 默认default        |
     
 ## getFormData
 获取表单数据

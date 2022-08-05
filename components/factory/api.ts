@@ -25,9 +25,10 @@ const searchLoop = (
             if (item.rule.field === value) {
                 return callback({ item, index, ary })
             }
-
-            if (item.children) {
-                return searchLoop(item.children as RuleFactory[], value, callback)
+            for (const slot in item.childrenSlot) {
+                if (item.childrenSlot[slot].length) {
+                    return searchLoop(item.childrenSlot[slot] as RuleFactory[], value, callback)
+                }
             }
         }
     })
@@ -119,13 +120,17 @@ export default class apiFactory {
                         }
                     })
                 } else if (result) {
-                    searchLoop(result.children as RuleFactory[], fields[idx], ({ item }) => {
-                        if (item) {
-                            result = item;
-                        } else {
-                            result = null;
+                    for (const slot in result.childrenSlot) {
+                        if (result.childrenSlot[slot].length) {
+                            searchLoop(result.childrenSlot[slot] as RuleFactory[], fields[idx], ({ item }) => {
+                                if (item) {
+                                    result = item;
+                                } else {
+                                    result = null;
+                                }
+                            })
                         }
-                    })
+                    }
                 } else {
                     result = null;
                 }
@@ -204,17 +209,17 @@ export default class apiFactory {
                     rf.setDisabled(disabled)
                 }
             },
-            pushChildren(field, rule, index) {
+            pushChildren(field, rule, index, slot) {
                 const rf = self.getRule(field)
                 if (rf) {
                     // 统一插入处理
-                    rf.addChildren(rule, index)
+                    rf.addChildren(rule, index, slot)
                 }
             },
-            delChildren(field, index) {
+            delChildren(field, index, slot) {
                 const rf = self.getRule(field)
                 if (rf) {
-                    rf.delChildren(index)
+                    rf.delChildren(index, slot)
                 }
             },
             isModelKey(field) {

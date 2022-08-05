@@ -37,7 +37,10 @@ export class RuleFactory {
 
     public display: Ref<boolean>
 
-    public children: Array<RuleFactory | string> = reactive([])
+
+    public childrenSlot: {
+        [slot: string]: Array<RuleFactory | string>
+    } = {}
 
     private _config: {
         disabled: string
@@ -271,11 +274,13 @@ export class RuleFactory {
         }
 
         if (isChild) {
-            this.children.forEach(child => {
-                if (typeof child === 'object') {
-                    child.setDisabled(disabled, isChild)
-                }
-            })
+            for (let key in this.childrenSlot) {
+                this.childrenSlot[key].forEach(child => {
+                    if (typeof child === 'object') {
+                        child.setDisabled(disabled, isChild)
+                    }
+                })
+            }
         }
     }
 
@@ -370,10 +375,26 @@ export class RuleFactory {
      * @param rule 
      * @param index 
      */
-    addChildren(rule: RuleType | string, index?: number) {
+    addChildren(rule: RuleType | string, index?: number, slot: string = 'default') {
         if (rule) {
-            const startIndex = index === undefined || index === null ? this.children.length : index
-            this.children.splice(startIndex, 0, typeof rule === "object" ? new RuleFactory(rule, this.modelValue, this.api, this.vm, this.isI18n) : rule)
+            if (typeof rule === "object") {
+                if (rule.slot) {
+                    slot = rule.slot
+                }
+
+                if (!this.childrenSlot[slot]) {
+                    this.childrenSlot[slot] = []
+                }
+
+                const startIndex = typeof index === 'number' ? index : this.childrenSlot[slot].length
+                const newRf = new RuleFactory(rule, this.modelValue, this.api, this.vm, this.isI18n);
+
+                this.childrenSlot[slot].splice(startIndex, 0, newRf)
+
+            } else {
+                const startIndex = typeof index === 'number' ? index : this.childrenSlot.default.length
+                this.childrenSlot.default.splice(startIndex, 0, rule)
+            }
         }
     }
 
@@ -381,9 +402,9 @@ export class RuleFactory {
      * 删除children
      * @param index 
      */
-    delChildren(index?: number) {
-        const endIndex = index === undefined || index === null ? this.children.length : 1
-        this.children.splice(index, endIndex)
+    delChildren(index?: number, slot: string = 'default') {
+        const endIndex = typeof index === 'number' ? 1 : this.childrenSlot[slot].length
+        this.childrenSlot[slot].splice(index, endIndex)
     }
 
     /**
@@ -526,30 +547,19 @@ export class RuleFactory {
      * @returns 
      */
     renderChildrenSolt() {
-        if (this.children.length === 0) {
-            return undefined
-        }
-
-        const solt = { default: [] }, result = {};
-
-        this.children.forEach(rc => {
-            if (typeof rc === "string") {
-                solt.default.push(this.setI18n(rc))
-            } else {
-                if (rc.rule.slot) {
-                    if (!solt[rc.rule.slot]) {
-                        solt[rc.rule.slot] = []
+        const result = {}
+        for (let slot in this.childrenSlot) {
+            if (this.childrenSlot[slot].length) {
+                result[slot] = () => this.childrenSlot[slot].map(rc => {
+                    if (typeof rc === 'string') {
+                        return this.setI18n(rc)
+                    } else {
+                        return rc.render()
                     }
-                    solt[rc.rule.slot].push(rc.render())
-                } else {
-                    solt.default.push(rc.render())
-                }
+                })
             }
-        })
-        for (let key in solt) {
-            result[key] = () => solt[key]
         }
-        return result
+        return Object.keys(result).length ? result : undefined
     }
 
 
