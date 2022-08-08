@@ -14,6 +14,7 @@ ant/easyForm
 | [api](./api.md)(v-model:api) | 提供一个全局可绑定的api | Function | ApiType               |
 | modelValue(v-model)          | 双向绑定的值            | {}       | any                   |
 | [option](./option.md)        | 提供一些设定            | {}       | PropsOptionType       |
+| [name](./api.md#getapi)      | 开启缓存当前api         | string   | string                |
 | disabled                     | 禁用整个表单内的组件    | boolean  | Boolean               |
 
 

@@ -196,3 +196,17 @@ subField
 ant/ruleApis
 :::
 
+
+## getApi
+
+不同xxx.vue文件渲染在同一个页面且需要相互交互的时候使用
+
+| 参数 | 必填 | 类型   | 说明                                                    |
+| ---- | ---- | ------ | ------------------------------------------------------- |
+| name | 是   | string | 获取有配置name值的&lt;beast-form name="xxx" /&gt; 的api |
+
+#### demo
+
+:::demo 
+getApi
+:::
