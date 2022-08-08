@@ -37,10 +37,9 @@ export class RuleFactory {
 
     public display: Ref<boolean>
 
-
-    public childrenSlot: {
+    public childrenSlot = reactive<{
         [slot: string]: Array<RuleFactory | string> | Function
-    } = {}
+    }>({})
 
     private _config: {
         disabled: string
