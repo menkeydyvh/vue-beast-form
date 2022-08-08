@@ -3,17 +3,21 @@ import { name } from '../index'
 import Config from '../config'
 import { firstToUpper, firstToLower } from '../tool'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
-import type { PropsOptionType } from "../types"
+import type { PropsOptionType, ApiType } from "../types"
 
 export const globalCache: {
     tagCacheComponents: {
         [key: string]: VNodeTypes
+    },
+    cacheApi?: {
+        [name: string]: ApiType
     },
     config: Config,
     t: any,
     basePropsOption: PropsOptionType
 } = {
     tagCacheComponents: {},
+    cacheApi: {},
     config: null,
     t: null,
     basePropsOption: null
@@ -35,6 +39,21 @@ export class LoaderFactory {
             globalCache.t = vmProxy.$t
         }
     }
+
+    static cacheApi(name: string, value?: ApiType) {
+        if (value) {
+            globalCache.cacheApi[name] = value;
+        } else {
+            return globalCache.cacheApi[name]
+        }
+    }
+
+
+    static removeCacheApi(name: string) {
+        delete globalCache.cacheApi[name]
+    }
+
+
 
     static switchDefaultName(name: string) {
         globalCache.config.switchDefaultName(name);

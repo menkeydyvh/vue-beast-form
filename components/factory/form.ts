@@ -13,6 +13,7 @@ interface VmPropsType {
     modelValue: {
         [key: string]: any
     }
+    name: string
     rule: RuleType[]
     disabled: boolean
     option: PropsOptionType
@@ -114,6 +115,17 @@ export default class FormFactory {
                 }
             }
         }
+    }
+
+    /**
+     * 缓存api
+     */
+    cacheApi(name: string) {
+        LoaderFactory.cacheApi(name, this.api.publishApi())
+    }
+
+    delCacheApi(name: string) {
+        LoaderFactory.removeCacheApi(name)
     }
 
     /**

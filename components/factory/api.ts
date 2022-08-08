@@ -155,6 +155,9 @@ export default class apiFactory {
     publishApi(): ApiType {
         let self = this;
         return {
+            getApi(name) {
+                return globalCache.cacheApi[name]
+            },
             setValue(field, value, key) {
                 const rf = self.getRule(field)
                 if (rf) {

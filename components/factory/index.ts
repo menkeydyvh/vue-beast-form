@@ -20,6 +20,7 @@ export default function createFactory(config: CreateFactoryConfigType) {
         directives: config.directives,
         props: {
             api: { type: Object as PropType<ApiType> },
+            name: { type: String },
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
             modelValue: { default: null },
             option: { type: Object as PropType<PropsOptionType> },
@@ -28,7 +29,7 @@ export default function createFactory(config: CreateFactoryConfigType) {
         emits: [...baseEmits, ...config.emits],
         setup(props, { emit }) {
             const vm = getCurrentInstance() as any,
-                { modelValue, rule, option, disabled } = toRefs(props);
+                { modelValue, rule, option, disabled, name } = toRefs(props);
             const rf = new FormFactory(vm, config.framework)
             // const setupTime = Date.now();
 
@@ -37,12 +38,18 @@ export default function createFactory(config: CreateFactoryConfigType) {
                 nextTick(() => {
                     // 视图都被渲染之后
                     emit('mounted', rf.api.publishApi())
+                    if (name.value) {
+                        rf.cacheApi(name.value);
+                    }
                     // console.log(`渲染结束时间：${Date.now() - setupTime}`)
                 })
             });
 
             onBeforeUnmount(() => {
                 rf.delVm();
+                if (name.value) {
+                    rf.delCacheApi(name.value);
+                }
                 config.directives = {}
                 config.emits = []
             })

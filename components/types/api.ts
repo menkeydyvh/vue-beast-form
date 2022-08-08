@@ -2,6 +2,7 @@ import type { ComponentInternalInstance } from 'vue'
 import type { RuleType, EmitType } from './rule'
 
 export interface ApiType {
+  getApi(name: string): ApiType
   /**
    * 修改值
    * @param field 

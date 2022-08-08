@@ -43,6 +43,10 @@ const menu: MenuItem[] = [
                 title: "ApiTest",
                 component: "apiForm.vue",
             },
+            {
+                title: "getApi测试",
+                component: "getApi.vue",
+            },
         ],
     },
     {

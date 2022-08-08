@@ -29,8 +29,19 @@ export default {
     app.component(bf.name, bf);
     return app;
   },
+  /**
+   * @returns 
+   */
   beastForm() {
     return createFactory(this._config)
+  },
+  /**
+   * 根据设置的name获取针对的api内容
+   * @param name 
+   * @returns 
+   */
+  getApi(name: string) {
+    return LoaderFactory.cacheApi(name)
   },
   /**
    * 导入组件缓存
