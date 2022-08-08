@@ -6,7 +6,6 @@
 ant/easyForm
 :::
 
-
 ## props
 
 | 参数                         | 说明                    | 类型     | ts类型                |
@@ -17,13 +16,7 @@ ant/easyForm
 | [option](./option.md)        | 提供一些设定            | {}       | PropsOptionType       |
 | disabled                     | 禁用整个表单内的组件    | boolean  | Boolean               |
 
-ts类型均可以使用如下方式获取
 
-```ts
-import type { ApiType, RuleType, PropsOptionType } from 'vue-beast-form'
-
-...
-```
 
 
 ## 事件
