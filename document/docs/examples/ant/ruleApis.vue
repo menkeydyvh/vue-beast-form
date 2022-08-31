@@ -231,6 +231,26 @@ export default {
               },
             },
           },
+          {
+            type: "a-button",
+            children: ["getComponent"],
+            on: {
+              click: (e, api) => {
+                console.log("input2 getComponent 结果:", api.getComponent("input2"));
+                console.log("div getComponent 结果:", api.getComponent("div"));
+              },
+            },
+          },
+          {
+            type: "a-button",
+            children: ["getEl"],
+            on: {
+              click: (e, api) => {
+                console.log("input2 getEl 结果:", api.getEl("input2"));
+                console.log("div getEl 结果:", api.getEl("div"));
+              },
+            },
+          },
         ],
       },
     ]);

@@ -5,9 +5,10 @@
   <a-row v-for="(item, index) in groupRule">
     <a-col flex="auto">
       <beast-form
+        v-model:api="fapis[index]"
+        v-model="value[index]"
         :rule="item.rule"
         :option="item.option"
-        v-model="value[index]"
         :disabled="disabled"
       />
     </a-col>
@@ -22,10 +23,10 @@ import type { PropType } from "vue";
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue";
 import vbf from "vue-beast-form";
 import { deepCopy } from "vue-beast-form/lib/tool";
-import type { RuleType, PropsOptionType } from "vue-beast-form";
+import type { RuleType, PropsOptionType, ApiType } from "vue-beast-form";
 
 interface GroupRule {
-  rule: Array<RuleType>;
+  rule: RuleType[];
   option: PropsOptionType;
 }
 
@@ -36,17 +37,17 @@ export default defineComponent({
   components: { BeastForm: vbf.beastForm(), PlusSquareOutlined, MinusSquareOutlined },
   props: {
     field: { type: String },
-    rule: { type: Array as PropType<Array<RuleType>>, required: true },
+    rule: { type: Array as PropType<RuleType[]>, required: true },
     option: { type: Object as PropType<PropsOptionType> },
     disabled: { type: Boolean },
     modelValue: { default: null },
-    "onUpdate:modelValue": { type: Function },
   },
+  emits: ["update:modelValue"],
   setup(props, { emit }) {
     const { rule, option, modelValue, field } = toRefs(props),
       groupRule = ref<GroupRule[]>([]),
-      value = ref<Array<any>>([]),
-      jApi = ref();
+      value = ref<any[]>([]),
+      fapis = ref<ApiType[]>([]);
 
     const onInit = () => {
         // 处理 array['',''] 和 array[object,object]的初始化赋值
@@ -88,6 +89,7 @@ export default defineComponent({
         // 删除
         groupRule.value.splice(index, 1);
         value.value.splice(index, 1);
+        fapis.value.splice(index, 1);
       },
       resultValue = () => {
         // 处理 array[] 和 array[object]的返回结果
@@ -115,7 +117,7 @@ export default defineComponent({
     onInit();
 
     return {
-      jApi,
+      fapis,
       value,
       groupRule,
       onAdd,

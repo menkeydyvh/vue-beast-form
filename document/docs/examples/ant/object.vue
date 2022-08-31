@@ -36,6 +36,7 @@ export default defineComponent({
               title: "subForm1",
               field: "subForm1",
               props: {
+                name: "subForm1-name",
                 rule: [
                   {
                     type: "a-input",
@@ -65,6 +66,15 @@ export default defineComponent({
             api.validate((valid, data) => {
               console.log(valid, data);
             });
+          },
+        },
+      },
+      {
+        type: "a-button",
+        children: ["设置subForm1 input2得值"],
+        on: {
+          click: (e, api) => {
+            api.getApi("subForm1-name").setValue("groupInput2", `${Date.now()}`);
           },
         },
       },

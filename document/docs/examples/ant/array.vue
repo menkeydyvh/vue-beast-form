@@ -49,11 +49,6 @@ export default defineComponent({
                     field: "input1",
                     validate: [{ required: true, message: "必须填写" }],
                   },
-                  {
-                    type: "a-input",
-                    title: "input2",
-                    field: "input2",
-                  },
                 ],
               },
             },
@@ -74,11 +69,6 @@ export default defineComponent({
               field: "input1",
               validate: [{ required: true, message: "必须填写" }],
             },
-            {
-              type: "a-input",
-              title: "input2",
-              field: "input2",
-            },
           ],
         },
       },
@@ -93,6 +83,20 @@ export default defineComponent({
             api.validate((valid, data) => {
               console.log(valid, data);
             });
+          },
+        },
+      },
+      {
+        type: "a-button",
+        children: ["group2 设置第二个input1的值"],
+        on: {
+          click: (e, api) => {
+            const group2input2Api = api.getComponent("group2").proxy.fapis[1];
+            if (group2input2Api) {
+              group2input2Api.setValue("input1", `${Date.now()}`);
+            } else {
+              alert("未找到 group2 第二个input1");
+            }
           },
         },
       },

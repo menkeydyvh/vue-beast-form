@@ -20,9 +20,9 @@ export class RuleFactory {
 
     public isI18n: boolean
 
-    public modelValue: ModelValueType
-
     public component: VNode
+
+    public modelValue: ModelValueType
 
     /**
      * 有v-model的时候这个值会有数据
@@ -74,12 +74,7 @@ export class RuleFactory {
         this.initValue()
         this.listenEvent()
         this.initChildren()
-        
-        this.component = h(
-            this.getTag(),
-            this.props,
-            this.renderChildrenSolt()
-        );
+
     }
 
     private getTag() {
@@ -614,6 +609,7 @@ export class RuleFactory {
      * @returns 
      */
     renderDirectives(vNode: VNode) {
+        this.component = vNode
         if (this.rule.directives) {
             const directives = this.rule.directives.map(item => {
                 if (Array.isArray(item)) {
@@ -634,7 +630,11 @@ export class RuleFactory {
      * @returns 
      */
     renderType() {
-        return this.renderDirectives(this.component)
+        return this.renderDirectives(h(
+            this.getTag(),
+            this.props,
+            this.renderChildrenSolt()
+        ))
     }
 
     /**
@@ -654,12 +654,10 @@ export class RuleFactory {
             return
         }
 
-
         const props = {},
             slot = {
                 default: () => [this.renderType()],
             };
-
 
         props[config.defaultName.formItemPropName] = this.rule.field
         if (this.props[this._config.disabled] !== true && this.rule.validate) {
