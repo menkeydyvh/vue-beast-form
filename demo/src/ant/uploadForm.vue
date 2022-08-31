@@ -3,7 +3,6 @@
     <beast-form
       :rule="rule"
       v-model="value"
-      v-model:api="jApi"
       :option="{
         form: {
           layout: 'vertical',
@@ -37,8 +36,7 @@ export default defineComponent({
               "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
           },
         ],
-      }),
-      jApi = ref<ApiFnType>();
+      });
 
     rule.value = [
       {
@@ -90,18 +88,19 @@ export default defineComponent({
         type: "a-button",
         props: {
           type: "primary",
-          onClick: () => {
-            jApi.value.validate((valid: boolean) => {
-              console.log(valid, jApi.value.getFormData());
+        },
+        children: ["submit提交"],
+        on: {
+          click: (e, api) => {
+            api.validate((valid: boolean) => {
+              console.log(valid, api.getFormData());
             });
           },
         },
-        children: ["submit提交"],
       },
     ];
 
     return {
-      jApi,
       value,
       rule,
     };

@@ -7,9 +7,13 @@ import type { RuleType, PropsOptionType, ApiType } from '../types'
 const baseEmits = ["changeField", "update:modelValue", "update:api", "mounted", 'unmounted']
 
 export interface CreateFactoryConfigType {
+    // 本组件的名称
     name: string
+    // 使用的框架名称
     framework: string
+    // 注册自定义指令
     directives: any
+    // 注册自定义emits
     emits: string[]
 }
 
@@ -35,6 +39,7 @@ export default function createFactory(config: CreateFactoryConfigType) {
 
             onMounted(() => {
                 rf.addVm()
+
                 nextTick(() => {
                     // 视图都被渲染之后
                     emit('mounted', rf.api.publishApi())
@@ -88,7 +93,15 @@ export default function createFactory(config: CreateFactoryConfigType) {
                 })
             }, { deep: true })
 
-            return () => rf.render()
+            return {
+                fApi: rf.api.publishApi(),
+                render() {
+                    return rf.render()
+                }
+            }
+        },
+        render() {
+            return this.render();
         },
     });
 

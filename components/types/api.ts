@@ -2,7 +2,21 @@ import type { ComponentInternalInstance } from 'vue'
 import type { RuleType, EmitType } from './rule'
 
 export interface ApiType {
+  /**
+   * 通过设置props.name获取对应api
+   * @param name 
+   */
   getApi(name: string): ApiType
+  /**
+   * 通过field获取组件
+   * @param field 
+   */
+  getComponent(field: string): ComponentInternalInstance
+  /**
+   * 通过field获取dom元素
+   * @param field 
+   */
+  getEl(field: string): HTMLElement
   /**
    * 修改值
    * @param field 

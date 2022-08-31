@@ -158,6 +158,18 @@ export default class apiFactory {
             getApi(name) {
                 return globalCache.cacheApi[name]
             },
+            getComponent(field) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    return rf.component.component
+                }
+            },
+            getEl(field) {
+                const rf = self.getRule(field)
+                if (rf) {
+                    return rf.component.el as HTMLElement
+                }
+            },
             setValue(field, value, key) {
                 const rf = self.getRule(field)
                 if (rf) {

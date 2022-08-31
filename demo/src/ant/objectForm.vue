@@ -2,7 +2,6 @@
   <a-card class="content-card" :bordered="false" title="object的处理">
     <beast-form
       :rule="rule"
-      v-model:api="jApi"
       :option="{
         form: {
           layout: 'vertical',
@@ -21,8 +20,7 @@ vbf.useFramework("ant-design-vue");
 export default defineComponent({
   components: { BeastForm: vbf.beastForm() },
   setup() {
-    const rule = ref<RuleType[]>(),
-      jApi = ref();
+    const rule = ref<RuleType[]>();
 
     rule.value = [
       {
@@ -75,21 +73,22 @@ export default defineComponent({
         type: "a-button",
         props: {
           type: "primary",
-          onClick: () => {
-            jApi.value.validate((valid: boolean) => {
+        },
+        children: ["submit提交"],
+        on: {
+          click: (e, api) => {
+            api.validate((valid: boolean) => {
               console.log("api.validate():", valid);
               if (valid) {
-                console.log("data:", jApi.value.getFormData());
+                console.log("data:", api.getFormData());
               }
             });
           },
         },
-        children: ["submit提交"],
       },
     ];
 
     return {
-      jApi,
       rule,
     };
   },

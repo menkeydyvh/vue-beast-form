@@ -11,13 +11,7 @@
             disabled ? "启用表单" : "禁用表单"
           }}</a-button>
         </a-space>
-        <beast-form
-          v-model:api="jApi"
-          v-model="value"
-          :rule="rule"
-          :option="option"
-          :disabled="disabled"
-        />
+        <beast-form v-model="value" :rule="rule" :option="option" :disabled="disabled" />
       </a-col>
       <a-col flex="300px">
         <pre v-text="JSON.stringify(value, null, 4)" />
@@ -36,8 +30,7 @@ vbf.useFramework("ant-design-vue");
 export default defineComponent({
   components: { BeastForm: vbf.beastForm() },
   setup() {
-    const jApi = ref(),
-      disabled = ref(false),
+    const disabled = ref(false),
       value = ref({ input: "input" }),
       rule = ref<RuleType[]>([]),
       option = ref({
@@ -278,18 +271,20 @@ export default defineComponent({
                 props: {
                   type: "primary",
                   htmlType: "sbumit",
-                  onClick: () => {
+                },
+                children: ["提交"],
+                on: {
+                  click: (e, api) => {
                     if (option.value.isForm) {
-                      jApi.value.validate((valid: boolean) => {
-                        console.log(valid, jApi.value.getFormData(), value.value);
+                      api.validate((valid: boolean) => {
+                        console.log(valid, api.getFormData(), value.value);
                       });
                     } else {
                       // 不是form的时候获取数据
-                      console.log("formData:", jApi.value.getFormData());
+                      console.log("formData:", api.getFormData());
                     }
                   },
                 },
-                children: ["提交"],
               },
               {
                 type: "a-button",
@@ -310,7 +305,6 @@ export default defineComponent({
 
     return {
       disabled,
-      jApi,
       value,
       rule,
       option,

@@ -179,6 +179,20 @@ subField
 | field | 是   | string | rule中的filed |
 | event | 是   | string | 事件名称      |
 
+## getComponent
+获取type对应组件vue对象，非组件返回为null
+
+| 参数  | 必填 | 类型   | 说明          |
+| ----- | ---- | ------ | ------------- |
+| field | 是   | string | rule中的filed |
+
+## getEl
+获取组件对应el或html dom数据
+
+| 参数  | 必填 | 类型   | 说明          |
+| ----- | ---- | ------ | ------------- |
+| field | 是   | string | rule中的filed |
+
 ## $t
 多语言转换
 

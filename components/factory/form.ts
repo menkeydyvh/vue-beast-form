@@ -35,8 +35,9 @@ export default class FormFactory {
 
     static formRefsName = "form"
 
-    // 计入form层关系
+    // 顶层vm
     public baseVm: ComponentInternalInstance = null
+    // vm集合
     public allVms: ComponentInternalInstance[] = []
 
     constructor(vm: any, frameworkName?: string) {
@@ -187,9 +188,12 @@ export default class FormFactory {
         }
 
         return [
-            h(formTag, formProps, {
-                default: () => this.renderRule()
-            })
+            h(formTag,
+                formProps,
+                {
+                    default: () => this.renderRule()
+                }
+            )
         ]
     }
 

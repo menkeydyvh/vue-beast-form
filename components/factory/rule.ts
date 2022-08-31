@@ -3,7 +3,7 @@ import { globalCache, LoaderFactory } from './loader'
 import { onToPropsName, propsToOnName } from '../tool'
 import { deepCopy } from '../tool'
 import type Api from './api'
-import type { VNodeTypes, ComponentInternalInstance, Ref } from 'vue'
+import type { VNode, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
 import type { RuleType, EmitType } from '../types'
 
@@ -21,6 +21,8 @@ export class RuleFactory {
     public isI18n: boolean
 
     public modelValue: ModelValueType
+
+    public component: VNode
 
     /**
      * 有v-model的时候这个值会有数据
@@ -72,6 +74,12 @@ export class RuleFactory {
         this.initValue()
         this.listenEvent()
         this.initChildren()
+        
+        this.component = h(
+            this.getTag(),
+            this.props,
+            this.renderChildrenSolt()
+        );
     }
 
     private getTag() {
@@ -605,7 +613,7 @@ export class RuleFactory {
      * @param vNode 
      * @returns 
      */
-    renderDirectives(vNode: VNodeTypes) {
+    renderDirectives(vNode: VNode) {
         if (this.rule.directives) {
             const directives = this.rule.directives.map(item => {
                 if (Array.isArray(item)) {
@@ -615,7 +623,7 @@ export class RuleFactory {
                     return item
                 }
             }).filter(item => item)
-            return withDirectives(vNode as any, directives as any)
+            return withDirectives(vNode, directives as any)
         } else {
             return vNode
         }
@@ -626,13 +634,7 @@ export class RuleFactory {
      * @returns 
      */
     renderType() {
-        return this.renderDirectives(
-            h(
-                this.getTag(),
-                this.props,
-                this.renderChildrenSolt()
-            )
-        )
+        return this.renderDirectives(this.component)
     }
 
     /**

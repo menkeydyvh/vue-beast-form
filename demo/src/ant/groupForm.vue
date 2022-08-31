@@ -4,7 +4,6 @@
     <beast-form
       :rule="rule"
       v-model="value"
-      v-model:api="jApi"
       :option="{
         form: {
           layout: 'vertical',
@@ -26,8 +25,7 @@ export default defineComponent({
   components: { BeastForm: vbf.beastForm() },
   setup() {
     const rule = ref<RuleType[]>(),
-      value = ref(),
-      jApi = ref();
+      value = ref();
 
     rule.value = [
       {
@@ -63,11 +61,6 @@ export default defineComponent({
                     field: "input1",
                     validate: [{ required: true, message: "必须填写" }],
                   },
-                  {
-                    type: "a-input",
-                    title: "input2",
-                    field: "input2",
-                  },
                 ],
               },
             },
@@ -88,11 +81,6 @@ export default defineComponent({
               field: "input1",
               validate: [{ required: true, message: "必须填写" }],
             },
-            {
-              type: "a-input",
-              title: "input2",
-              field: "input2",
-            },
           ],
         },
       },
@@ -100,18 +88,19 @@ export default defineComponent({
         type: "a-button",
         props: {
           type: "primary",
-          onClick: () => {
-            jApi.value.validate((valid: boolean) => {
-              console.log(valid, jApi.value.getFormData());
+        },
+        children: ["submit提交"],
+        on: {
+          click: (e, api) => {
+            api.validate((valid: boolean) => {
+              console.log(valid, api.getFormData());
             });
           },
         },
-        children: ["submit提交"],
       },
     ];
 
     return {
-      jApi,
       value,
       rule,
     };

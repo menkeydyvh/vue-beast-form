@@ -3,7 +3,6 @@
     <beast-form
       :rule="rule"
       v-model="value"
-      v-model:api="jApi"
       :option="{
         form: {
           layout: 'vertical',
@@ -30,8 +29,7 @@ export default defineComponent({
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref({}),
-      disabled = ref(),
-      jApi = ref<ApiFnType>();
+      disabled = ref();
 
     let disbaled = false,
       display = true,
@@ -263,6 +261,24 @@ export default defineComponent({
               },
             },
           },
+          {
+            type: "a-button",
+            children: ["获取el"],
+            on: {
+              click: (e, api) => {
+                console.log(api.getEl("subForm1"));
+              },
+            },
+          },
+          {
+            type: "a-button",
+            children: ["获取compoment"],
+            on: {
+              click: (e, api) => {
+                console.log(api.getComponent("subForm1"));
+              },
+            },
+          },
         ],
       },
     ];
@@ -274,7 +290,6 @@ export default defineComponent({
       };
 
     return {
-      jApi,
       value,
       rule,
       disabled,

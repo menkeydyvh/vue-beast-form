@@ -13,13 +13,7 @@
             disabled ? "启用表单" : "禁用表单"
           }}</a-button>
         </a-space>
-        <beast-form
-          v-model:api="jApi"
-          v-model="value"
-          :rule="rule"
-          :option="option"
-          :disabled="disabled"
-        />
+        <beast-form v-model="value" :rule="rule" :option="option" :disabled="disabled" />
       </a-col>
       <a-col :span="6">
         <pre v-text="JSON.stringify(value, null, 4)" />
@@ -39,8 +33,7 @@ vbf.useFramework("vant");
 export default defineComponent({
   components: { BeastForm: vbf.beastForm() },
   setup() {
-    const jApi = ref(),
-      disabled = ref(false),
+    const disabled = ref(false),
       value = ref({}),
       rule = ref<RuleType[]>([]),
       option = ref({
@@ -333,7 +326,6 @@ export default defineComponent({
 
     return {
       disabled,
-      jApi,
       value,
       rule,
       option,
