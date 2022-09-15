@@ -1,21 +1,22 @@
-let mdContainer = require('markdown-it-container')
-const MarkdownIt = require('markdown-it')
-const localMd = MarkdownIt()
-const fs = require('fs')
-const path = require('path')
-const highlight = require('./highlight')
+import mdContainer from 'markdown-it-container'
+import MarkdownIt from 'markdown-it'
+import fs from 'fs'
+import path from 'path'
+import highlight from './highlight'
 
-module.exports = options => {
+const localMd = MarkdownIt()
+
+export default options => {
   const { component = 'demo-block', componentsDir, getComponentName } = options;
   const componentName = component
     .replace(/^\S/, s => s.toLowerCase())
     .replace(/([A-Z])/g, "-$1").toLowerCase();
   return md => {
     md.use(mdContainer, 'demo', {
-      validate (params) {
+      validate(params) {
         return params.trim().match(/^demo\s*(.*)$/);
       },
-      render (tokens, idx) {
+      render(tokens, idx) {
         const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
         if (tokens[idx].nesting === 1) {
           const description = m && m.length > 1 ? m[1] : '';

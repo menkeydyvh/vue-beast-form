@@ -1,23 +1,23 @@
 // ref https://github.com/vuejs/vitepress/blob/main/src/node/markdown/plugins/highlight.ts
-const escapeHtml = require('escape-html')
-const prism = require('prismjs')
-const chalk = require('chalk')
+import escapeHtml from 'escape-html'
+import prism from 'prismjs'
+// import chalk from 'chalk'
 
 // prism is listed as actual dep so it's ok to require
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const loadLanguages = require('prismjs/components/index')
+// import { loadLanguages } from 'prismjs'
 
 // required to make embedded highlighting work...
-loadLanguages(['markup', 'css', 'javascript'])
+// loadLanguages(['markup', 'css', 'javascript'])
 
-function wrap (code, lang) {
+function wrap(code, lang) {
   if (lang === 'text') {
     code = escapeHtml(code)
   }
   return `<pre v-pre><code>${code}</code></pre>`
 }
 
-module.exports = (str, lang) => {
+export default (str, lang) => {
   if (!lang) {
     return wrap(str, 'text')
   }
@@ -36,16 +36,16 @@ module.exports = (str, lang) => {
     lang = 'python'
   }
   if (!prism.languages[lang]) {
-    try {
-      loadLanguages([lang])
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        chalk.yellow(
-          `[vitepress] Syntax highlight for language "${lang}" is not supported.`
-        )
-      )
-    }
+    // try {
+    // loadLanguages([lang])
+    // } catch (e) {
+    // eslint-disable-next-line no-console
+    //   console.warn(
+    //     chalk.yellow(
+    //       `[vitepress] Syntax highlight for language "${lang}" is not supported.`
+    //     )
+    //   )
+    // }
   }
   if (prism.languages[lang]) {
     const code = prism.highlight(str, prism.languages[lang], lang)

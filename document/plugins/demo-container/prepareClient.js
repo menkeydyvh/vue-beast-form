@@ -1,6 +1,6 @@
-const { globby, path } = require('@vuepress/utils')
+import { globby, path } from '@vuepress/utils'
 
-module.exports = async (app, options, identifier = '') => {
+export default async (app, options, identifier = '') => {
 
     const getComponentsFromDir = async ({ componentsDir, componentsPatterns, getComponentName }) => {
         if (!componentsDir) {

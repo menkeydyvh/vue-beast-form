@@ -4,12 +4,12 @@
 /**
  * 提供 ::: demo xxx ::: 语法，用于构建 markdown 中的示例
  */
-const demoBlockContainers = require('./common/containers')
-const { hash, path } = require('@vuepress/utils')
-const prepareClient = require('./prepareClient')
-const chokidar = require('chokidar')
+import demoBlockContainers from './common/containers'
+import { hash, path } from '@vuepress/utils'
+import prepareClient from './prepareClient'
+import chokidar from 'chokidar'
 
-module.exports = (options = {}) => {
+export default (options = {}) => {
 
   options = Object.assign({
     components: {},
