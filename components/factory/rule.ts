@@ -94,15 +94,15 @@ export class RuleFactory {
                 modelKeyEvents = [],
                 modelKeyDefaultValues = [],
                 rdcPropsKey = rdc.props ? Object.keys(rdc.props || {}) : [];
-
+            
             // -- v-model配置
-            if (this.rule.model.length) {
+            if (this.rule.model?.length) {
                 modelKeys = this.rule.model;
             }
             if (modelKeys.length === 0) {
                 modelKeys = config.getModelValueKeys(rdcName)
             }
-            
+
             // 过滤验证 确认这个key在这个props里
             modelKeys = modelKeys.filter(item => rdcPropsKey.includes(item))
 
@@ -532,7 +532,6 @@ export class RuleFactory {
         if (!this.field) {
             return;
         }
-
         this._config.modelKeys.forEach((key, index) => {
             const self = this;
             this.props[self._config.modelKeyEvents[index]] = function () {

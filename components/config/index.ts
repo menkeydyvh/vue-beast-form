@@ -142,16 +142,12 @@ export default class config {
      */
     getModelValueChangeEvents(componentName: string, keys: string[]) {
         const fcke = this.modelEvent[componentName]
-        if (fcke) {
-            if (keys?.length) {
-                return keys.map((key, i) => {
-                    return fcke[i] || `onUpdate:${key}`
-                })
-            } else {
-                return fcke
-            }
+        if (keys?.length) {
+            return keys.map((key, i) => {
+                return fcke?.[i] || `onUpdate:${key}`
+            })
         } else {
-            return []
+            return fcke || []
         }
     }
 
@@ -162,21 +158,17 @@ export default class config {
      * @returns 
      */
     getModelValueDefaultNullValues(componentName: string, keys: string[]) {
-        let fcdv = this.defaultValue[componentName]
-        if (fcdv) {
-            if (keys?.length) {
-                return keys.map((_key, i) => {
-                    if (fcdv[i]) {
-                        return fcdv[i]
-                    } else {
-                        return null
-                    }
-                })
-            } else {
-                return fcdv;
-            }
+        const fcdv = this.defaultValue[componentName]
+        if (keys?.length) {
+            return keys.map((_key, i) => {
+                if (fcdv?.[i]) {
+                    return fcdv[i]
+                } else {
+                    return null
+                }
+            })
         } else {
-            return []
+            return fcdv || [];
         }
     }
 
