@@ -1,21 +1,17 @@
 <template>
   <a-card class="content-card" :bordered="false" title="其他支持多个v-model处理">
-    <beast-form
-      :rule="rule"
-      v-model="value"
-      :option="{
-        form: {
-          layout: 'vertical',
-        },
-      }"
-    />
+    <beast-form :rule="rule" v-model="value" :option="{
+      form: {
+        layout: 'vertical',
+      },
+    }" />
     {{ value }}
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import vbf from "../../../components";
-import type { RuleType, ApiFnType } from "../../../components/types";
+import type { RuleType, ApiType } from "../../../components/types";
 
 vbf.useFramework("ant-design-vue");
 
@@ -56,7 +52,7 @@ export default defineComponent({
             },
           ],
         },
-        vModelKey: ["expandedKeys", "selectedKeys", "checkedKeys"],
+        model: ["expandedKeys", "selectedKeys", "checkedKeys"],
       },
       {
         type: "a-menu",
@@ -84,8 +80,8 @@ export default defineComponent({
             ],
           },
         ],
-        vModelKey: ["openKeys", "selectedKeys"],
-        vModelKeyDefaultValue: [[], []],
+        model: ["openKeys", "selectedKeys"],
+        defaultValue: [[], []],
       },
       {
         type: "a-pagination",
@@ -95,7 +91,7 @@ export default defineComponent({
           total: 50,
           pageSize: 10,
         },
-        vModelKey: "current",
+        model: ["current"],
       },
       {
         type: "a-steps",
@@ -109,7 +105,7 @@ export default defineComponent({
           { type: "a-step", props: { title: "第 5 步" } },
         ],
         value: 2,
-        vModelKey: "current",
+        model: ["current"],
       },
       {
         type: "a-collapse",
@@ -137,7 +133,7 @@ export default defineComponent({
             children: ["第 4 步内容"],
           },
         ],
-        vModelKey: "activeKey",
+        model: ["activeKey"],
       },
       {
         type: "a-tabs",
@@ -161,7 +157,7 @@ export default defineComponent({
           },
         ],
         value: "1",
-        vModelKey: "activeKey",
+        model: ["activeKey"],
       },
       {
         type: "a-drawer",
@@ -170,7 +166,7 @@ export default defineComponent({
           title: "抽屉组件Title",
         },
         children: ["抽屉组件内容"],
-        vModelKey: "visible",
+        model: ["visible"],
       },
       {
         type: "a-button",
@@ -179,8 +175,8 @@ export default defineComponent({
         },
         children: ["submit提交"],
         on: {
-          click: (e, api) => {
-            api.validate((valid, data) => {
+          click: (_e: any, api: ApiType) => {
+            api.validate((valid: any, data: any) => {
               console.log("validate:", valid, data);
             });
           },
@@ -190,7 +186,7 @@ export default defineComponent({
         type: "a-button",
         children: ["显示抽屉"],
         on: {
-          click: (e, api) => {
+          click: (_e: any, api: { setValue: (arg0: string, arg1: boolean) => void; }) => {
             api.setValue("drawer", true);
           },
         },

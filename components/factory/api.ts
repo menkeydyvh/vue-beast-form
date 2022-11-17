@@ -44,7 +44,7 @@ const searchLoop = (
 const formValidate = async (formEvent: any, fields?: string | string[]) => {
     if (formEvent) {
         try {
-            await formEvent[globalCache.config.defaultName.formEventValidate](fields)
+            await formEvent[globalCache.config.baseConfig.formEventValidate](fields)
         } catch (error) {
             return false;
         }
@@ -59,7 +59,7 @@ const formValidate = async (formEvent: any, fields?: string | string[]) => {
     */
 const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
     if (formEvent) {
-        formEvent[globalCache.config.defaultName.formEventClearValidate](fields)
+        formEvent[globalCache.config.baseConfig.formEventClearValidate](fields)
     }
 }
 

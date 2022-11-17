@@ -10,7 +10,7 @@ export default class config {
     /**
      * form 组件名称相关定义
      */
-    public defaultName: FrameworkFormBaseConfig = {
+    public baseConfig: FrameworkFormBaseConfig = {
         form: '',
         formPropsModel: '',
         formItem: '',
@@ -97,7 +97,7 @@ export default class config {
     }
 
     /**
-     * 替换defaultName值
+     * 替换baseConfig值
      * @param config 
      */
     setKeyValue = (thisKey: string, config: { [key: string]: any; }) => {

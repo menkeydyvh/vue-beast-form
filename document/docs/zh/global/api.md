@@ -2,17 +2,17 @@
 
 ## 明细
 
-| 名称                                      | 参数                                 | 说明                                                    |
-| ----------------------------------------- | ------------------------------------ | ------------------------------------------------------- |
-| [beastForm](#beastform)                   | -                                    | 本组件                                                  |
-| [components](../guide/demandLoad.md)      | data: {}                             | 加载组件                                                |
-| [directive](../guide/demandLoad.md)       | key: string<br/>directive: Directive | 加载指令                                                |
-| [emits](../guide/demandLoad.md)           | names: string&#124;string[]          | 提前设置好组件emits                                     |
-| [ruleParse](#规则的对象与字符串转换)      | str: string                          | 规则字符串转换成对象                                    |
-| [ruleStringify](#规则的对象与字符串转换)  | rules:RuleType&#124;RuleType[]       | 对象规则转化成字符串                                    |
-| [setBasePropsOption](#setbasepropsoption) | po: PropsOptionType                  | 设置基础的PropsOption                                   |
-| [getApi](../props/api.md#getapi)          | name: string                         | 获取有配置name值的&lt;beast-form name="xxx" /&gt; 的api |
-| useFramework                              | frameworkName: string                | 多框架下切换框架使用，本文档多处使用注意看示例          |
+| 名称                                      | 参数                     | 说明                                                    |
+| ----------------------------------------- | ------------------------ | ------------------------------------------------------- |
+| [beastForm](#beastform)                   | -                        | 本组件                                                  |
+| [components](../guide/demandLoad.md)      | {}                       | 加载组件                                                |
+| [directive](../guide/demandLoad.md)       | （string，directive）    | 加载指令                                                |
+| [emits](../props/api.md#demo)             | string&#124;string[]     | 提前设置好组件emits                                     |
+| [ruleParse](#规则的对象与字符串转换)      | string                   | 规则字符串转换成对象                                    |
+| [ruleStringify](#规则的对象与字符串转换)  | RuleType&#124;RuleType[] | 对象规则转化成字符串                                    |
+| [setBasePropsOption](#setbasepropsoption) | PropsOptionType          | 设置基础的PropsOption                                   |
+| [getApi](../props/api.md#getapi)          | string                   | 获取有配置name值的&lt;beast-form name="xxx" /&gt; 的api |
+| useFramework                              | string                   | 多框架下切换框架使用，本文档多处使用注意看示例          |
 
 
 ## beastForm

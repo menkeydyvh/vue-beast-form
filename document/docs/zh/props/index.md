@@ -22,10 +22,10 @@ ant/easyForm
 
 ## 事件
 
-| 名称              | 说明                   | 参数                                            |
-| ----------------- | ---------------------- | ----------------------------------------------- |
-| changeField       | 单独字段值修改时候回调 | field: string<br/> value: any<br/> api: ApiType |
-| update:modelValue | v-model时使用          | modelValue: {}                                  |
-| update:api        | v-model:api时使用      | api: ApiType                                    |
-| mounted           | 命周期render完成       | api: ApiType                                    |
-| unmounted         | 生命周期 组件注销      | -                                               |
+| 名称              | 说明                   | 参数                 |
+| ----------------- | ---------------------- | -------------------- |
+| changeField       | 单独字段值修改时候回调 | (string, any, ApiType) |
+| update:modelValue | v-model时使用          | {}                   |
+| update:api        | v-model:api时使用      | ApiType              |
+| mounted           | 命周期render完成       | ApiType              |
+| unmounted         | 生命周期 组件注销      | -                    |

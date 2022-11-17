@@ -27,8 +27,8 @@ const rule = ref<RuleType[]>([
 | [props](#props示例)                  | Object                                                               | 组件的props                                                                                    |
 | [field](#field示例)                  | String                                                               | 在api中用来做搜索的key,表单组件时用来记录值得key                                               |
 | [title](#title示例)                  | String &#124; RuleType &#124; false                                  | 为formItem的label值<br/>string：直接展示<br/>rule：渲染成插槽展示<br/>false：不包裹在form-item |
-| [vModelKey](#vmodel示例)             | String &#124; Array&lt;String&gt;                                    | 组件v-model:key 对应的key 监听多个v-model时可为数组                                            |
-| [vModelKeyDefaultValue](#vmodel示例) | String &#124; Array&lt;String&gt;                                    | 组件v-model:key="value" 对应的value的默认空值,有些组件默认空值需要配置为[]的情况可进行配置使用 |
+| [model](#vmodel示例)             | String &#124; Array&lt;String&gt;                                    | 组件v-model:key 对应的key 监听多个v-model时可为数组                                            |
+| [defaultValue](#vmodel示例) | String &#124; Array&lt;String&gt;                                    | 组件v-model:key="value" 对应的value的默认空值,有些组件默认空值需要配置为[]的情况可进行配置使用 |
 | [value](#value示例)                  | any                                                                  | 组件值                                                                                         |
 | [validate](#validate示例)            | Array                                                                | 组件验证规则,例如：[{required: true, message: '请输入内容'}]                                   |
 | [class](#sca示例)                    | String &#124; Array                                                  | 针对组件设置className                                                                          |
@@ -72,7 +72,7 @@ ant/ruleValue
 :::
 
  #### vModel示例
-vModelKey和vModelKeyDefaultValue
+model和defaultValue
 
 :::demo 
 ant/ruleVmodel

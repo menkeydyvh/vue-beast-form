@@ -5,7 +5,7 @@
 ```js
 export default {
     "vant": {
-        defaultName: {
+         baseConfig: {
             form: 'van-form',
             formPropsModel: '',
             formItem: '',
@@ -16,14 +16,16 @@ export default {
             formEventValidate: 'validate',
             formEventClearValidate: 'resetValidation',
         },
-        formDataComponentKey: {
-            "van-calendar": 'show',
-            "van-popup": 'show',
+        model: {
+            "van-calendar": ['show'],
+            "van-popup": ['show'],
         },
-        formDataComponentDefaultValue: {
-            "van-checkbox-group": [],
-            "van-number-keyboard": ''
-        }
+        defaultValue: {
+            "van-checkbox-group": [[]],
+            "van-number-keyboard": ['']
+        },
+        modelEvent: {},
+        disabled: {},
     }
 }
 ```

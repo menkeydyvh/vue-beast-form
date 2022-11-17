@@ -19,12 +19,16 @@
 **答：提供v-model:key**
 
 
-```js
+```vue
+<template>
+    xxxx
+</template>
+<script>
 export default defineComponent({
     name:"",
     props:['modelValue','disabled'],
     emits:['update:modelValue'],
-    // 其他自己开发
+    // 其他自己开发...
 })
-
+</script>
 ```

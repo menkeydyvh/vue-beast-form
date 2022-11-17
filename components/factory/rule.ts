@@ -192,7 +192,7 @@ export class RuleFactory {
                 this.props[this._config.disabled] = false
             }
 
-            if (globalCache.config.defaultName.formItem && this.rule.title !== false) {
+            if (globalCache.config.baseConfig.formItem && this.rule.title !== false) {
                 if (this.rule.attrs) {
                     for (let key in this.rule.attrs) {
                         if (!tagPropsKeys.includes(key)) {
@@ -644,7 +644,7 @@ export class RuleFactory {
             return
         }
 
-        if (!config.defaultName.formItem) {
+        if (!config.baseConfig.formItem) {
             return
         }
 
@@ -653,12 +653,12 @@ export class RuleFactory {
                 default: () => [this.renderType()],
             };
 
-        props[config.defaultName.formItemPropName] = this.rule.field
+        props[config.baseConfig.formItemPropName] = this.rule.field
         if (this.props[this._config.disabled] !== true && this.rule.validate) {
             if (this.rule.validate.find(item => item.required)) {
                 props['required'] = true
             }
-            props[config.defaultName.formItemPropRules] = this.rule.validate.map(v => {
+            props[config.baseConfig.formItemPropRules] = this.rule.validate.map(v => {
                 const nv = { ...v };
                 if (nv.message) {
                     nv.message = this.setI18n(nv.message)
@@ -673,12 +673,12 @@ export class RuleFactory {
         }
 
         if (typeof this.rule.title === 'string') {
-            props[config.defaultName.formItemPropLabel] = this.setI18n(this.rule.title);
+            props[config.baseConfig.formItemPropLabel] = this.setI18n(this.rule.title);
         } else if (this.titleRule) {
-            slot[config.defaultName.formItemSlotTitle] = () => this.titleRule.render()
+            slot[config.baseConfig.formItemSlotTitle] = () => this.titleRule.render()
         }
 
-        return h(LoaderFactory.getComponents(config.defaultName.formItem) as any, { ...props, ...this.formItemProps }, slot)
+        return h(LoaderFactory.getComponents(config.baseConfig.formItem) as any, { ...props, ...this.formItemProps }, slot)
     }
 
     /**

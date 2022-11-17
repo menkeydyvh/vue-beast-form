@@ -42,7 +42,7 @@ export type RuleType = {
      *    key2:xxx,
      * }
      */
-    value?: {
+    value?: any | {
         [field: string]: any
     };
     /**

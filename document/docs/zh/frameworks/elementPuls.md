@@ -5,7 +5,7 @@
 ```js
 export default {
     'element-plus': {
-        defaultName: {
+        baseConfig: {
             form: 'el-form',
             formPropsModel: 'model',
             formItem: 'el-form-item',
@@ -16,14 +16,13 @@ export default {
             formEventValidate: 'validate',
             formEventClearValidate: 'clearValidate',
         },
-        formDataComponentKey: {},
-        formDataComponentDefaultValue: {
-            ElCheckboxGroup: [],
-            ElTransfer: [],
+        model: {},
+        defaultValue: {
+            ElCheckboxGroup: [[]],
+            ElTransfer: [[]],
         },
-        formDataComponentChangeKeyEvent: {
-        },
-        formDataComponentDisabled: {},
+        modelEvent: {},
+        disabled: {},
     },
 }
 ```

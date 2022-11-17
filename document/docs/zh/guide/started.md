@@ -14,17 +14,23 @@ npm install --S vue-beast-form
 </CodeGroup>
 
 ## 全局配置
-main.js 确认使用的ui组件  [详细说明](../global/beastForm.md)
+main.js 确认使用的ui组件，以ant-design-vue为例子  [$beastForm详细说明](../global/beastForm.md)
 
-```js{6-8}
+```js
 import { createApp } from 'vue'
 import App from './App.vue'
+import antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
+import frameworks from 'vue-beast-form/lib/config/frameworks'
 
 const app = createApp(App)
 
 app.config.globalProperties.$beastForm = {
-    base: 'ant-design-vue'
+    base: 'ant-design-vue',
+    frameworks: frameworks
 }
+app.use(antd);
+
 ...
 ```
 

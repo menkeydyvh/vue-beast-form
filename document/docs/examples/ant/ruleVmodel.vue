@@ -58,8 +58,8 @@ export default {
               ],
             },
           ],
-          vModelKey: ["openKeys", "selectedKeys"],
-          vModelKeyDefaultValue: [[], []],
+          model: ["openKeys", "selectedKeys"],
+          defaultValue: [[], []],
         },
       ]),
       value = ref();

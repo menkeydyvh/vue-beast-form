@@ -41,7 +41,7 @@ const antDesignVue: GlobalConfigTypeFramework = {
             AUploadDragger: ["fileList"],
         },
         defaultValue: {
-            ATransfer: [],
+            ATransfer: [[]],
         },
         modelEvent: {},
         disabled: {
