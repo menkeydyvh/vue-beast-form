@@ -90,35 +90,29 @@ export class RuleFactory {
             // disabled
             this._config.disabled = config.getComponentDisabled(rdcName)
 
-            let modelKeys: string[] = [], modelKeyEvents = [], modelKeyDefaultValues = [], rdcPropsKey = rdc.props ? Object.keys(rdc.props || {}) : [];
+            let modelKeys: string[] = [],
+                modelKeyEvents = [],
+                modelKeyDefaultValues = [],
+                rdcPropsKey = rdc.props ? Object.keys(rdc.props || {}) : [];
+
             // -- v-model配置
-            if (this.rule.vModelKey) {
-                if (Array.isArray(this.rule.vModelKey)) {
-                    modelKeys = this.rule.vModelKey
-                } else {
-                    modelKeys = [this.rule.vModelKey]
-                }
+            if (this.rule.model.length) {
+                modelKeys = this.rule.model;
             }
             if (modelKeys.length === 0) {
                 modelKeys = config.getModelValueKeys(rdcName)
             }
+            
             // 过滤验证 确认这个key在这个props里
             modelKeys = modelKeys.filter(item => rdcPropsKey.includes(item))
+
             if (modelKeys.length) {
                 // -- 事件配置
                 modelKeyEvents = config.getModelValueChangeEvents(rdcName, modelKeys)
 
                 // -- 默认空值配置
-                if (this.rule.vModelKeyDefaultValue !== undefined) {
-                    if (Array.isArray(this.rule.vModelKeyDefaultValue)) {
-                        if (modelKeys.length === 1) {
-                            modelKeyDefaultValues[0] = this.rule.vModelKeyDefaultValue
-                        } else {
-                            modelKeyDefaultValues = this.rule.vModelKeyDefaultValue
-                        }
-                    } else {
-                        modelKeyDefaultValues.push(this.rule.vModelKeyDefaultValue)
-                    }
+                if (this.rule.defaultValue?.length) {
+                    modelKeyDefaultValues = this.rule.defaultValue
                 }
                 if (modelKeyDefaultValues.length === 0) {
                     modelKeyDefaultValues = config.getModelValueDefaultNullValues(rdcName, modelKeys)

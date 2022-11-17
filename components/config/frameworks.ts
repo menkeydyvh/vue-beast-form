@@ -1,7 +1,9 @@
-export default {
-    // 对应ui框架
+import type { GlobalConfigTypeFramework } from '../types'
+
+
+const antDesignVue: GlobalConfigTypeFramework = {
     'ant-design-vue': {
-        defaultName: {
+        baseConfig: {
             form: 'a-form',
             formPropsModel: 'model',
             formItem: 'a-form-item',
@@ -12,42 +14,43 @@ export default {
             formEventValidate: 'validate',
             formEventClearValidate: 'clearValidate',
         },
-        formDataComponentKey: {
-            AAutoComplete: 'value',
-            ACascader: 'value',
-            ACheckboxGroup: 'value',
-            ADatePicker: 'value',
-            ARangePicker: 'value',
-            AInput: 'value',
-            ATextarea: 'value',
-            AInputPassword: 'value',
-            AInputNumber: 'value',
-            AMentions: 'value',
-            ARadioGroup: 'value',
-            ARate: 'value',
-            ASelect: 'value',
-            ASlider: 'value',
-            ATimePicker: 'value',
-            ATimeRangePicker: 'value',
-            ATreeSelect: 'value',
-            ACheckbox: 'checked',
-            AChecked: 'checked',
-            ARadio: 'checked',
-            ASwitch: 'checked',
-            ATransfer: "targetKeys",
-            AUpload: 'fileList',
-            AUploadDragger: "fileList",
+        model: {
+            AAutoComplete: ['value'],
+            ACascader: ['value'],
+            ACheckboxGroup: ['value'],
+            ADatePicker: ['value'],
+            ARangePicker: ['value'],
+            AInput: ['value'],
+            ATextarea: ['value'],
+            AInputPassword: ['value'],
+            AInputNumber: ['value'],
+            AMentions: ['value'],
+            ARadioGroup: ['value'],
+            ARate: ['value'],
+            ASelect: ['value'],
+            ASlider: ['value'],
+            ATimePicker: ['value'],
+            ATimeRangePicker: ['value'],
+            ATreeSelect: ['value'],
+            ACheckbox: ['checked'],
+            AChecked: ['checked'],
+            ARadio: ['checked'],
+            ASwitch: ['checked'],
+            ATransfer: ["targetKeys"],
+            AUpload: ['fileList'],
+            AUploadDragger: ["fileList"],
         },
-        formDataComponentDefaultValue: {
+        defaultValue: {
             ATransfer: [],
         },
-        formDataComponentChangeKeyEvent: {},
-        formDataComponentDisabled: {
+        modelEvent: {},
+        disabled: {
             ACollapsePanel: ""
         },
     },
+}, elementPlus: GlobalConfigTypeFramework = {
     'element-plus': {
-        defaultName: {
+        baseConfig: {
             form: 'el-form',
             formPropsModel: 'model',
             formItem: 'el-form-item',
@@ -58,17 +61,17 @@ export default {
             formEventValidate: 'validate',
             formEventClearValidate: 'clearValidate',
         },
-        formDataComponentKey: {},
-        formDataComponentDefaultValue: {
-            ElCheckboxGroup: [],
-            ElTransfer: [],
+        model: {},
+        defaultValue: {
+            ElCheckboxGroup: [[]],
+            ElTransfer: [[]],
         },
-        formDataComponentChangeKeyEvent: {
-        },
-        formDataComponentDisabled: {},
+        modelEvent: {},
+        disabled: {},
     },
+}, vant: GlobalConfigTypeFramework = {
     "vant": {
-        defaultName: {
+        baseConfig: {
             form: 'van-form',
             formPropsModel: '',
             formItem: '',
@@ -79,13 +82,24 @@ export default {
             formEventValidate: 'validate',
             formEventClearValidate: 'resetValidation',
         },
-        formDataComponentKey: {
-            "van-calendar": 'show',
-            "van-popup": 'show',
+        model: {
+            "van-calendar": ['show'],
+            "van-popup": ['show'],
         },
-        formDataComponentDefaultValue: {
-            "van-checkbox-group": [],
-            "van-number-keyboard": ''
-        }
+        defaultValue: {
+            "van-checkbox-group": [[]],
+            "van-number-keyboard": ['']
+        },
+        modelEvent: {},
+        disabled: {},
     }
+}
+
+
+
+export default {
+    // 对应ui框架
+    ...antDesignVue,
+    ...elementPlus,
+    ...vant,
 }

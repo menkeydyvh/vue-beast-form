@@ -9,48 +9,50 @@ export interface GlobalConfigType {
     /**
      * 配置多个框架名称方便导入默认配置
      */
-    frameworks:
-    {
-        [frameworkName: string]: {
-            /**
-             * 表单form相关核心配置项
-             */
-            defaultName: DefaultName;
-            /**
-             * 表单组件v-model:key配置key
-             */
-            formDataComponentKey?: {
-                [ComponentName: string]: string | string[]
-            }
-            /**
-             * 表单组件v-model:key配置key的默认空值
-             */
-            formDataComponentDefaultValue?: {
-                [ComponentName: string]: any;
-            }
-            /**
-             * 表单组件v-model:key配置key修改的监听名称
-             */
-            formDataComponentChangeKeyEvent?: {
-                [ComponentName: string]: string | string[];
-            }
-            /**
-             * 表单组件disabled的值默认是disabled  
-             * 假设禁用key不是disabled 是readonly 则需要配置: {componentName:"readonly"}
-             */
-            formDataComponentDisabled?: {
-                [ComponentName: string]: string;
-            }
-        }
-    },
-
+    frameworks: GlobalConfigTypeFramework
 }
 
+/**
+ * frameworks的配置规则
+ */
+export interface GlobalConfigTypeFramework {
+    [frameworkName: string]: {
+        /**
+         * 表单form相关核心配置项
+         */
+        baseConfig: FrameworkFormBaseConfig;
+        /**
+         * 表单组件v-model:key配置key
+         */
+        model?: {
+            [ComponentName: string]: string[]
+        }
+        /**
+         * 表单组件v-model:key配置key的默认空值
+         */
+        defaultValue?: {
+            [ComponentName: string]: any[];
+        }
+        /**
+         * 表单组件v-model:key配置key修改的监听名称
+         */
+        modelEvent?: {
+            [ComponentName: string]: string[];
+        }
+        /**
+         * 表单组件disabled的值默认是disabled  
+         * 假设禁用key不是disabled 是readonly 则需要配置: {ComponentName:"readonly"}
+         */
+        disabled?: {
+            [ComponentName: string]: string;
+        }
+    }
+}
 
 /**
  * 表单form和formitem默认项
  */
-export interface DefaultName {
+export interface FrameworkFormBaseConfig {
     /**
      * 框架form组件的名称：例如'a-form'
      */

@@ -53,10 +53,8 @@ export class LoaderFactory {
         delete globalCache.cacheApi[name]
     }
 
-
-
-    static switchDefaultName(name: string) {
-        globalCache.config.switchDefaultName(name);
+    static switchFramework(name: string) {
+        globalCache.config.switchFramework(name);
     }
 
     static setbasePropsOption(propsOption: PropsOptionType) {

@@ -46,7 +46,7 @@ export default class FormFactory {
         }
 
         if (frameworkName) {
-            globalCache.config.switchDefaultName(frameworkName);
+            globalCache.config.switchFramework(frameworkName);
         }
 
         this.vm = vm

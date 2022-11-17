@@ -24,26 +24,18 @@ export type RuleType = {
      */
     title?: string | RuleType | false;
     /**
-     * 一个 v-model:key  值为key 
-     * 
-     * 多个 v-model:key时可用 [key,key1,key2]
-     * 
-     * 多个v-model时 也可只设置其一个来针对这个key获取
+     *  v-model:key值为key [key]
+     * 默认值 [modelValue]
      */
-    vModelKey?: string | string[];
-    /**
-     * 默认值 null  主要为了处理默认值不为null的时候处理
-     * 
-     * 当vModelKey设置为数组时需要与其保持一致长度
+    model?: string[];
+    /**     
+     * 与model长度保持一致
+     * 默认值 [null]  
+     * 主要为了处理默认值不能设置为null的处理 例如有些model的默认值是[]或{}时候处理
      */
-    vModelKeyDefaultValue?: any;
+    defaultValue?: any[];
     /**
-     * 对应vModelKey的值
-     * 
-     * 当vModelKey为数组时候这个值会变为对象形式
-     * 
-     * 例: vModelKey = [key,key1,key2]
-     * 
+     * 当model为数组时候这个值会变为对象形式
      * value = {
      *    key:xxx,
      *    key1:xxx,
