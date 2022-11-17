@@ -1,6 +1,6 @@
 {
   "name": "vue-beast-form",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "通过vue3、一些vue3框架、自定义组件，通过vue3的渲染方式使用json配置渲染出ui，达到低代码的效果",
   "main": "lib/index.js",
   "module": "lib/index.js",
