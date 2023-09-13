@@ -1,6 +1,6 @@
 import { defineClientConfig } from '@vuepress/client'
 
-import frameworks from 'vue-beast-form/lib/config/frameworks'
+import { antDesignVue, elementPlus, vant } from 'vue-beast-form/lib/config/frameworks'
 
 import antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
@@ -15,7 +15,7 @@ export default defineClientConfig({
     enhance({ app }) {
         app.config.globalProperties.$beastForm = {
             base: "ant-design-vue",
-            frameworks: frameworks
+            frameworks: { ...antDesignVue, ...elementPlus, ...vant }
         }
         app.use(antd);
         app.use(ElementPlus)

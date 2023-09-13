@@ -15,7 +15,6 @@
     "allowJs": true,
     "isolatedModules": false,
     "declaration": true,
-    "importsNotUsedAsValues": "preserve",
     "resolveJsonModule": true,
     "lib": [
       "esnext",

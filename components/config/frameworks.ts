@@ -1,7 +1,7 @@
 import type { GlobalConfigTypeFramework } from '../types'
 
 
-const antDesignVue: GlobalConfigTypeFramework = {
+export const antDesignVue: GlobalConfigTypeFramework = {
     'ant-design-vue': {
         baseConfig: {
             form: 'a-form',
@@ -48,7 +48,9 @@ const antDesignVue: GlobalConfigTypeFramework = {
             ACollapsePanel: ""
         },
     },
-}, elementPlus: GlobalConfigTypeFramework = {
+}
+
+export const elementPlus: GlobalConfigTypeFramework = {
     'element-plus': {
         baseConfig: {
             form: 'el-form',
@@ -69,7 +71,9 @@ const antDesignVue: GlobalConfigTypeFramework = {
         modelEvent: {},
         disabled: {},
     },
-}, vant: GlobalConfigTypeFramework = {
+}
+
+export const vant: GlobalConfigTypeFramework = {
     "vant": {
         baseConfig: {
             form: 'van-form',
@@ -93,13 +97,4 @@ const antDesignVue: GlobalConfigTypeFramework = {
         modelEvent: {},
         disabled: {},
     }
-}
-
-
-
-export default {
-    // 对应ui框架
-    ...antDesignVue,
-    ...elementPlus,
-    ...vant,
 }

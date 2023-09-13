@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './app.vue'
 
 import type { GlobalConfigType } from "../../components"
-import frameworks from "../../components/config/frameworks"
+import { antDesignVue, elementPlus, vant } from "../../components/config/frameworks"
 
 import i18n from './lang/index';
 import vbf from '../../components';
@@ -18,7 +18,11 @@ const app = createApp(App)
 
 const bfConfig: GlobalConfigType = {
     base: 'vant',
-    frameworks: frameworks,
+    frameworks: {
+        ...antDesignVue,
+        ...elementPlus,
+        ...vant,
+    },
 
 }
 

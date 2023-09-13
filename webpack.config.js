@@ -1,8 +1,10 @@
-const path = require('path');
+import path from 'path';
+import {fileURLToPath} from 'url';
 
-const distFileBaseName = "vbf"
+const distFileBaseName = "vbf";
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-module.exports = {
+export default {
     resolve: {
         extensions: ['.ts', '.js'],
     },
