@@ -11,7 +11,7 @@ export default {
     devtool: 'source-map',
     mode: 'production',
     entry: {
-        index: "./components/index.ts",
+        index: "./lib/index.js",
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
