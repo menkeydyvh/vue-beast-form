@@ -1,11 +1,11 @@
-import { LoaderFactory } from './factory/loader';
-import createFactory from './factory';
-import { ruleParse, ruleStringify } from './tool';
+import { LoaderFactory } from './factory/loader.js';
+import createFactory from './factory/index.js';
+import { ruleParse, ruleStringify } from './tool.js';
 import type { CreateFactoryConfigType } from './factory';
 import type { App, Component, Directive } from 'vue';
 import type { RuleType, PropsOptionType } from './types';
 
-export * from './types';
+export * from './types/index.js';
 
 export const name = "BeastForm";
 

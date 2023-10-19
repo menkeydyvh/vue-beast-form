@@ -1,7 +1,7 @@
 import { reactive, toRefs, provide, inject, h } from "vue"
-import { RuleFactory } from './rule'
-import { globalCache, LoaderFactory } from './loader'
-import Api from './api'
+import { RuleFactory } from './rule.js'
+import { globalCache, LoaderFactory } from './loader.js'
+import Api from './api.js'
 import type { ComponentInternalInstance } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
 

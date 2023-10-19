@@ -1,7 +1,6 @@
 import { h, reactive, unref, ref, resolveDirective, withDirectives } from 'vue'
-import { globalCache, LoaderFactory } from './loader'
-import { onToPropsName, propsToOnName } from '../tool'
-import { deepCopy } from '../tool'
+import { globalCache, LoaderFactory } from './loader.js'
+import { onToPropsName, propsToOnName, deepCopy } from '../tool.js'
 import type Api from './api'
 import type { VNode, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
@@ -94,7 +93,7 @@ export class RuleFactory {
                 modelKeyEvents = [],
                 modelKeyDefaultValues = [],
                 rdcPropsKey = rdc.props ? Object.keys(rdc.props || {}) : [];
-            
+
             // -- v-model配置
             if (this.rule.model?.length) {
                 modelKeys = this.rule.model;

@@ -1,5 +1,5 @@
 import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, onUnmounted, watch, nextTick } from 'vue'
-import FormFactory from './form'
+import FormFactory from './form.js'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType, ApiType } from '../types'
 

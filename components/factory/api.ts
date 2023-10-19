@@ -1,5 +1,5 @@
-import { globalCache } from "./loader"
-import FormFactory from "./form"
+import { globalCache } from "./loader.js"
+import FormFactory from "./form.js"
 import type { ModelValueType } from "./form"
 import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'

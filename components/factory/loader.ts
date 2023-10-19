@@ -1,7 +1,7 @@
 import { resolveComponent } from 'vue'
-import { name } from '../index'
-import Config from '../config'
-import { firstToUpper, firstToLower } from '../tool'
+import { name } from '../index.js'
+import Config from '../config/index.js'
+import { firstToUpper, firstToLower } from '../tool.js'
 import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { PropsOptionType, ApiType } from "../types"
 
