@@ -5,6 +5,7 @@ import { path } from '@vuepress/utils'
 import demoContainer from '../../plugins/demo-container'
 
 export default defineUserConfig({
+    base: "/vue-beast-form/",
     lang: 'zh-CN',
     title: 'vue beast form',
     description: '通过JSON配置UI来实现Vue的渲染的框架',
