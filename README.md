@@ -14,7 +14,7 @@ vue3用json方式布局并提供表单数据处理，搭配现有市场上的框
 ## 安装教程
 
 ```
-npm i -S vue-beast-form
+npm install  vue-beast-form
 ```
 
 

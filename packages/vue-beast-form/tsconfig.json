@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": false,
+    "target": "es6",
+    "skipLibCheck": true,
+    "removeComments": true,
+    "allowJs": true,
+    "isolatedModules": false,
+    "declaration": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
+}

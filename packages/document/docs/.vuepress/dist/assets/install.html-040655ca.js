@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-d6f6210e","path":"/zh/guide/install.html","title":"介绍","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1659088497000,"contributors":[{"name":"xhyu","email":"xhyu@qeelyn.com","commits":8}]},"filePathRelative":"zh/guide/install.md"}');export{e as data};

@@ -1,0 +1,28 @@
+{
+  "name": "@vue-beast-form/document",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vuepress/client": "2.0.0-beta.67",
+    "babel-preset-env": "^1.7.0",
+    "escape-html": "^1.0.3",
+    "vue": "^3.3.7",
+    "vuepress": "2.0.0-beta.67"
+  },
+  "dependencies": {
+    "ant-design-vue": "^3.2.3",
+    "element-plus": "^2.2.11",
+    "less": "^4.1.2",
+    "vant": "^3.5.2",
+    "vue-beast-form": "^1.0.0",
+    "vuedraggable": "^4.1.0"
+  }
+}
