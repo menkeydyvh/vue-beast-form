@@ -13,24 +13,36 @@ vue3用json方式布局并提供表单数据处理，搭配现有市场上的框
 
 ## 安装教程
 
+npm
 ```
-npm install  vue-beast-form
+npm install vue-beast-form
+```
+
+pnpm
+```
+pnpm add vue-beast-form
 ```
 
 
 ## 文档 
 
-运行本项目的 document 为文档站点可直接浏览
+github文档地址：[这里](https://menkeydyvh.github.io/vue-beast-form/)
+
+### 手动运行文档
 
 ```
-cd .\document
+cd .\packages\document
 
 npm run dev
 ```
 
-**文档说明和例子都很全！**
+## demo
 
-## 文档编写
+### 手动运行demo
 
-[vuepress](https://v2.vuepress.vuejs.org/zh/)
+```
+cd .\packages\demo
+
+pnpm dev
+```
 

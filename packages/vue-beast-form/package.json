@@ -1,6 +1,6 @@
 {
   "name": "vue-beast-form",
-  "version": "1.0.1-beta.0",
+  "version": "1.0.0",
   "description": "通过vue3、一些vue3框架、自定义组件，通过vue3的渲染方式使用json配置渲染出ui，达到低代码的效果",
   "main": "esm/index.js",
   "module": "esm/index.js",
@@ -16,13 +16,13 @@
     "framework"
   ],
   "files": [
-    "bundle",
     "esm",
     "umd",
     "LICENSE"
   ],
   "license": "MIT",
   "scripts": {
+    "dev": "rollup -c --watch",
     "build": "rollup -c",
     "prepublishOnly": "pnpm build"
   },

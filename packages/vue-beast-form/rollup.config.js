@@ -14,13 +14,11 @@ export default defineConfig([
             "tool": 'src/tool.ts',
             "config/frameworks": 'src/config/frameworks.ts',
         },
-        output: [
-            {
-                dir: "esm",
-                format: 'es',
-                entryFileNames: '[name].js'
-            },
-        ],
+        output: {
+            dir: "esm",
+            format: 'es',
+            entryFileNames: '[name].js'
+        },
         plugins: [
             typescript({
                 tsconfig: './tsconfig.json',
@@ -32,13 +30,11 @@ export default defineConfig([
             resolve(),
         ]
     },
-
     // umd
     {
         external: ['vue'],
         input: 'src/index.ts',
-        output:
-        {
+        output: {
             dir: 'umd',
             format: 'umd',
             globals: {

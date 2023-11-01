@@ -18,6 +18,7 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 node_modules
+dist
 esm
 umd
 bundle
