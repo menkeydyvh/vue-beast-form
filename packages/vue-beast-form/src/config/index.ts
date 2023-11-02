@@ -4,7 +4,7 @@ import type { ComponentInternalInstance } from "vue"
 /**
  * 支持组件多情况配置
  */
-export default class config {
+export default class Config {
 
     public vm: ComponentInternalInstance
     /**
@@ -25,36 +25,28 @@ export default class config {
     /**
      * 表单组件定义 v-model 的 :key
      */
-    public model: {
-        [ComponentName: string]: string[];
-    } = {
-            default: ['modelValue']
-        }
+    public model: { default: ['modelValue'] } & Record<string, string[]> = {
+        default: ['modelValue']
+    }
 
     /**
      * 表单组件定义 v-model 的 :key 对应的默认值 默认值null
      * PS：如果有特殊默认值需要配置出来，对应model的值的格式
      */
-    public defaultValue: {
-        [ComponentName: string]: any[];
-    } = {}
+    public defaultValue: Record<string, any[]> = {}
 
     /**
      * 表单组件定义 v-model 的 :key 对应的事件名称 
      * PS：如果组件默认值与默认事件监听有出入需要默认配置
      */
-    public modelEvent: {
-        [ComponentName: string]: string[];
-    } = {}
+    public modelEvent: Record<string, string[]> = {}
 
     /**
      * 表单组件定义 v-model 的 :key
      */
-    public disabled: {
-        [ComponentName: string]: string;
-    } = {
-            default: 'disabled'
-        }
+    public disabled: { default: 'disabled' } & Record<string, string> = {
+        default: 'disabled'
+    }
 
     constructor(vm: ComponentInternalInstance) {
         this.vm = vm
@@ -65,7 +57,6 @@ export default class config {
         } else {
             console.error("error: You need set app.config.globalProperties.$beastForm")
         }
-
     }
 
     /**
@@ -100,7 +91,7 @@ export default class config {
      * 替换baseConfig值
      * @param config 
      */
-    setKeyValue = (thisKey: string, config: { [key: string]: any; }) => {
+    setKeyValue = (thisKey: "baseConfig" | "model" | "defaultValue" | "modelEvent" | "disabled", config: { [key: string]: any; }) => {
         if (["baseConfig", "model", "defaultValue", "modelEvent", "disabled"].includes(thisKey)) {
             for (let key in config) {
                 this[thisKey][key] = config[key]

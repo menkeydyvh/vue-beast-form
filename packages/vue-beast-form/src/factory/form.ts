@@ -7,9 +7,7 @@ import type { RuleType, PropsOptionType } from '../types'
 import { beastName } from "../tool"
 
 
-export interface ModelValueType {
-    [field: string]: any
-}
+
 
 interface VmPropsType {
     modelValue: {
@@ -25,7 +23,7 @@ export default class FormFactory {
 
     public vm: ComponentInternalInstance
 
-    public modelValue: ModelValueType
+    public modelValue: Record<string, any>
 
     public option: PropsOptionType
 
@@ -41,7 +39,7 @@ export default class FormFactory {
     // vm集合
     public allVms: ComponentInternalInstance[] = []
 
-    constructor(vm: any, frameworkName?: string) {
+    constructor(vm: ComponentInternalInstance, frameworkName?: string) {
         if (!globalCache?.config) {
             new LoaderFactory(vm)
         }
@@ -109,7 +107,7 @@ export default class FormFactory {
         this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option.value, form: formProps }
     }
 
-    updateModelValue(modelValue: ModelValueType) {
+    updateModelValue(modelValue: Record<string, any>) {
         if (modelValue) {
             for (let key in modelValue) {
                 if (this.modelValue[key] !== modelValue[key]) {
@@ -167,7 +165,7 @@ export default class FormFactory {
         let formTag = LoaderFactory.getComponents(config.baseConfig.form) as any;
 
         if (config.baseConfig.form && formTag) {
-            formProps.ref = beastName.FORMREF
+            // formProps.ref = beastName.FORMREF
             const fpKeys = Object.keys(formTag.props);
             if (config.baseConfig.formPropsModel && fpKeys.includes(config.baseConfig.formPropsModel)) {
                 formProps[config.baseConfig.formPropsModel] = this.modelValue

@@ -1,5 +1,4 @@
 import { globalCache } from "./loader"
-import type { ModelValueType } from "./form"
 import type { ComponentInternalInstance } from 'vue'
 import type { RuleFactory } from './rule'
 import type { ApiType } from '../types'
@@ -69,7 +68,7 @@ export default class apiFactory {
 
     public vm: ComponentInternalInstance
 
-    private modelValue: ModelValueType
+    private modelValue: Record<string, any>
 
     private rfs: RuleFactory[]
 
@@ -83,7 +82,7 @@ export default class apiFactory {
    * 记录数据
    * @param modelValue 
    */
-    setModelValue(modelValue: ModelValueType) {
+    setModelValue(modelValue: Record<string, any>) {
         this.modelValue = modelValue
     }
 

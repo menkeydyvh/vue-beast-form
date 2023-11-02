@@ -5,12 +5,8 @@ import type { ComponentInternalInstance, VNodeTypes } from "vue"
 import type { PropsOptionType, ApiType } from "../types"
 
 export const globalCache: {
-    tagCacheComponents: {
-        [key: string]: VNodeTypes
-    },
-    cacheApi?: {
-        [name: string]: ApiType
-    },
+    tagCacheComponents: Record<string, VNodeTypes>,
+    cacheApi?: Record<string, ApiType>,
     config: Config,
     t: any,
     basePropsOption: PropsOptionType
@@ -64,7 +60,7 @@ export class LoaderFactory {
         }
     }
 
-    static loaderComponents(components: { [key: string]: VNodeTypes }) {
+    static loaderComponents(components: Record<string, VNodeTypes>) {
         if (components) {
             for (let key in components) {
                 globalCache.tagCacheComponents[key] = components[key]

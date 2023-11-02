@@ -3,13 +3,12 @@ import { globalCache, LoaderFactory } from './loader'
 import { onToPropsName, propsToOnName, deepCopy } from '../tool'
 import type Api from './api'
 import type { VNode, ComponentInternalInstance, Ref } from 'vue'
-import type { ModelValueType } from './form'
 import type { RuleType, EmitType } from '../types'
 
 
 export class RuleFactory {
 
-    public vm: ComponentInternalInstance | any
+    public vm: ComponentInternalInstance
 
     public rule: RuleType
 
@@ -21,26 +20,20 @@ export class RuleFactory {
 
     public component: VNode
 
-    public modelValue: ModelValueType
+    public modelValue: Record<string, any>
 
     /**
      * 有v-model的时候这个值会有数据
      */
     public field: string
 
-    public props = reactive<{
-        [key: string]: any
-    }>({})
+    public props = reactive<Record<string, any>>({})
 
-    public formItemProps = reactive<{
-        [key: string]: any
-    }>({})
+    public formItemProps = reactive<Record<string, any>>({})
 
     public display: Ref<boolean>
 
-    public childrenSlot = reactive<{
-        [slot: string]: Array<RuleFactory | string> | Function
-    }>({})
+    public childrenSlot = reactive<Record<string, Array<RuleFactory | string> | Function>>({})
 
     private _config: {
         disabled: string
