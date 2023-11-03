@@ -10,9 +10,7 @@ export type RuleType = {
     /**
      * 对应type的组件 props设置
      */
-    props?: {
-        [key: string]: any
-    };
+    props?: Record<string, any>;
     /**
      * 可用于api使用时候的检索功能
      * 
@@ -42,9 +40,7 @@ export type RuleType = {
      *    key2:xxx,
      * }
      */
-    value?: any | {
-        [field: string]: any
-    };
+    value?: any | Record<string, any>;
     /**
      * 验证规则
      * 
@@ -62,17 +58,13 @@ export type RuleType = {
      * 
      * 诺为表单输入组件会设置在form-item的style上
      */
-    style?: string | {
-        [key: string]: string
-    };
+    style?: string | Record<string, any>;
     /**
      * 设置在type对应的attrs上
      * 
      * 诺为表单输入组件会设置在form-item的attrs上
      */
-    attrs?: {
-        [key: string]: any
-    };
+    attrs?: Record<string, any>;
     /**
      * 子规则或子文本内容
      */
@@ -92,9 +84,7 @@ export type RuleType = {
     /**
      * 事件会覆盖props内同名事件处理
      */
-    on?: {
-        [onName: string]: Function
-    }
+    on?: Record<string, Function>
     /**
      * 会抛出事件
      */

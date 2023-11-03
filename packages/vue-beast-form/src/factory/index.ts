@@ -1,4 +1,4 @@
-import { defineComponent, getCurrentInstance, toRefs, onMounted, onBeforeUnmount, onUnmounted, watch, nextTick } from 'vue'
+import { defineComponent, getCurrentInstance, toRaw } from 'vue'
 import FormFactory from './form'
 import type { PropType } from 'vue'
 import type { RuleType, PropsOptionType, ApiType } from '../types'
@@ -18,91 +18,88 @@ export interface CreateFactoryConfigType {
 
 export default function createFactory(config: CreateFactoryConfigType) {
 
-    const component = defineComponent({
+    return defineComponent({
         name: config.name,
         directives: config.directives,
         props: {
             api: { type: Object as PropType<ApiType> },
             name: { type: String },
             rule: { type: Array as PropType<Array<RuleType>>, required: true },
-            modelValue: { default: null },
+            modelValue: { type: Object, },
             option: { type: Object as PropType<PropsOptionType> },
             disabled: { type: Boolean },
         },
         emits: [...baseEmits, ...config.emits],
-        setup(props, { emit }) {
-            const vm = getCurrentInstance() as any,
-                { modelValue, rule, option, disabled, name } = toRefs(props);
-            const rf = new FormFactory(vm, config.framework)
-            // const setupTime = Date.now();
-
-            onMounted(() => {
-                rf.addVm()
-
-                nextTick(() => {
-                    // 视图都被渲染之后
-                    emit('mounted', rf.api.publishApi())
-                    if (name.value) {
-                        rf.cacheApi(name.value);
-                    }
-                    // console.log(`渲染结束时间：${Date.now() - setupTime}`)
-                })
-            });
-
-            onBeforeUnmount(() => {
-                rf.delVm();
-                if (name.value) {
-                    rf.delCacheApi(name.value);
-                }
-                config.directives = {}
-                config.emits = []
-            })
-
-            onUnmounted(() => {
-                emit('unmounted')
-            })
-
-            nextTick(() => {
-                emit("update:api", rf.api.publishApi())
-                emit("update:modelValue", rf.modelValue)
-            })
-
-            watch(option, () => {
-                rf.initOption()
-                vm.proxy.$forceUpdate()
-            }, { deep: true })
-
-            watch(disabled, () => {
-                rf.initDisabled()
-            }, { deep: true })
-
-            watch(rf.modelValue, () => {
-                emit("update:modelValue", rf.modelValue)
-            }, { deep: true })
-
-            watch(rule, () => {
-                rf.initModelValue();
-                rf.initRule()
-                vm.ctx.$forceUpdate()
-            }, { deep: true })
-
-            watch(modelValue, () => {
-                nextTick(() => {
-                    rf.updateModelValue(modelValue.value)
-                })
-            }, { deep: true })
-
+        watch: {
+            option: {
+                handler() {
+                    this.rf.initOption(this.option);
+                    this.$forceUpdate();
+                },
+                deep: true,
+            },
+            rule: {
+                handler() {
+                    this.rf.initModelValue(this.modelValue);
+                    this.rf.initRule(this.rule);
+                    this.$forceUpdate();
+                },
+                deep: true,
+            },
+            disabled: {
+                handler() {
+                    this.rf.initDisabled(this.disabled);
+                },
+            },
+            modelValue: {
+                handler() {
+                    this.rf.updateModelValue(this.modelValue);
+                },
+                deep: true,
+            },
+            "rf.modelValue": {
+                handler() {
+                    this.$emit("update:modelValue", toRaw(this.rf.modelValue));
+                },
+                deep: true,
+            },
+        },
+        data() {
             return {
-                fApi: rf.api.publishApi(),
-                render() {
-                    return rf.render()
-                }
+                rf: null
             }
         },
-        render() {
-            return this.render();
+        created() {
+            const vm = getCurrentInstance();
+            this.rf = new FormFactory(vm, config.framework);
+            this.rf.initOption(this.option);
+            this.rf.initModelValue(this.modelValue);
+            this.rf.initRule(this.rule);
         },
+        mounted() {
+            this.rf.addVm();
+            this.$nextTick(() => {
+                this.$emit("update:api", this.rf.api.publishApi());
+                this.$emit("update:modelValue", this.rf.modelValue);
+                if (this.name) {
+                    this.rf.cacheApi(this.name);
+                }
+                this.$emit('mounted');
+            })
+        },
+        beforeUnmount() {
+            this.rf.delVm();
+            if (this.name) {
+                this.rf.delCacheApi(this.name);
+            }
+            config.directives = {};
+            config.emits = [];
+        },
+        unmounted() {
+            this.$emit('unmounted');
+        },
+        render() {
+            return this.rf.render();
+        }
     });
-
-    return component
 }

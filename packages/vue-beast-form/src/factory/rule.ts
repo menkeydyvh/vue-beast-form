@@ -1,4 +1,4 @@
-import { h, reactive, unref, ref, resolveDirective, withDirectives } from 'vue'
+import { h, reactive, unref, ref, resolveDirective, withDirectives, mergeProps } from 'vue'
 import { globalCache, LoaderFactory } from './loader'
 import { onToPropsName, propsToOnName, deepCopy } from '../tool'
 import type Api from './api'
@@ -167,72 +167,50 @@ export class RuleFactory {
         const tag = this.getTag();
 
         if (typeof tag === 'object') {
-
-            let tagPropsKeys = []
-            // 是组件
+            const tagPropsKeys = [], tagProps = {}
             if (tag.props) {
-                tagPropsKeys = Object.keys(tag.props)
+                tagPropsKeys.push(...Object.keys(tag.props))
             }
 
             if (this.rule.props) {
                 for (let key in this.rule.props) {
-                    this.props[key] = this.rule.props[key]
+                    if (tagPropsKeys.includes(key)) {
+                        tagProps[key] = this.rule.props[key]
+                    }
                 }
-            }
-
-            if (this._config.disabled && tagPropsKeys.includes(this._config.disabled)) {
-                this.props[this._config.disabled] = false
             }
 
             if (globalCache.config.baseConfig.formItem && this.rule.title !== false) {
-                if (this.rule.attrs) {
-                    for (let key in this.rule.attrs) {
+                const formItemProps = {}
+                if (this.rule.props) {
+                    for (let key in this.rule.props) {
                         if (!tagPropsKeys.includes(key)) {
-                            this.formItemProps[key] = this.rule.attrs[key]
+                            formItemProps[key] = this.rule.props[key]
                         }
                     }
                 }
-                if (this.rule.style) {
-                    this.formItemProps.style = this.rule.style
-                }
-                if (this.rule.class) {
-                    this.formItemProps.class = this.rule.class
-                }
+
+                this.formItemProps = mergeProps(formItemProps, this.rule.attrs, {
+                    style: this.rule.style,
+                    class: this.rule.class,
+                })
+                this.props = tagProps;
             } else {
-                if (this.rule.attrs) {
-                    for (let key in this.rule.attrs) {
-                        if (!tagPropsKeys.includes(key)) {
-                            this.props[key] = this.rule.attrs[key]
-                        }
-                    }
-                }
-                if (this.rule.style) {
-                    this.props.style = this.rule.style
-                }
-                if (this.rule.class) {
-                    this.props.class = this.rule.class
-                }
+                this.props = mergeProps(tagProps, this.rule.attrs, {
+                    style: this.rule.style,
+                    class: this.rule.class,
+                })
             }
 
         } else {
-            // 不是组件
-            if (this.rule.props) {
-                for (let key in this.rule.props) {
-                    this.props[key] = this.rule.props[key]
+            this.props = mergeProps(
+                this.rule.props,
+                this.rule.attrs,
+                {
+                    style: this.rule.style,
+                    class: this.rule.class,
                 }
-            }
-            if (this.rule.attrs) {
-                for (let key in this.rule.attrs) {
-                    this.props[key] = this.rule.attrs[key]
-                }
-            }
-            if (this.rule.style) {
-                this.props.style = this.rule.style
-            }
-            if (this.rule.class) {
-                this.props.class = this.rule.class
-            }
-
+            )
         }
     }
 
@@ -303,7 +281,8 @@ export class RuleFactory {
      * @param value 
      */
     setProps(key: string, value: any) {
-        this.props[key] = value
+        this.props[key] = value;
+        this.component.props[key] = value;
     }
 
     /**
@@ -342,16 +321,16 @@ export class RuleFactory {
         }
         // 正常设置值
         if (this._config.modelKeys.length === 1) {
-            this.props[this._config.modelKeys[0]] = v === undefined ? this._config.modelKeyDefaultValues[0] : v
+            this.setProps(this._config.modelKeys[0], v === undefined ? this._config.modelKeyDefaultValues[0] : v)
         } else {
             if (key) {
                 const keyIdx = this._config.modelKeys.findIndex(mk => mk === key)
                 if (keyIdx > -1) {
-                    this.props[key] = v === undefined ? this._config.modelKeyDefaultValues[keyIdx] : v
+                    this.setProps(key, v === undefined ? this._config.modelKeyDefaultValues[keyIdx] : v)
                 }
             } else {
                 this._config.modelKeys.forEach((mk, keyIdx) => {
-                    this.props[mk] = v?.[mk] === undefined ? this._config.modelKeyDefaultValues[keyIdx] : v?.[mk]
+                    this.setProps(mk, v?.[mk] === undefined ? this._config.modelKeyDefaultValues[keyIdx] : v?.[mk])
                 })
             }
         }

@@ -1,7 +1,8 @@
 <template>
   <a-card class="content-card" :bordered="false" title="测试渲染示例">
     <beast-form v-model="value" :rule="rule" :option="option" />
-    <span v-test1>{{ value }}</span>
+    <div v-test1>{{ value }}</div>
+    <div>{{ rule }}</div>
     <a-button @click="onAdd">add</a-button>
   </a-card>
 </template>
@@ -103,7 +104,7 @@ export default defineComponent({
     // console.log(vbf.ruleParse(str));
 
     rule.value = vbf.ruleParse(str);
-    onMounted(() => {});
+    onMounted(() => { });
 
     return {
       jApi,

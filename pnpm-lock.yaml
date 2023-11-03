@@ -72,8 +72,8 @@ importers:
         specifier: ^3.5.2
         version: 3.6.12(vue@3.3.7)
       vue-beast-form:
-        specifier: ^1.0.0
-        version: 1.0.0(vue@3.3.7)
+        specifier: workspace:*
+        version: link:../vue-beast-form
       vuedraggable:
         specifier: ^4.1.0
         version: 4.1.0(vue@3.3.7)
@@ -4422,14 +4422,6 @@ packages:
       vscode-pug-languageservice: 0.29.8
       vscode-typescript-languageservice: 0.29.8
     dev: true
-
-  /vue-beast-form@1.0.0(vue@3.3.7):
-    resolution: {integrity: sha512-eIcReGmHkQDeujArSLVvodmpR3qH4eVyRcjqunNIIHTMFK2WVxEeqpTT75db6MGabk5z55K0soloZqV/VIAJ2Q==}
-    peerDependencies:
-      vue: '>=3.2.0'
-    dependencies:
-      vue: 3.3.7(typescript@4.9.5)
-    dev: false
 
   /vue-demi@0.14.6(vue@3.3.7):
     resolution: {integrity: sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==}

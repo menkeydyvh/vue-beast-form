@@ -1,23 +1,9 @@
-import { reactive, toRefs, provide, inject, h } from "vue"
+import { reactive, provide, inject, h } from "vue"
 import { RuleFactory } from './rule'
 import { globalCache, LoaderFactory } from './loader'
 import Api from './api'
 import type { ComponentInternalInstance } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
-import { beastName } from "../tool"
-
-
-
-
-interface VmPropsType {
-    modelValue: {
-        [key: string]: any
-    }
-    name: string
-    rule: RuleType[]
-    disabled: boolean
-    option: PropsOptionType
-}
 
 export default class FormFactory {
 
@@ -32,7 +18,6 @@ export default class FormFactory {
     public disabled: boolean
 
     public api: Api
-
 
     // 顶层vm
     public baseVm: ComponentInternalInstance = null
@@ -64,50 +49,40 @@ export default class FormFactory {
 
         this.api.setAllVms(this.allVms);
 
-        this.initOption()
-        this.initModelValue()
-        this.initRule()
     }
 
-    initModelValue() {
-        const { modelValue } = toRefs<VmPropsType>(this.vm.props as any)
+    initModelValue(modelValue?: Record<string, any>) {
 
-        this.modelValue = reactive({ ...modelValue.value as any })
+        this.modelValue = reactive({ ...modelValue })
 
         this.api.setModelValue(this.modelValue)
     }
 
-    initRule() {
-        const { rule } = toRefs<VmPropsType>(this.vm.props as any)
-
-        this.rules = (rule.value).filter(
-            item => !!item
-        ).map(
+    initRule(rule: RuleType[]) {
+        this.rules = rule.map(
             item => new RuleFactory(item, this.modelValue, this.api, this.vm, this.option.isI18n)
         )
 
         this.api.setRfs(this.rules)
     }
 
-    initDisabled() {
-        const { disabled } = toRefs<VmPropsType>(this.vm.props as any)
-
-        this.disabled = disabled.value
+    initDisabled(disabled: boolean) {
+        this.disabled = disabled
 
         this.rules.forEach(rule => {
             rule.setDisabled(this.disabled, true)
         })
     }
 
-    initOption() {
-        const { option } = toRefs<VmPropsType>(this.vm.props as any),
-            baseVmOption = this.baseVm.props?.option as PropsOptionType,
-            formProps = { ...globalCache?.basePropsOption?.form, ...baseVmOption?.form, ...option.value?.form }
+    initOption(option?: PropsOptionType) {
+        const baseVmOption = this.baseVm.props?.option as PropsOptionType,
+            formProps = { ...globalCache?.basePropsOption?.form, ...baseVmOption?.form, ...option?.form }
 
-        this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option.value, form: formProps }
+        this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option, form: formProps }
     }
 
-    updateModelValue(modelValue: Record<string, any>) {
+    updateModelValue(modelValue?: Record<string, any>) {
+        console.log(this.rules)
         if (modelValue) {
             for (let key in modelValue) {
                 if (this.modelValue[key] !== modelValue[key]) {
@@ -165,7 +140,6 @@ export default class FormFactory {
         let formTag = LoaderFactory.getComponents(config.baseConfig.form) as any;
 
         if (config.baseConfig.form && formTag) {
-            // formProps.ref = beastName.FORMREF
             const fpKeys = Object.keys(formTag.props);
             if (config.baseConfig.formPropsModel && fpKeys.includes(config.baseConfig.formPropsModel)) {
                 formProps[config.baseConfig.formPropsModel] = this.modelValue
