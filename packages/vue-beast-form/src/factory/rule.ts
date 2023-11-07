@@ -225,20 +225,20 @@ export class RuleFactory {
                 for (const slot in this.rule.children) {
                     const childSlot = this.rule.children[slot]
                     this.childrenSlot[slot] = function () {
-                        const csr: Array<string | RuleType> = childSlot(...arguments)
-                        try {
-                            if (Array.isArray(csr)) {
-                                return csr.map(csrItem => {
-                                    if (typeof csrItem === 'string') {
-                                        return csrItem
-                                    } else {
-                                        return (new RuleFactory(csrItem, slef.modelValue, slef.api, slef.vm, slef.isI18n)).render()
-                                    }
-                                })
-                            }
-                        } catch (error) {
-                            return csr
-                        }
+                        // const csr: Array<string | RuleType> = childSlot(...arguments)
+                        // try {
+                        //     if (Array.isArray(csr)) {
+                        //         return csr.map(csrItem => {
+                        //             if (typeof csrItem === 'string') {
+                        //                 return csrItem
+                        //             } else {
+                        //                 return (new RuleFactory(csrItem, slef.modelValue, slef.api, slef.vm, slef.isI18n)).render()
+                        //             }
+                        //         })
+                        //     }
+                        // } catch (error) {
+                        //     return csr
+                        // }
                     }
                 }
             }

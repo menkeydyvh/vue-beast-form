@@ -1,9 +1,8 @@
-import { LoaderFactory } from './factory/loader';
-import createFactory from './factory/index';
+import { LoaderFactory } from './core/loader';
 import { ruleParse, ruleStringify, beastName } from './tool';
-import type { App, Component, Directive } from 'vue';
-import type { RuleType, PropsOptionType } from './types';
-
+import { App, Directive, VNode } from 'vue';
+import { RuleType, PropsOptionType } from './types';
+import CoreComp from './core/index.vue'
 export * from './types/index';
 
 export default {
@@ -28,7 +27,8 @@ export default {
    * @returns 
    */
   beastForm() {
-    return createFactory(this._config)
+    CoreComp.props.config.default = this._config;
+    return CoreComp
   },
   /**
    * 根据设置的name获取针对的api内容
@@ -42,9 +42,7 @@ export default {
    * 导入组件缓存
    * @param data 
    */
-  components(data: {
-    [key: string]: Component
-  }) {
+  components(data: Record<string, VNode>) {
     LoaderFactory.loaderComponents(data)
   },
   /**

@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import vbf, { RuleType } from "vue-beast-form";
 
 vbf.useFramework("ant-design-vue");
@@ -38,7 +38,7 @@ export default defineComponent({
       },
       {
         type: "a-input",
-        title: "商品名称2",
+        title: { type: 'div', children: ['商品名称2'] },
         field: "goods_name",
         value: "goods2",
         props: {
