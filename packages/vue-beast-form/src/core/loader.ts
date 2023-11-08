@@ -1,10 +1,11 @@
 import Config from '../config/index'
+import BeastForm from './index.vue'
 import { firstToUpper, firstToLower } from '../tool'
-import type { ComponentInternalInstance, VNode } from "vue"
+import type { Component, ComponentInternalInstance } from "vue"
 import type { PropsOptionType, ApiType } from "../types"
 
 export const globalCache: {
-    tagCacheComponents: Record<string, VNode & { name?: string }>,
+    tagCacheComponents: Record<string, Component>,
     cacheApi?: Record<string, ApiType>,
     config: Config,
     t: any,
@@ -20,15 +21,17 @@ export const globalCache: {
 export class LoaderFactory {
 
     constructor(vm: ComponentInternalInstance) {
-        globalCache.config = new Config(vm)
+        globalCache.config = new Config(vm);
+
+        globalCache.tagCacheComponents[BeastForm.name] = BeastForm;
 
         for (let key in vm.appContext.components) {
-            globalCache.tagCacheComponents[key] = vm.appContext.components[key] as VNode
+            globalCache.tagCacheComponents[key] = vm.appContext.components[key];
         }
 
-        const vmProxy = vm?.proxy as any
+        const vmProxy = vm?.proxy as any;
         if (vmProxy.$t) {
-            globalCache.t = vmProxy.$t
+            globalCache.t = vmProxy.$t;
         }
     }
 
@@ -36,13 +39,13 @@ export class LoaderFactory {
         if (value) {
             globalCache.cacheApi[name] = value;
         } else {
-            return globalCache.cacheApi[name]
+            return globalCache.cacheApi[name];
         }
     }
 
 
     static removeCacheApi(name: string) {
-        delete globalCache.cacheApi[name]
+        delete globalCache.cacheApi[name];
     }
 
     static switchFramework(name: string) {
@@ -51,16 +54,16 @@ export class LoaderFactory {
 
     static setbasePropsOption(propsOption: PropsOptionType) {
         if (propsOption && Object.keys(propsOption).length) {
-            globalCache.basePropsOption = propsOption
+            globalCache.basePropsOption = propsOption;
         } else {
-            globalCache.basePropsOption = null
+            globalCache.basePropsOption = null;
         }
     }
 
-    static loaderComponents(components: Record<string, VNode>) {
+    static loaderComponents(components: Record<string, Component>) {
         if (components) {
             for (let key in components) {
-                globalCache.tagCacheComponents[key] = components[key]
+                globalCache.tagCacheComponents[key] = components[key];
             }
         }
     }
@@ -73,10 +76,10 @@ export class LoaderFactory {
         // 存在大写 
         if (/[A-Z]/.test(key)) {
             // AAbc 转换 a-abc
-            let lowerKey = ""
+            let lowerKey = "";
             key.replace(/(?=([A-Z]))/g, "-").split('-').forEach(k => {
                 if (k) {
-                    lowerKey += firstToLower(k)
+                    lowerKey += firstToLower(k);
                 }
             })
             if (globalCache.tagCacheComponents[lowerKey]) {
@@ -89,7 +92,7 @@ export class LoaderFactory {
             let upperKey = "";
             key.split('-').forEach(k => {
                 if (k) {
-                    upperKey += firstToUpper(k)
+                    upperKey += firstToUpper(k);
                 }
             })
             if (globalCache.tagCacheComponents[upperKey]) {
@@ -97,6 +100,6 @@ export class LoaderFactory {
             }
         }
 
-        return key
+        return key;
     }
 }

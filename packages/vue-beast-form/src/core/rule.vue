@@ -1,5 +1,4 @@
 <template>
-    {{ curProps }}
     <component :is="curComp" v-bind="curProps">
         <template v-if="rule.children">
             <template v-if="Array.isArray(rule.children)">
@@ -119,6 +118,7 @@ const setDisabled = (value: boolean) => {
     if (curConfig.disabled) {
         setProps(curConfig.disabled, value);
     }
+    vm.proxy.$forceUpdate();
 }
 
 const setI18n = (str: string) => {
@@ -234,7 +234,7 @@ if (typeofComp === 'string') {
     }
 
     // init config
-    const curCompPropsKeys = curComp.type['props'] ? Object.keys(curComp.type['props']) : null,
+    const curCompPropsKeys = Object.keys({ ...curComp.type['props'] }),
         curCompName = curComp.type['name'];
     curConfig.disabled = globalCache.config.getComponentDisabled(curCompName);
     if (curConfig.disabled) {
@@ -268,6 +268,10 @@ if (rule.on) {
         addOn(onName);
     }
 }
+
+watch(curConfig, () => {
+    console.log('curConfig', curConfig)
+}, { deep: true })
 
 defineExpose({
     getValue,

@@ -6,7 +6,7 @@
     </component>
 </template>
 <script setup lang="ts">
-import { defineOptions, getCurrentInstance, onMounted, onUnmounted, ref, h, VNode, reactive, watch, onBeforeUnmount } from 'vue'
+import { defineOptions, getCurrentInstance, onMounted, onUnmounted, h, reactive, onBeforeUnmount } from 'vue'
 import { RuleType, PropsOptionType, ApiType } from '../types'
 import { LoaderFactory, globalCache } from './loader';
 import { CreateFactoryConfigType } from '../factory';
@@ -88,7 +88,7 @@ vm.proxy.$watch("disabled", (value) => {
     Object.keys(curValue).forEach(field => {
         publishApi.setDisabled(field, value)
     })
-})
+}, { immediate: true })
 
 const emitChangeField = (value: any, field: string) => {
     curValue[field] = value;
