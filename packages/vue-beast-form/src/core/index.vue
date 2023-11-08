@@ -1,12 +1,12 @@
 <template>
-    <component :is="coreComp" v-bind="coreProps">
+    <component :is="curComp && option?.isForm !== false? curComp: divComp" v-bind="curProps">
         <template v-for="item in rule">
-            <FormItemComp :rule="item" :modelValue="curValue" :api="api" @changeField="emitChangeField" />
+            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" @changeField="emitChangeField" />
         </template>
     </component>
 </template>
 <script setup lang="ts">
-import { defineOptions, getCurrentInstance, computed, onMounted, onUnmounted, ref, h, watch } from 'vue'
+import { defineOptions, getCurrentInstance, onMounted, onUnmounted, ref, h, VNode, reactive, watch, onBeforeUnmount } from 'vue'
 import { RuleType, PropsOptionType, ApiType } from '../types'
 import { LoaderFactory, globalCache } from './loader';
 import { CreateFactoryConfigType } from '../factory';
@@ -23,7 +23,7 @@ interface CoreProps {
     config?: CreateFactoryConfigType;
 }
 
-const props = defineProps<CoreProps>();
+const { name, option, modelValue, config } = defineProps<CoreProps>();
 
 defineOptions({
     name: "BeastForm",
@@ -37,49 +37,77 @@ const emit = defineEmits<{
     'unmounted': [],
 }>()
 
+
 const vm = getCurrentInstance();
 
 const api = new apiFactory(vm);
-
-const curValue = ref({})
+const publishApi = api.publishApi();
 
 if (!globalCache?.config) {
-    new LoaderFactory(vm)
+    new LoaderFactory(vm);
 }
-if (props.config?.framework) {
-    globalCache.config.switchFramework(props.config.framework);
+if (config?.framework) {
+    globalCache.config.switchFramework(config.framework);
 }
 
-const coreProps = ref({});
+const coreConfig = {
+    formModel: globalCache.config.baseConfig.formPropsModel ?? '',
+};
 
-const coreComp = computed(() => {
-    if (props.option?.isForm !== false && globalCache.config.baseConfig.form) {
-        if (globalCache.config.baseConfig.formPropsModel) {
-            coreProps.value[globalCache.config.baseConfig.formPropsModel] = curValue.value
-        }
-        if (props.option?.form) {
-            for (let key in props.option.form) {
-                coreProps.value[key] = props.option.form[key];
-            }
-        }
+const curValue = reactive<Record<string, any>>({});
+const curProps = reactive<Record<string, any>>({});
 
-        return LoaderFactory.getComponents(globalCache.config.baseConfig.form)
-    } else {
-        return h('div')
+const divComp = h('div');
+
+const curComp = globalCache.config.baseConfig.form ?
+    h(LoaderFactory.getComponents(globalCache.config.baseConfig.form)) : null
+
+vm.proxy.$watch("option", (value) => {
+    if (value?.form) {
+        for (let key in value.form) {
+            curProps[key] = value.form[key];
+        }
     }
+}, { immediate: true, deep: true })
 
+vm.proxy.$watch("modelValue", () => {
+    // todo:考虑外部设置值时候的处理目前先不考虑
+    // if (props.modelValue) {
+    //     for (let key in props.modelValue) {
+    //         if (coreValue[key] !== props.modelValue[key]) {
+    //             publishApi.setValue(key, props.modelValue[key])
+    //         }
+    //     }
+    // }
+    if (coreConfig.formModel) {
+        curProps[coreConfig.formModel] = curValue
+    }
+}, { immediate: true, deep: true })
+
+vm.proxy.$watch("disabled", (value) => {
+    Object.keys(curValue).forEach(field => {
+        publishApi.setDisabled(field, value)
+    })
 })
 
 const emitChangeField = (value: any, field: string) => {
-    curValue.value[field] = value;
-    console.log(curValue.value)
-    emit('update:modelValue', { ...curValue.value })
+    curValue[field] = value;
+    emit('update:modelValue', { ...curValue })
     emit("changeField", value, field)
 }
 
 onMounted(() => {
+    if (name) {
+        LoaderFactory.cacheApi(name, publishApi);
+    }
     emit("mounted");
-    emit("update:api", api.publishApi())
+    emit("update:api", publishApi)
+})
+
+onBeforeUnmount(() => {
+    if (name) {
+        LoaderFactory.removeCacheApi(name);
+    }
 })
 
 onUnmounted(() => {
