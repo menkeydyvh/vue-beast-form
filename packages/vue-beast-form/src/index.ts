@@ -7,7 +7,6 @@ export * from './types/index';
 
 export default {
   _config: {
-    name: beastName.BASE,
     framework: '',
     directives: {},
     emits: [],
@@ -28,6 +27,9 @@ export default {
    */
   beastForm() {
     CoreComp.props.config.default = this._config;
+    this.components({
+      [beastName.BASE]: CoreComp
+    })
     return CoreComp
   },
   /**

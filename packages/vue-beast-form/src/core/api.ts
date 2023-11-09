@@ -1,56 +1,27 @@
 import { globalCache } from "./loader"
 import type { ComponentInternalInstance } from 'vue'
 import type { ApiType } from '../types'
-
-
-/**
-    * 表单验证表单字段验证
-    * @param formEvent 
-    * @param fields 
-    * @returns 
-    */
-const formValidate = async (formEvent: any, fields?: string | string[]) => {
-    if (formEvent) {
-        try {
-            await formEvent[globalCache.config.baseConfig.formEventValidate](fields)
-        } catch (error) {
-            return false;
-        }
-    }
-    return true;
-}
-
-/**
-    * 清除表单验证
-    * @param formEvent 
-    * @param fields 
-    */
-const clearFormValidate = (formEvent: any, fields?: string | string[]) => {
-    if (formEvent) {
-        formEvent[globalCache.config.baseConfig.formEventClearValidate](fields)
-    }
-}
-
+import { beastName } from "../tool";
 
 export default class apiFactory {
 
-    vm: ComponentInternalInstance
+    vm: ComponentInternalInstance;
 
-    fieldVms: Record<string, ComponentInternalInstance> = {}
+    beastFormVms: ComponentInternalInstance[];
+
+    fieldVms: Record<string, ComponentInternalInstance> = {};
 
     constructor(vm: ComponentInternalInstance) {
-        this.vm = vm
+        this.vm = vm;
     }
-
 
     /**
    * 记录数据
    * @param ruleFs 
    */
     addfieldVms(field: string, vm: ComponentInternalInstance) {
-        this.fieldVms[field] = vm
+        this.fieldVms[field] = vm;
     }
-
 
     /**
        * 通过field检索规则  支持xxx.xxx层级方式
@@ -60,8 +31,13 @@ export default class apiFactory {
     getRule = (field: string) => {
         return this.fieldVms[field]
     }
-
-
+    $t = (str: string) => {
+        if (globalCache.t) {
+            return globalCache.t(str)
+        } else {
+            return str
+        }
+    }
     /**
      * 对外发布api
      * @returns 
@@ -157,68 +133,44 @@ export default class apiFactory {
                 return Object.keys(self.vm.proxy?.['modelValue'] ?? {}).includes(field)
             },
             getFormData(field) {
-                if (field) {
-                    const rf = self.getRule(field)
-                    if (rf) {
-                        return rf.exposed.getValue()
-                    }
-                } else {
-                    return self.vm.proxy?.['modelValue'];
-                }
+                return self.vm.exposed.getFormData(field);
             },
             resetFormData(field) {
-                if (field) {
-                    const rf = self.getRule(field)
-                    if (rf) {
-                        rf.exposed.setValue(null)
+                self.vm.exposed.resetFormData(field);
+            },
+            async validate(callback, fields, beastFormVm) {
+                console.log(self);
+                let valid = true, data = null;
+                if (beastFormVm) {
+                    if (!await beastFormVm.exposed.validate(fields)) {
+                        valid = false
                     }
                 } else {
-                    for (let key in self.vm.proxy?.['modelValue']) {
-                        this.resetFormData(key);
+                    if (!await self.vm.exposed.validate(fields)) {
+                        valid = false
+                    }
+                    // for (let key in self.fieldVms) {
+                    //     if (self.fieldVms[key].subTree?.type?.['name'] === beastName.BASE) {
+                    //         if (!await self.fieldVms[key].subTree.component.exposed.validate(fields)) {
+                    //             valid = false;
+                    //         }
+                    //     }
+                    // }
+                }
+                if (valid) {
+                    if (beastFormVm) {
+                        data = beastFormVm.exposed.getFormData()
+                    } else {
+                        data = this.getFormData()
                     }
                 }
+                callback(valid, data)
             },
-            async validate(callback, fields, formVm) {
-                // let valid = true, data = null
-                // if (formVm) {
-                //     if (!await formValidate(formVm.refs[beastName.FORMREF], fields)) {
-                //         valid = false
-                //     }
-                // } else {
-                //     if (self.allVms) {
-                //         let i = 0, len = self.allVms.length;
-                //         for (i; i < len; i++) {
-                //             if (!await formValidate(self.allVms[i].refs[beastName.FORMREF], fields)) {
-                //                 valid = false
-                //             }
-                //         }
-                //     }
-                // }
-                // if (valid) {
-                //     if (fields) {
-                //         if (Array.isArray(fields)) {
-                //             data = {};
-                //             fields.forEach(field => {
-                //                 data[field] = this.getFormData(field);
-                //             })
-                //         } else {
-                //             data = this.getFormData(fields);
-                //         }
-                //     } else {
-                //         data = this.getFormData();
-                //     }
-                // }
-                // callback(valid, data)
-            },
-            clearValidate(fields, formVm) {
-                if (formVm) {
-                    // clearFormValidate(formVm.refs[beastName.FORMREF], fields);
+            clearValidate(fields, beastFormVm) {
+                if (beastFormVm) {
+                    beastFormVm.exposed.clearFormValidate(fields);
                 } else {
-                    // if (self.allVms) {
-                    //     self.allVms.forEach(item => {
-                    //         clearFormValidate(item.refs[beastName.FORMREF], fields);
-                    //     })
-                    // }
+                    self.vm.exposed.clearFormValidate(fields);
                 }
             },
             addOn(field, event, callback) {
@@ -240,11 +192,7 @@ export default class apiFactory {
                 }
             },
             $t(str) {
-                if (globalCache.t) {
-                    return globalCache.t(str)
-                } else {
-                    return str
-                }
+                return self.$t(str);
             },
         }
     }

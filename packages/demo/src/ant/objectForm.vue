@@ -1,13 +1,11 @@
 <template>
   <a-card class="content-card" :bordered="false" title="object的处理">
-    <beast-form
-      :rule="rule"
-      :option="{
-        form: {
-          layout: 'vertical',
-        },
-      }"
-    />
+    {{ value }}
+    <beast-form v-model="value" :rule="rule" :option="{
+      form: {
+        layout: 'vertical',
+      },
+    }" />
   </a-card>
 </template>
 <script lang="ts">
@@ -21,6 +19,7 @@ export default defineComponent({
   components: { BeastForm: vbf.beastForm() },
   setup() {
     const rule = ref<RuleType[]>();
+    const value = ref();
 
     rule.value = [
       {
@@ -90,6 +89,7 @@ export default defineComponent({
 
     return {
       rule,
+      value,
     };
   },
 });

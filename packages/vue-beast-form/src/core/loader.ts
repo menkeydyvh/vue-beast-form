@@ -1,5 +1,4 @@
 import Config from '../config/index'
-import BeastForm from './index.vue'
 import { firstToUpper, firstToLower } from '../tool'
 import type { Component, ComponentInternalInstance } from "vue"
 import type { PropsOptionType, ApiType } from "../types"
@@ -22,8 +21,6 @@ export class LoaderFactory {
 
     constructor(vm: ComponentInternalInstance) {
         globalCache.config = new Config(vm);
-
-        globalCache.tagCacheComponents[BeastForm.name] = BeastForm;
 
         for (let key in vm.appContext.components) {
             globalCache.tagCacheComponents[key] = vm.appContext.components[key];

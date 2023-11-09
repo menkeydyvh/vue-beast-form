@@ -3,7 +3,7 @@
         <component v-if="curComp && rule.field" :is="curComp" v-bind="curProps">
             <template v-if="titleSlot" #[titleSlot]>
                 <template v-if="typeof rule.title === 'string'">
-                    {{ rule.title }}
+                    {{ setI18n(rule.title) }}
                 </template>
                 <BeastRule v-else-if="(typeof rule.title === 'object')" :rule="rule.title" :modelValue="modelValue"
                     :api="api" :isI18n="isI18n" @changeField="emitChangeField" />
@@ -29,7 +29,7 @@ interface RuleProps {
     isI18n?: boolean;
 }
 
-const { rule, api } = defineProps<RuleProps>();
+const { rule, api, isI18n } = defineProps<RuleProps>();
 
 const emit = defineEmits<{
     'changeField': [value: any, field: string];
@@ -67,6 +67,13 @@ const setDisplay = (value: boolean) => {
     display.value = value;
 }
 
+const setI18n = (str: string) => {
+    if (isI18n && globalCache.t) {
+        return globalCache.t(str) as string;
+    }
+    return str;
+}
+
 if (globalCache.config.baseConfig.formItem) {
     if (globalCache.config.baseConfig.formItemPropName && curConfig.field) {
         curProps[globalCache.config.baseConfig.formItemPropName] = curConfig.field;
@@ -83,6 +90,25 @@ if (globalCache.config.baseConfig.formItem) {
 
     for (let key in mp) {
         curProps[key] = mp[key];
+    }
+
+    if (globalCache.config.baseConfig.formItemPropRules) {
+        curProps[globalCache.config.baseConfig.formItemPropRules] = rule.validate?.map(rv => {
+            if (rv.required) {
+                curProps['required'] = true
+            }
+            const nrv = { ...rv };
+            if (nrv.message) {
+                nrv.message = setI18n(nrv.message)
+            }
+            if (nrv.validator) {
+                nrv.validator = function () {
+                    return rv.validator(...arguments, api.publishApi())
+                }
+            }
+            return nrv
+        })
+
     }
 }
 

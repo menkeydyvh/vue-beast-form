@@ -4,7 +4,7 @@
             <template v-if="Array.isArray(rule.children)">
                 <template v-for="child in rule.children">
                     <template v-if="typeof child === 'string'">
-                        {{ child }}
+                        {{ setI18n(child) }}
                     </template>
                     <template v-else>
                         <BeastRule :rule="child" :api="api" :modelValue="modelValue" @changeField="onChangeField" />
@@ -16,7 +16,7 @@
                     <Transition>
                         <template #[key]>
                             <template v-if="typeof child === 'string'">
-                                {{ child }}
+                                {{ setI18n(child) }}
                             </template>
                             <template v-else>
                                 <BeastRule :rule="child" :api="api" :modelValue="modelValue" @changeField="onChangeField" />
@@ -268,10 +268,6 @@ if (rule.on) {
         addOn(onName);
     }
 }
-
-watch(curConfig, () => {
-    console.log('curConfig', curConfig)
-}, { deep: true })
 
 defineExpose({
     getValue,
