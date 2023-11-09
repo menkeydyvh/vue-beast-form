@@ -1,5 +1,5 @@
 <template>
-    <component :is="curComp" v-bind="curProps">
+    <component :is="curComp" v-bind="curProps" v-on="listeners">
         <template v-if="rule.children">
             <template v-if="Array.isArray(rule.children)">
                 <template v-for="child in rule.children">
@@ -29,7 +29,7 @@
     </component>
 </template>
 <script setup lang="ts">
-import { reactive, mergeProps, h, getCurrentInstance, watch } from 'vue'
+import { reactive, mergeProps, h, getCurrentInstance, computed } from 'vue'
 import { EmitType, RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
@@ -112,13 +112,13 @@ const setValue = (v: any, key?: string) => {
 
 const setProps = (key: string, value: any) => {
     curProps[key] = value;
+    vm.proxy.$forceUpdate();
 }
 
 const setDisabled = (value: boolean) => {
     if (curConfig.disabled) {
         setProps(curConfig.disabled, value);
     }
-    vm.proxy.$forceUpdate();
 }
 
 const setI18n = (str: string) => {
@@ -167,9 +167,7 @@ const initValue = () => {
             }
             curProps[key] = value;
 
-            curProps[keyEvent] = function () {
-                setValue(arguments[0], key);
-            }
+
 
             emitChangeField();
         } else {
@@ -186,11 +184,6 @@ const initValue = () => {
                 }
                 curProps[key] = value[key];
 
-
-                let keyEvent = curConfig.modelKeyEvents[index]
-                curProps[keyEvent] = function () {
-                    setValue(arguments[0], key);
-                }
             })
 
             emitChangeField();
@@ -259,6 +252,17 @@ if (typeofComp === 'string') {
         }
     }
 }
+
+const listeners = computed(() => {
+    const vModelEvent = {}
+    curConfig.modelKeys.forEach(key => {
+        vModelEvent[`update:${key}`] = (value) => {
+            setValue(value, key);
+        }
+    })
+
+    return vModelEvent
+})
 
 rule.emits?.forEach(item => {
     addEmit(item);

@@ -20,7 +20,11 @@ import { RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
 import apiFactory from './api';
+import { beastName } from '../tool';
 
+defineOptions({
+    name: beastName.BASEITEM,
+})
 
 interface RuleProps {
     rule: RuleType;
@@ -64,6 +68,7 @@ const setProps = (key: string, value: any) => {
 }
 
 const setDisplay = (value: boolean) => {
+    console.log(display)
     display.value = value;
 }
 
@@ -95,15 +100,15 @@ if (globalCache.config.baseConfig.formItem) {
     if (globalCache.config.baseConfig.formItemPropRules) {
         curProps[globalCache.config.baseConfig.formItemPropRules] = rule.validate?.map(rv => {
             if (rv.required) {
-                curProps['required'] = true
+                curProps['required'] = true;
             }
             const nrv = { ...rv };
             if (nrv.message) {
-                nrv.message = setI18n(nrv.message)
+                nrv.message = setI18n(nrv.message);
             }
             if (nrv.validator) {
                 nrv.validator = function () {
-                    return rv.validator(...arguments, api.publishApi())
+                    rv.validator(...arguments, api.publishApi());
                 }
             }
             return nrv

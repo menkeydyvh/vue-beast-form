@@ -3,6 +3,7 @@ import type { RuleType } from './types'
 
 export enum beastName {
     BASE = "BeastForm",
+    BASEITEM = "BeastFormItem",
     FORMREF = "form",
 };
 
