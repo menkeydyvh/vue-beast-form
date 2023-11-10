@@ -86,6 +86,16 @@ const menu: MenuItem[] = [
             },
         ],
     },
+    {
+        title: "test",
+        base: "test",
+        children: [
+            {
+                title: "示例",
+                component: "index.vue",
+            },
+        ],
+    },
 ]
 
 export default menu
