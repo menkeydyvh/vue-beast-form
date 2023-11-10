@@ -78,7 +78,9 @@ export type RuleType = {
      */
     display?: boolean;
     /**
+     * 不在支持
      * 指令
+     * @deprecated('废弃')
      */
     directives?: Array<[Directive | string] | [Directive | string, any] | [Directive | string, any, string] | [Directive | string, any, string, Record<string, boolean>]>
     /**
@@ -86,7 +88,9 @@ export type RuleType = {
      */
     on?: Record<string, Function>
     /**
-     * 会抛出事件
+     * 不在支持
+     * 会抛出事件 
+     * @deprecated('废弃')
      */
     emits?: Array<EmitType>
 }

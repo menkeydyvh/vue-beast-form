@@ -66,20 +66,20 @@ const vm = getCurrentInstance();
 const publishApi = props.api.publishApi();
 const typeofComp = typeof LoaderFactory.getComponents(props.rule.type);
 
-const directives = [];
-props.rule.directives?.forEach(item => {
-    if (Array.isArray(item)) {
-        if (typeof item[0] === 'string') {
-            const rd = resolveDirective(item[0]);
-            if (rd) {
-                directives.push([rd, ...item.slice(1)])
-            }
-        } else {
-            // todo: withDirectives can only be used inside render functions
-            directives.push([toRaw(item[0]), ...item.slice(1)])
-        }
-    }
-});
+const directives: DirectiveArguments = [];
+// 不在支持指令
+// props.rule.directives?.forEach(item => {
+//     if (Array.isArray(item)) {
+//         if (typeof item[0] === 'string') {
+//             const rd = resolveDirective(item[0]);
+//             if (rd) {
+//                 directives.push([rd, ...item.slice(1)] as DirectiveArguments[0])
+//             }
+//         } else {
+//             directives.push([{ ...item[0] }, ...item.slice(1)] as DirectiveArguments[0])
+//         }
+//     }
+// });
 
 const curRender = h(LoaderFactory.getComponents(props.rule.type));
 
@@ -282,9 +282,11 @@ if (typeofComp === 'string') {
     }
 }
 
-props.rule.emits?.forEach(item => {
-    addEmit(item);
-})
+// 不在支持emit
+// props.rule.emits?.forEach(item => {
+//     addEmit(item);
+// })
+
 if (props.rule.on) {
     for (let onName in props.rule.on) {
         addOn(onName);
