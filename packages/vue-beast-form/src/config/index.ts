@@ -94,7 +94,9 @@ export default class Config {
     setKeyValue = (thisKey: "baseConfig" | "model" | "defaultValue" | "modelEvent" | "disabled", config: { [key: string]: any; }) => {
         if (["baseConfig", "model", "defaultValue", "modelEvent", "disabled"].includes(thisKey)) {
             for (let key in config) {
-                this[thisKey][key] = config[key]
+                if (this[thisKey][key] != config[key]) {
+                    this[thisKey][key] = config[key]
+                }
             }
         }
     }

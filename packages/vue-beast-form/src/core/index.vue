@@ -1,7 +1,8 @@
 <template>
-    <component :is="curComp && option?.['isForm'] !== false? curComp: divComp" v-bind="curProps">
+    <component :is="curComp && curOption.isForm !== false? curComp: divComp" v-bind="curProps">
         <template v-for="item in rule">
-            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" @changeField="emitChangeField" />
+            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" :isI18n="curOption.isI18n" :disabled="disabled"
+                @changeField="emitChangeField" />
         </template>
     </component>
 </template>
@@ -27,14 +28,7 @@ defineOptions({
 })
 
 const props = defineProps<CoreProps>();
-
-const emit = defineEmits<{
-    "update:modelValue": [value: Record<string, any>],
-    "changeField": [value: any, field: string],
-    "update:api": [api: ApiType],
-    "mounted": [],
-    'unmounted': [],
-}>()
+const emit = defineEmits(["update:modelValue", "changeField", "update:api", "mounted", 'unmounted'])
 
 const baseVm = inject('baseVm', null);
 const vm = getCurrentInstance();
@@ -49,36 +43,32 @@ if (!globalCache?.config) {
     new LoaderFactory(vm);
 }
 
+const curOption = reactive<PropsOptionType>({
+    ...globalCache.basePropsOption,
+    ...baseVm?.props?.option,
+    ...props.option
+});
+
+if (curOption.framework) {
+    globalCache.config.switchFramework(curOption.framework);
+}
+
 const divComp = h('div');
-const curProps = reactive<Record<string, any>>({});
-const curComp = globalCache.config.baseConfig.form ?
-    LoaderFactory.getComponents(globalCache.config.baseConfig.form) : null
+const curProps = reactive<Record<string, any>>({ ...curOption.form });
+const curComp = globalCache.config.baseConfig.form ? LoaderFactory.getComponents(globalCache.config.baseConfig.form) : null
 
 if (curComp && globalCache.config.baseConfig.formPropsModel) {
     curProps[globalCache.config.baseConfig.formPropsModel] = props.modelValue
 }
 
-watch(() => props.option, (value) => {
-    const formProps: Record<string, any> = {
-        ...baseVm?.props?.option?.form,
-        ...value?.form,
-    };
-    for (let key in formProps) {
-        curProps[key] = formProps[key];
+watch(() => props.option, (o) => {
+    if (o.isForm !== curOption.isForm) {
+        curOption.isForm = o.isForm
     }
-    if (props.option?.framework) {
-        globalCache.config.switchFramework(props.option.framework);
-    }
-}, { immediate: true, deep: true })
-
-watch(() => props.modelValue, () => {
 }, { deep: true })
 
-watch(() => props.disabled, (value) => {
-    Object.keys(props.modelValue).forEach(field => {
-        publishApi.setDisabled(field, value)
-    })
-}, { immediate: true })
+// watch(() => props.modelValue, () => {
+// }, { deep: true })
 
 const getFormData = (field?: string) => {
     if (field) {
@@ -92,7 +82,7 @@ const resetFormData = (field?: string) => {
     if (field) {
         publishApi.setValue(field, null)
     } else {
-        Object.keys(props.modelValue).forEach(key => {
+        Object.keys({ ...props.modelValue }).forEach(key => {
             resetFormData(key);
         })
     }
@@ -111,7 +101,7 @@ const validate = async (field?: string) => {
         }
 
         if (!field) {
-            Object.keys(props.modelValue).forEach(async key => {
+            Object.keys({ ...props.modelValue }).forEach(async key => {
                 const rf = api.getRule(key);
                 if (rf.subTree?.type?.['name'] === beastName.BASE) {
                     if (!await rf.subTree.component.exposed.validate()) {
@@ -131,7 +121,7 @@ const clearFormValidate = (field?: string) => {
             vm.subTree?.component?.exposed?.[clearValidateName](field);
         }
         if (!field) {
-            Object.keys(props.modelValue).forEach(key => {
+            Object.keys({ ...props.modelValue }).forEach(key => {
                 const rf = api.getRule(key);
                 if (rf.subTree?.type?.['name'] === beastName.BASE) {
                     rf.subTree.component.exposed.clearFormValidate()
@@ -149,8 +139,9 @@ defineExpose({
 })
 
 const emitChangeField = (value: any, field: string) => {
-    props.modelValue[field] = value;
-    emit('update:modelValue', { ...props.modelValue })
+    const modelValue = { ...props.modelValue };
+    modelValue[field] = value;
+    emit('update:modelValue', modelValue)
     emit("changeField", value, field)
 }
 

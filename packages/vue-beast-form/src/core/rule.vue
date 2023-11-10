@@ -7,7 +7,8 @@
                         {{ setI18n(child) }}
                     </template>
                     <template v-else>
-                        <BeastRule :rule="child" :api="api" :modelValue="modelValue" @changeField="onChangeField" />
+                        <BeastRule :rule="child" :api="api" :modelValue="modelValue" :disabled="disabled"
+                            @changeField="onChangeField" />
                     </template>
                 </template>
             </template>
@@ -19,7 +20,8 @@
                                 {{ setI18n(child) }}
                             </template>
                             <template v-else>
-                                <BeastRule :rule="child" :api="api" :modelValue="modelValue" @changeField="onChangeField" />
+                                <BeastRule :rule="child" :api="api" :modelValue="modelValue" :disabled="disabled"
+                                    @changeField="onChangeField" />
                             </template>
                         </template>
                     </Transition>
@@ -29,7 +31,7 @@
     </component>
 </template>
 <script setup lang="ts">
-import { reactive, mergeProps, h, getCurrentInstance, computed } from 'vue'
+import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, toRaw, watch } from 'vue'
 import { EmitType, RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
@@ -41,12 +43,13 @@ interface RuleProps {
     api: apiFactory;
     modelValue?: Record<string, any>;
     isI18n?: boolean;
+    disabled?: boolean;
 }
 
-const { rule, api, modelValue, isI18n } = defineProps<RuleProps>();
+const props = defineProps<RuleProps>();
 
 const curConfig = reactive({
-    field: rule.field,
+    field: props.rule.field,
     disabled: '',
     modelKeys: [],
     modelKeyEvents: [],
@@ -60,10 +63,27 @@ const emit = defineEmits<{
 const curProps = reactive<Record<string, any>>({});
 
 const vm = getCurrentInstance();
+const publishApi = props.api.publishApi();
+const typeofComp = typeof LoaderFactory.getComponents(props.rule.type);
 
-const typeofComp = typeof LoaderFactory.getComponents(rule.type);
+const directives = [];
+props.rule.directives?.forEach(item => {
+    if (Array.isArray(item)) {
+        if (typeof item[0] === 'string') {
+            const rd = resolveDirective(item[0]);
+            if (rd) {
+                directives.push([rd, ...item.slice(1)])
+            }
+        } else {
+            // todo: withDirectives can only be used inside render functions
+            directives.push([toRaw(item[0]), ...item.slice(1)])
+        }
+    }
+});
 
-const curComp = h(LoaderFactory.getComponents(rule.type));
+const curRender = h(LoaderFactory.getComponents(props.rule.type));
+
+const curComp = directives.length ? withDirectives(curRender, directives) : curRender;
 
 const onChangeField = (value: any, field: string) => {
     emit("changeField", value, field)
@@ -120,8 +140,12 @@ const setDisabled = (value: boolean) => {
     }
 }
 
+watch(() => props.disabled, () => {
+    setDisabled(props.disabled)
+})
+
 const setI18n = (str: string) => {
-    if (isI18n && globalCache.t) {
+    if (props.isI18n && globalCache.t) {
         return globalCache.t(str) as string;
     }
     return str;
@@ -130,16 +154,16 @@ const setI18n = (str: string) => {
 const addOn = (event: string, callback?: Function) => {
     curProps[onToPropsName(event)] = function () {
         if (callback) {
-            callback(...arguments, api.publishApi());
+            callback(...arguments, publishApi);
         } else {
-            rule.on?.[event]?.(...arguments, api.publishApi());
+            props.rule.on?.[event]?.(...arguments, publishApi);
         }
     }
 }
 
 const addEmit = (eType: EmitType) => {
     curProps[onToPropsName(eType.event)] = function () {
-        vm.emit(eType.alias, ...arguments, api.publishApi());
+        vm.emit(eType.alias, ...arguments, publishApi);
     }
 }
 
@@ -155,12 +179,12 @@ const initValue = () => {
         let value: any;
         if (curConfig.modelKeys.length === 1) {
             const key = curConfig.modelKeys[0], keyEvent = curConfig.modelKeyEvents[0];
-            if (modelValue && curConfig.field in modelValue) {
-                value = modelValue[curConfig.field];
-            } else if ('value' in rule) {
-                value = rule.value;
-            } else if (rule.props && key in rule.props) {
-                value = rule.props[key];
+            if (props.modelValue && curConfig.field in props.modelValue) {
+                value = props.modelValue[curConfig.field];
+            } else if ('value' in props.rule) {
+                value = props.rule.value;
+            } else if (props.rule.props && key in props.rule.props) {
+                value = props.rule.props[key];
             } else {
                 value = curConfig.modelKeyDefaultValues[0];
             }
@@ -174,12 +198,12 @@ const initValue = () => {
         } else {
             value = {};
             curConfig.modelKeys.forEach((key, index) => {
-                if (modelValue && curConfig.field in modelValue) {
-                    value[key] = modelValue[curConfig.field]?.[key];
-                } else if ('value' in rule) {
-                    value[key] = rule.value?.[key];
-                } else if (rule.props && key in rule.props) {
-                    value[key] = rule.props[key];
+                if (props.modelValue && curConfig.field in props.modelValue) {
+                    value[key] = props.modelValue[curConfig.field]?.[key];
+                } else if ('value' in props.rule) {
+                    value[key] = props.rule.value?.[key];
+                } else if (props.rule.props && key in props.rule.props) {
+                    value[key] = props.rule.props[key];
                 } else {
                     value[key] = curConfig.modelKeyDefaultValues[index];
                 }
@@ -199,16 +223,16 @@ const initValue = () => {
 }
 
 if (curConfig.field) {
-    api.addfieldVms(curConfig.field, vm);
+    props.api.addfieldVms(curConfig.field, vm);
 }
 
 if (typeofComp === 'string') {
     // init props
     const mp = mergeProps(
-        rule.attrs,
+        props.rule.attrs,
         {
-            style: rule.style,
-            class: rule.class,
+            style: props.rule.style,
+            class: props.rule.class,
         }
     )
     for (let key in mp) {
@@ -217,15 +241,15 @@ if (typeofComp === 'string') {
 } else {
     // init props
     let mp: Record<string, any> = {};
-    if (globalCache.config.baseConfig.formItem && rule.title !== false) {
-        mp = mergeProps(rule.props)
+    if (globalCache.config.baseConfig.formItem && props.rule.title !== false) {
+        mp = mergeProps(props.rule.props)
     } else {
         mp = mergeProps(
-            rule.props,
-            rule.attrs,
+            props.rule.props,
+            props.rule.attrs,
             {
-                style: rule.style,
-                class: rule.class,
+                style: props.rule.style,
+                class: props.rule.class,
             }
         )
     }
@@ -237,19 +261,17 @@ if (typeofComp === 'string') {
     const curCompPropsKeys = Object.keys({ ...curComp.type['props'] }),
         curCompName = curComp.type['name'];
     curConfig.disabled = globalCache.config.getComponentDisabled(curCompName);
-    if (curConfig.disabled) {
-        curProps[curConfig.disabled] = false;
-    }
-    if (rule.model?.length) {
-        curConfig.modelKeys = rule.model.filter(key => curCompPropsKeys.includes(key));
+
+    if (props.rule.model?.length) {
+        curConfig.modelKeys = props.rule.model.filter(key => curCompPropsKeys.includes(key));
     } else {
         curConfig.modelKeys = globalCache.config.getModelValueKeys(curCompName).filter(key => curCompPropsKeys.includes(key));
     }
 
     if (curConfig.modelKeys.length) {
         curConfig.modelKeyEvents = globalCache.config.getModelValueChangeEvents(curCompName, curConfig.modelKeys);
-        if (rule.defaultValue?.length) {
-            curConfig.modelKeyDefaultValues = rule.defaultValue;
+        if (props.rule.defaultValue?.length) {
+            curConfig.modelKeyDefaultValues = props.rule.defaultValue;
         } else {
             curConfig.modelKeyDefaultValues = globalCache.config.getModelValueDefaultNullValues(curCompName, curConfig.modelKeys);
         }
@@ -260,11 +282,11 @@ if (typeofComp === 'string') {
     }
 }
 
-rule.emits?.forEach(item => {
+props.rule.emits?.forEach(item => {
     addEmit(item);
 })
-if (rule.on) {
-    for (let onName in rule.on) {
+if (props.rule.on) {
+    for (let onName in props.rule.on) {
         addOn(onName);
     }
 }

@@ -38,7 +38,7 @@ import 'vant/lib/index.css';
 
 app.use(Antd).directive('test1', {
     mounted() {
-        // console.log('directive:test1')
+        console.log('directive:test1')
     }
 })
 

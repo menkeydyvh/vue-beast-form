@@ -20,13 +20,7 @@ export default defineComponent({
           layout: "vertical",
         },
         framework: 'ant-design-vue',
-        directives: {
-          test2: {
-            mounted() {
-              console.log("directive:test2");
-            },
-          }
-        }
+
       });
 
     rule.value = [
@@ -75,7 +69,11 @@ export default defineComponent({
           },
         },
         children: [{ type: "span", slot: "prefix", children: ["prefix"] }],
-        directives: [["test1"], ["test2"]],
+        directives: [["test1"], [{
+          mounted() {
+            console.log("directive:test2");
+          },
+        }]],
         class: "input-class",
         attrs: {
           attr1: "input-attr1",
@@ -114,7 +112,6 @@ export default defineComponent({
                 type: "a-button",
                 props: {
                   type: "primary",
-                  htmlType: "sbumit",
                 },
                 children: ["提交"],
               },

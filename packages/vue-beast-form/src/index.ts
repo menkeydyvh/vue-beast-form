@@ -15,13 +15,12 @@ const core = () => {
 
 export const BeastForm = core();
 
-
 /**
   * vue.use 的时候使用
   * @param app 
   * @returns 
   */
-const install = (app: App) => {
+export const install = (app: App) => {
   const copm = core();
   app.component(copm.name, copm);
   return app;
@@ -71,6 +70,3 @@ export const setBasePropsOption = (po: PropsOptionType) => {
   LoaderFactory.setbasePropsOption(po);
 }
 
-export default {
-  install,
-}

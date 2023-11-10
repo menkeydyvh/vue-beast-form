@@ -6,11 +6,12 @@
                     {{ setI18n(rule.title) }}
                 </template>
                 <BeastRule v-else-if="(typeof rule.title === 'object')" :rule="rule.title" :modelValue="modelValue"
-                    :api="api" :isI18n="isI18n" @changeField="emitChangeField" />
+                    :api="api" :isI18n="isI18n" :disabled="disabled" @changeField="emitChangeField" />
             </template>
-            <BeastRule :rule="rule" :modelValue="modelValue" :api="api" :isI18n="isI18n" @changeField="emitChangeField" />
+            <BeastRule :rule="rule" :modelValue="modelValue" :disabled="disabled" :api="api" :isI18n="isI18n"
+                @changeField="emitChangeField" />
         </component>
-        <BeastRule v-else :rule="rule" :modelValue="modelValue" :api="api" :isI18n="isI18n"
+        <BeastRule v-else :rule="rule" :modelValue="modelValue" :api="api" :disabled="disabled" :isI18n="isI18n"
             @changeField="emitChangeField" />
     </template>
 </template>
@@ -31,6 +32,7 @@ interface RuleProps {
     api: apiFactory;
     modelValue?: Record<string, any>;
     isI18n?: boolean;
+    disabled?: boolean;
 }
 
 const { rule, api, isI18n } = defineProps<RuleProps>();
@@ -68,7 +70,6 @@ const setProps = (key: string, value: any) => {
 }
 
 const setDisplay = (value: boolean) => {
-    console.log(display)
     display.value = value;
 }
 

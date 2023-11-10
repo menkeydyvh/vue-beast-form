@@ -277,8 +277,8 @@ export default defineComponent({
     const divBtnClick = (e, api) => {
       console.log("divBtnClick:emits", api);
     },
-      changeField = (field, value, api) => {
-        // console.log("changeField:", field, value, api);
+      changeField = (value, field) => {
+        console.log("changeField:", field, value);
       };
 
     return {

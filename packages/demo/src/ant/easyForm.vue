@@ -32,7 +32,6 @@ export default defineComponent({
       rule = ref<RuleType[]>([]),
       option = ref({
         form: {
-          wrapperCol: { span: 14 },
           layout: "vertical",
         },
         isForm: true,
