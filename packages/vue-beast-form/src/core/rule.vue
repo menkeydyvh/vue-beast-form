@@ -36,8 +36,11 @@ import { EmitType, RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
 import apiFactory from './api';
-import { onToPropsName } from '../tool';
+import { beastName, onToPropsName } from '../tool';
 
+defineOptions({
+    name: beastName.BASERULE,
+})
 interface RuleProps {
     rule: RuleType;
     api: apiFactory;
