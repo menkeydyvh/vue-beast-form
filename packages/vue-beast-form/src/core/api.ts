@@ -139,7 +139,6 @@ export default class apiFactory {
                 self.vm.exposed.resetFormData(field);
             },
             async validate(callback, fields, beastFormVm) {
-                console.log(self);
                 let valid = true, data = null;
                 if (beastFormVm) {
                     if (!await beastFormVm.exposed.validate(fields)) {
@@ -149,13 +148,6 @@ export default class apiFactory {
                     if (!await self.vm.exposed.validate(fields)) {
                         valid = false
                     }
-                    // for (let key in self.fieldVms) {
-                    //     if (self.fieldVms[key].subTree?.type?.['name'] === beastName.BASE) {
-                    //         if (!await self.fieldVms[key].subTree.component.exposed.validate(fields)) {
-                    //             valid = false;
-                    //         }
-                    //     }
-                    // }
                 }
                 if (valid) {
                     if (beastFormVm) {

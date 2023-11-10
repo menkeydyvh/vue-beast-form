@@ -1,13 +1,13 @@
 <template>
-    <component :is="curComp && curOption.isForm !== false? curComp: divComp" v-bind="curProps">
+    <component ref="fromRef" :is="curComp && curOption.isForm !== false? curComp: divComp" v-bind="curProps">
         <template v-for="item in rule">
-            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" :isI18n="curOption.isI18n" :disabled="disabled"
-                @changeField="emitChangeField" />
+            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" :isI18n="curOption.isI18n"
+                :disabled="disabled" @changeField="emitChangeField" />
         </template>
     </component>
 </template>
 <script setup lang="ts">
-import { defineOptions, getCurrentInstance, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch } from 'vue'
+import { defineOptions, getCurrentInstance, ref, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch, computed } from 'vue'
 import { RuleType, PropsOptionType, ApiType } from '../types'
 import { LoaderFactory, globalCache } from './loader';
 import FormItemComp from './formItem.vue';
@@ -27,6 +27,7 @@ defineOptions({
     name: beastName.BASE,
 })
 
+const fromRef = ref();
 const props = defineProps<CoreProps>();
 const emit = defineEmits(["update:modelValue", "changeField", "update:api", "mounted", 'unmounted'])
 
@@ -54,11 +55,12 @@ if (curOption.framework) {
 }
 
 const divComp = h('div');
+const curValue = computed(() => ({ ...props.modelValue }));
 const curProps = reactive<Record<string, any>>({ ...curOption.form });
 const curComp = globalCache.config.baseConfig.form ? LoaderFactory.getComponents(globalCache.config.baseConfig.form) : null
 
 if (curComp && globalCache.config.baseConfig.formPropsModel) {
-    curProps[globalCache.config.baseConfig.formPropsModel] = props.modelValue
+    curProps[globalCache.config.baseConfig.formPropsModel] = curValue.value
 }
 
 watch(() => props.option, (o) => {
@@ -66,9 +68,6 @@ watch(() => props.option, (o) => {
         curOption.isForm = o.isForm
     }
 }, { deep: true })
-
-// watch(() => props.modelValue, () => {
-// }, { deep: true })
 
 const getFormData = (field?: string) => {
     if (field) {
@@ -90,14 +89,12 @@ const resetFormData = (field?: string) => {
 
 const validate = async (field?: string) => {
     let valid = true;
-    if (curComp && props.option?.isForm !== false) {
-        const validateName = globalCache.config.baseConfig.formEventValidate;
-        if (validateName && vm.subTree?.component?.exposed?.[validateName]) {
-            try {
-                valid = await vm.subTree?.component?.exposed?.[validateName](field);
-            } catch (error) {
-                valid = false;
-            }
+    const validateName = globalCache.config.baseConfig.formEventValidate;
+    if (fromRef.value && validateName in fromRef.value) {
+        try {
+            valid = await fromRef.value[validateName](field);;
+        } catch (error) {
+            valid = false;
         }
 
         if (!field) {

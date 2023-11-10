@@ -7,7 +7,7 @@
                         {{ setI18n(child) }}
                     </template>
                     <template v-else>
-                        <BeastRule :rule="child" :api="api" :modelValue="modelValue" :disabled="disabled"
+                        <BeastRule :rule="child" :api="api" :modelValue="modelValue?.[child.field]" :disabled="disabled"
                             @changeField="onChangeField" />
                     </template>
                 </template>
@@ -20,8 +20,8 @@
                                 {{ setI18n(child) }}
                             </template>
                             <template v-else>
-                                <BeastRule :rule="child" :api="api" :modelValue="modelValue" :disabled="disabled"
-                                    @changeField="onChangeField" />
+                                <BeastRule :rule="child" :api="api" :modelValue="modelValue?.[child.field]"
+                                    :disabled="disabled" @changeField="onChangeField" />
                             </template>
                         </template>
                     </Transition>
@@ -31,7 +31,7 @@
     </component>
 </template>
 <script setup lang="ts">
-import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, toRaw, watch } from 'vue'
+import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, watch } from 'vue'
 import { EmitType, RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
@@ -41,7 +41,7 @@ import { onToPropsName } from '../tool';
 interface RuleProps {
     rule: RuleType;
     api: apiFactory;
-    modelValue?: Record<string, any>;
+    modelValue?: any;
     isI18n?: boolean;
     disabled?: boolean;
 }
@@ -49,7 +49,6 @@ interface RuleProps {
 const props = defineProps<RuleProps>();
 
 const curConfig = reactive({
-    field: props.rule.field,
     disabled: '',
     modelKeys: [],
     modelKeyEvents: [],
@@ -90,8 +89,8 @@ const onChangeField = (value: any, field: string) => {
 }
 
 const emitChangeField = () => {
-    if (curConfig.field) {
-        emit("changeField", getValue(), curConfig.field)
+    if (props.rule.field) {
+        emit("changeField", getValue(), props.rule.field)
     }
 }
 
@@ -179,8 +178,8 @@ const initValue = () => {
         let value: any;
         if (curConfig.modelKeys.length === 1) {
             const key = curConfig.modelKeys[0], keyEvent = curConfig.modelKeyEvents[0];
-            if (props.modelValue && curConfig.field in props.modelValue) {
-                value = props.modelValue[curConfig.field];
+            if (props.modelValue != undefined) {
+                value = props.modelValue;
             } else if ('value' in props.rule) {
                 value = props.rule.value;
             } else if (props.rule.props && key in props.rule.props) {
@@ -198,8 +197,8 @@ const initValue = () => {
         } else {
             value = {};
             curConfig.modelKeys.forEach((key, index) => {
-                if (props.modelValue && curConfig.field in props.modelValue) {
-                    value[key] = props.modelValue[curConfig.field]?.[key];
+                if (props.modelValue && props.rule.field in props.modelValue) {
+                    value[key] = props.modelValue[props.rule.field]?.[key];
                 } else if ('value' in props.rule) {
                     value[key] = props.rule.value?.[key];
                 } else if (props.rule.props && key in props.rule.props) {
@@ -214,7 +213,6 @@ const initValue = () => {
                 }
 
                 curProps[key] = value[key];
-
             })
 
             emitChangeField();
@@ -222,8 +220,8 @@ const initValue = () => {
     }
 }
 
-if (curConfig.field) {
-    props.api.addfieldVms(curConfig.field, vm);
+if (props.rule.field) {
+    props.api.addfieldVms(props.rule.field, vm);
 }
 
 if (typeofComp === 'string') {
@@ -276,7 +274,7 @@ if (typeofComp === 'string') {
             curConfig.modelKeyDefaultValues = globalCache.config.getModelValueDefaultNullValues(curCompName, curConfig.modelKeys);
         }
 
-        if (curConfig.field) {
+        if (props.rule.field) {
             initValue();
         }
     }

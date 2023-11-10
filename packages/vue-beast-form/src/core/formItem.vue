@@ -5,14 +5,15 @@
                 <template v-if="typeof rule.title === 'string'">
                     {{ setI18n(rule.title) }}
                 </template>
-                <BeastRule v-else-if="(typeof rule.title === 'object')" :rule="rule.title" :modelValue="modelValue"
-                    :api="api" :isI18n="isI18n" :disabled="disabled" @changeField="emitChangeField" />
+                <BeastRule v-else-if="(typeof rule.title === 'object')" :rule="rule.title"
+                    :modelValue="modelValue?.[rule.title.field]" :api="api" :isI18n="isI18n" :disabled="disabled"
+                    @changeField="emitChangeField" />
             </template>
-            <BeastRule :rule="rule" :modelValue="modelValue" :disabled="disabled" :api="api" :isI18n="isI18n"
+            <BeastRule :rule="rule" :modelValue="modelValue?.[rule.field]" :disabled="disabled" :api="api" :isI18n="isI18n"
                 @changeField="emitChangeField" />
         </component>
-        <BeastRule v-else :rule="rule" :modelValue="modelValue" :api="api" :disabled="disabled" :isI18n="isI18n"
-            @changeField="emitChangeField" />
+        <BeastRule v-else :rule="rule" :modelValue="modelValue?.[rule.field]" :api="api" :disabled="disabled"
+            :isI18n="isI18n" @changeField="emitChangeField" />
     </template>
 </template>
 <script setup lang="ts">
