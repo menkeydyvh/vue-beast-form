@@ -1,15 +1,14 @@
 <template>
-    <component :is="curComp && option?.isForm !== false? curComp: divComp" v-bind="curProps">
+    <component :is="curComp && option?.['isForm'] !== false? curComp: divComp" v-bind="curProps">
         <template v-for="item in rule">
             <FormItemComp :rule="item" :modelValue="modelValue" :api="api" @changeField="emitChangeField" />
         </template>
     </component>
 </template>
 <script setup lang="ts">
-import { defineOptions, getCurrentInstance, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch, nextTick } from 'vue'
+import { defineOptions, getCurrentInstance, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch } from 'vue'
 import { RuleType, PropsOptionType, ApiType } from '../types'
 import { LoaderFactory, globalCache } from './loader';
-import { CreateFactoryConfigType } from '../factory';
 import FormItemComp from './formItem.vue';
 import apiFactory from './api';
 import { beastName } from '../tool';
@@ -21,14 +20,13 @@ interface CoreProps {
     modelValue?: Record<string, any>;
     option?: PropsOptionType;
     disabled?: boolean;
-    config?: CreateFactoryConfigType;
 }
-
-const { name, option, modelValue, config } = defineProps<CoreProps>();
 
 defineOptions({
     name: beastName.BASE,
 })
+
+const props = defineProps<CoreProps>();
 
 const emit = defineEmits<{
     "update:modelValue": [value: Record<string, any>],
@@ -50,24 +48,17 @@ const publishApi = api.publishApi();
 if (!globalCache?.config) {
     new LoaderFactory(vm);
 }
-if (config?.framework) {
-    globalCache.config.switchFramework(config.framework);
-}
-
-const coreConfig = {
-    formModel: globalCache.config.baseConfig.formPropsModel ?? '',
-};
-
-const curValue = reactive<Record<string, any>>({ ...modelValue });
-const curProps = reactive<Record<string, any>>({});
 
 const divComp = h('div');
-
+const curProps = reactive<Record<string, any>>({});
 const curComp = globalCache.config.baseConfig.form ?
-    h(LoaderFactory.getComponents(globalCache.config.baseConfig.form)) : null
+    LoaderFactory.getComponents(globalCache.config.baseConfig.form) : null
 
-// watch好像监听不了值变化不知道什么原因只能用vm下的$watch
-vm.proxy.$watch("option", (value) => {
+if (curComp && globalCache.config.baseConfig.formPropsModel) {
+    curProps[globalCache.config.baseConfig.formPropsModel] = props.modelValue
+}
+
+watch(() => props.option, (value) => {
     const formProps: Record<string, any> = {
         ...baseVm?.props?.option?.form,
         ...value?.form,
@@ -75,25 +66,25 @@ vm.proxy.$watch("option", (value) => {
     for (let key in formProps) {
         curProps[key] = formProps[key];
     }
-}, { immediate: true, deep: true })
-
-vm.proxy.$watch("modelValue", () => {
-    if (coreConfig.formModel) {
-        curProps[coreConfig.formModel] = curValue
+    if (props.option?.framework) {
+        globalCache.config.switchFramework(props.option.framework);
     }
 }, { immediate: true, deep: true })
 
-vm.proxy.$watch("disabled", (value) => {
-    Object.keys(curValue).forEach(field => {
+watch(() => props.modelValue, () => {
+}, { deep: true })
+
+watch(() => props.disabled, (value) => {
+    Object.keys(props.modelValue).forEach(field => {
         publishApi.setDisabled(field, value)
     })
 }, { immediate: true })
 
 const getFormData = (field?: string) => {
     if (field) {
-        return curValue[field];
+        return props.modelValue[field];
     } else {
-        return { ...curValue };
+        return { ...props.modelValue };
     }
 }
 
@@ -101,7 +92,7 @@ const resetFormData = (field?: string) => {
     if (field) {
         publishApi.setValue(field, null)
     } else {
-        Object.keys(curValue).forEach(key => {
+        Object.keys(props.modelValue).forEach(key => {
             resetFormData(key);
         })
     }
@@ -109,7 +100,7 @@ const resetFormData = (field?: string) => {
 
 const validate = async (field?: string) => {
     let valid = true;
-    if (curComp && option?.isForm !== false) {
+    if (curComp && props.option?.isForm !== false) {
         const validateName = globalCache.config.baseConfig.formEventValidate;
         if (validateName && vm.subTree?.component?.exposed?.[validateName]) {
             try {
@@ -120,7 +111,7 @@ const validate = async (field?: string) => {
         }
 
         if (!field) {
-            Object.keys(curValue).forEach(async key => {
+            Object.keys(props.modelValue).forEach(async key => {
                 const rf = api.getRule(key);
                 if (rf.subTree?.type?.['name'] === beastName.BASE) {
                     if (!await rf.subTree.component.exposed.validate()) {
@@ -134,13 +125,13 @@ const validate = async (field?: string) => {
 }
 
 const clearFormValidate = (field?: string) => {
-    if (curComp && option?.isForm !== false) {
+    if (curComp && props.option?.isForm !== false) {
         const clearValidateName = globalCache.config.baseConfig.formEventClearValidate;
         if (clearValidateName && vm.subTree?.component?.exposed?.[clearValidateName]) {
             vm.subTree?.component?.exposed?.[clearValidateName](field);
         }
         if (!field) {
-            Object.keys(curValue).forEach(key => {
+            Object.keys(props.modelValue).forEach(key => {
                 const rf = api.getRule(key);
                 if (rf.subTree?.type?.['name'] === beastName.BASE) {
                     rf.subTree.component.exposed.clearFormValidate()
@@ -158,22 +149,22 @@ defineExpose({
 })
 
 const emitChangeField = (value: any, field: string) => {
-    curValue[field] = value;
-    emit('update:modelValue', { ...curValue })
+    props.modelValue[field] = value;
+    emit('update:modelValue', { ...props.modelValue })
     emit("changeField", value, field)
 }
 
 onMounted(() => {
-    if (name) {
-        LoaderFactory.cacheApi(name, publishApi);
+    if (props.name) {
+        LoaderFactory.cacheApi(props.name, publishApi);
     }
     emit("mounted");
     emit("update:api", publishApi)
 })
 
 onBeforeUnmount(() => {
-    if (name) {
-        LoaderFactory.removeCacheApi(name);
+    if (props.name) {
+        LoaderFactory.removeCacheApi(props.name);
     }
 })
 

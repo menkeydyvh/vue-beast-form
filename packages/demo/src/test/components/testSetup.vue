@@ -71,7 +71,7 @@ const vm = getCurrentInstance();
 
 
 const btnComp = vm.appContext.components.AButton;
-const btnProps = reactive({})
+const btnProps = reactive<Record<string, any>>({});
 
 const setBtnProps = () => {
     if (btnProps.type == "primary") {
@@ -83,6 +83,6 @@ const setBtnProps = () => {
 
 const inputRef = ref()
 const inputComp = vm.appContext.components.AInput
-const inputProps = reactive({
+const inputProps = reactive<Record<string, any>>({
 })
 </script>

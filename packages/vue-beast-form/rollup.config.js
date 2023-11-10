@@ -2,7 +2,7 @@ import typescript from '@rollup/plugin-typescript'
 import resolve from '@rollup/plugin-node-resolve'
 import alias from '@rollup/plugin-alias'
 import { terser } from 'rollup-plugin-terser'
-import vue from '@vitejs/plugin-vue'
+import vuePlugin from '@vitejs/plugin-vue'
 import { defineConfig } from 'rollup'
 
 const pkgName = 'vbf';
@@ -10,9 +10,9 @@ const pkgName = 'vbf';
 export default defineConfig([
     // esm
     {
+        external: ['vue'],
         input: {
             "index": 'src/index.ts',
-            "tool": 'src/tool.ts',
             "config/frameworks": 'src/config/frameworks.ts',
         },
         output: {
@@ -25,7 +25,7 @@ export default defineConfig([
                 tsconfig: './tsconfig.json',
                 outDir: "esm",
             }),
-            vue(),
+            vuePlugin(),
             alias({
                 resolve: [".js"]
             }),
@@ -50,9 +50,7 @@ export default defineConfig([
                 outDir: "umd",
                 declaration: false,
             }),
-            vue({
-                
-            }),
+            vuePlugin(),
             alias({
                 resolve: [".js"]
             }),

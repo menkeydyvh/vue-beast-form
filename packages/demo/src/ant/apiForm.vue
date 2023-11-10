@@ -1,31 +1,23 @@
 <template>
   <a-card class="content-card" :bordered="false" title="api测试用例">
-    <beast-form
-      :rule="rule"
-      v-model="value"
-      :option="{
-        form: {
-          layout: 'vertical',
-        },
-      }"
-      :disabled="disabled"
-      @divBtnClick="divBtnClick"
-      @changeField="changeField"
-    />
+    <beast-form :rule="rule" v-model="value" :option="{
+      form: {
+        layout: 'vertical',
+      },
+      framework: 'ant-design-vue',
+      emits: ['divBtnClick'],
+    }" :disabled="disabled" @divBtnClick="divBtnClick" @changeField="changeField" />
     <br />
     <a-button @click="disabled = !disabled">整个表单禁用启用</a-button>
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { RuleType, ApiType } from "vue-beast-form";
+import { BeastForm, RuleType, ApiType } from "vue-beast-form";
 
-
-vbf.emits("divBtnClick");
-vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref({}),
@@ -283,8 +275,8 @@ export default defineComponent({
       },
     ];
     const divBtnClick = (e, api) => {
-        console.log("divBtnClick:emits", api);
-      },
+      console.log("divBtnClick:emits", api);
+    },
       changeField = (field, value, api) => {
         // console.log("changeField:", field, value, api);
       };

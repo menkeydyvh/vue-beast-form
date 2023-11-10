@@ -1,5 +1,5 @@
 <template>
-    <component :is="curComp" v-bind="curProps" v-on="listeners">
+    <component :is="curComp" v-bind="curProps">
         <template v-if="rule.children">
             <template v-if="Array.isArray(rule.children)">
                 <template v-for="child in rule.children">
@@ -112,7 +112,6 @@ const setValue = (v: any, key?: string) => {
 
 const setProps = (key: string, value: any) => {
     curProps[key] = value;
-    vm.proxy.$forceUpdate();
 }
 
 const setDisabled = (value: boolean) => {
@@ -167,7 +166,9 @@ const initValue = () => {
             }
             curProps[key] = value;
 
-
+            curProps[keyEvent] = (value: any) => {
+                setValue(value, key)
+            }
 
             emitChangeField();
         } else {
@@ -182,6 +183,12 @@ const initValue = () => {
                 } else {
                     value[key] = curConfig.modelKeyDefaultValues[index];
                 }
+
+                const keyEvent = curConfig.modelKeyEvents[index]
+                curProps[keyEvent] = (value: any) => {
+                    setValue(value, key)
+                }
+
                 curProps[key] = value[key];
 
             })
@@ -252,17 +259,6 @@ if (typeofComp === 'string') {
         }
     }
 }
-
-const listeners = computed(() => {
-    const vModelEvent = {}
-    curConfig.modelKeys.forEach(key => {
-        vModelEvent[`update:${key}`] = (value) => {
-            setValue(value, key);
-        }
-    })
-
-    return vModelEvent
-})
 
 rule.emits?.forEach(item => {
     addEmit(item);

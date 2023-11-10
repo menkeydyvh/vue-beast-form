@@ -1,26 +1,22 @@
 <template>
   <a-card class="content-card" :bordered="false" title="upload组件">
-    <beast-form
-      :rule="rule"
-      v-model="value"
-      :option="{
-        form: {
-          layout: 'vertical',
-        },
-      }"
-    />
+    <beast-form :rule="rule" v-model="value" :option="{
+      form: {
+        layout: 'vertical',
+      },
+      framework: 'ant-design-vue',
+    }" />
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { InboxOutlined } from "@ant-design/icons-vue";
-import vbf, { RuleType } from "vue-beast-form";
+import { BeastForm, components, RuleType } from "vue-beast-form";
 
-vbf.components({ InboxOutlined });
-vbf.useFramework("ant-design-vue");
+components({ InboxOutlined });
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref({

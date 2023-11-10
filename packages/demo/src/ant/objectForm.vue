@@ -5,18 +5,16 @@
       form: {
         layout: 'vertical',
       },
+      framework: 'ant-design-vue',
     }" />
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import vbf, { RuleType, ApiType } from "vue-beast-form";
-
-
-vbf.useFramework("ant-design-vue");
+import { BeastForm, RuleType, ApiType } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>();
     const value = ref();

@@ -1,9 +1,5 @@
 <template>
-  <a-card
-    class="content-card"
-    :bordered="false"
-    title="title是json的解析 | 指令调试 | style | class | attrs "
-  >
+  <a-card class="content-card" :bordered="false" title="title是json的解析 | 指令调试 | style | class | attrs ">
     <beast-form v-model="value" :rule="rule" :option="option" />
     <span v-test1>{{ value }}</span>
   </a-card>
@@ -11,18 +7,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { RuleType, ApiType } from "vue-beast-form";
-
-
-vbf.useFramework("ant-design-vue");
-vbf.directive("test2", {
-  mounted() {
-    console.log("directive:test2");
-  },
-});
+import { BeastForm, RuleType, ApiType } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     // 指令
     const value = ref({ goods_name: "123", name: "123" }),
@@ -31,6 +19,14 @@ export default defineComponent({
         form: {
           layout: "vertical",
         },
+        framework: 'ant-design-vue',
+        directives: {
+          test2: {
+            mounted() {
+              console.log("directive:test2");
+            },
+          }
+        }
       });
 
     rule.value = [

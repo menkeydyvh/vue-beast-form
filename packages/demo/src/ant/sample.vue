@@ -9,12 +9,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from "vue";
-import vbf, { RuleType } from "vue-beast-form";
-
-vbf.useFramework("ant-design-vue");
+import { BeastForm, RuleType, ruleStringify, ruleParse } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),
@@ -24,6 +22,7 @@ export default defineComponent({
           layout: "vertical",
         },
         isI18n: true,
+        framework: 'ant-design-vue'
       });
 
     const testRule = [
@@ -99,11 +98,11 @@ export default defineComponent({
 
     // rule.value = testRule;
 
-    const str = vbf.ruleStringify(testRule);
+    const str = ruleStringify(testRule);
     // console.log(str);
     // console.log(vbf.ruleParse(str));
 
-    rule.value = vbf.ruleParse(str);
+    rule.value = ruleParse(str) as RuleType[];
     onMounted(() => { });
 
     return {

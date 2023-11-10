@@ -1,28 +1,24 @@
 <template>
   <a-card class="content-card" :bordered="false" title="数组的处理，引入Group组件">
     <div>值:{{ value }}</div>
-    <beast-form
-      :rule="rule"
-      v-model="value"
-      :option="{
-        form: {
-          layout: 'vertical',
-        },
-      }"
-    />
+    <beast-form :rule="rule" v-model="value" :option="{
+      form: {
+        layout: 'vertical',
+      },
+      framework: 'ant-design-vue',
+    }" />
   </a-card>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
-import vbf, { RuleType, ApiType } from "vue-beast-form";
+import { components, BeastForm, RuleType, ApiType } from "vue-beast-form";
 
 
-vbf.components({ Group });
-vbf.useFramework("ant-design-vue");
+components({ Group });
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref<RuleType[]>(),
       value = ref();

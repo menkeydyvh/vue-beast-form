@@ -17,7 +17,7 @@ import { defineComponent, ref, toRefs, watch } from "vue";
 import type { PropType } from "vue";
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue";
 import { deepCopy } from "vue-beast-form/esm/tool";
-import vbf, { RuleType, ApiType, PropsOptionType } from "vue-beast-form";
+import { BeastForm, RuleType, ApiType, PropsOptionType } from "vue-beast-form";
 
 
 interface GroupRule {
@@ -25,11 +25,10 @@ interface GroupRule {
   option: PropsOptionType;
 }
 
-vbf.useFramework("ant-design-vue");
 
 export default defineComponent({
   name: "Group",
-  components: { BeastForm: vbf.beastForm(), PlusSquareOutlined, MinusSquareOutlined },
+  components: { BeastForm, PlusSquareOutlined, MinusSquareOutlined },
   props: {
     field: { type: String },
     rule: { type: Array as PropType<RuleType[]>, required: true },

@@ -1,12 +1,12 @@
 import { createApp } from 'vue'
 import App from './app.vue'
 
-import vbf, { GlobalConfigType } from 'vue-beast-form';
+import { setBasePropsOption, GlobalConfigType } from 'vue-beast-form';
 import { antDesignVue, elementPlus, vant } from "vue-beast-form/esm/config/frameworks.js"
 
 import i18n from './lang/index';
 
-vbf.setBasePropsOption({
+setBasePropsOption({
     // form: {
     //     layout: "vertical",
     // },

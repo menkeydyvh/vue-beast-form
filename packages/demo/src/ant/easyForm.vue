@@ -22,13 +22,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { RuleType, ApiType } from "vue-beast-form";
-
-
-vbf.useFramework("ant-design-vue");
+import { BeastForm, RuleType } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const disabled = ref(false),
       value = ref({ input: "input" }),
@@ -39,6 +36,7 @@ export default defineComponent({
           layout: "vertical",
         },
         isForm: true,
+        framework: 'ant-design-vue',
       });
 
     rule.value = [
