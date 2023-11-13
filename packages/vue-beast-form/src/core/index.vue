@@ -10,7 +10,7 @@
 import { defineOptions, getCurrentInstance, ref, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch, computed, ComponentInternalInstance } from 'vue'
 import { RuleType, PropsOptionType, ApiType } from '../types'
 import { LoaderFactory, globalCache } from './loader';
-import FormItemComp from './formItem.vue';
+import FormItemComp from './item.vue';
 import apiFactory from './api';
 import { beastName } from '../tool';
 
