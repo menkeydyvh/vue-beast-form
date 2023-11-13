@@ -1,6 +1,7 @@
 <template>
   <a-card class="content-card" :bordered="false" title="数组的处理，引入Group组件">
     <div>值:{{ value }}</div>
+    <br/>
     <beast-form :rule="rule" v-model="value" :option="{
       form: {
         layout: 'vertical',
@@ -13,7 +14,6 @@
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
 import { components, BeastForm, RuleType, ApiType } from "vue-beast-form";
-
 
 components({ Group });
 

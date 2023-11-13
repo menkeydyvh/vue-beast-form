@@ -1,13 +1,10 @@
 import { globalCache } from "./loader"
 import type { ComponentInternalInstance } from 'vue'
 import type { ApiType } from '../types'
-import { beastName } from "../tool";
 
 export default class apiFactory {
 
     vm: ComponentInternalInstance;
-
-    beastFormVms: ComponentInternalInstance[];
 
     fieldVms: Record<string, ComponentInternalInstance> = {};
 

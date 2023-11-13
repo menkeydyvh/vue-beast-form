@@ -130,6 +130,7 @@ export interface ApiType {
   * 添加事件监听
   * @param field 
   * @param emit 
+  * @deprecated('废弃')
   */
   addEmit(field: string, emit: EmitType): void
   /**

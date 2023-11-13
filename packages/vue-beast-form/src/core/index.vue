@@ -1,13 +1,13 @@
 <template>
-    <component ref="fromRef" :is="curComp && curOption.isForm !== false? curComp: divComp" v-bind="curProps">
+    <component ref="formRef" :is="curComp && curOption.isForm !== false? curComp: divComp" v-bind="curProps">
         <template v-for="item in rule">
-            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" :isI18n="curOption.isI18n"
-                :disabled="disabled" @changeField="emitChangeField" />
+            <FormItemComp :rule="item" :modelValue="modelValue" :api="api" :isI18n="curOption.isI18n" :disabled="disabled"
+                @changeField="emitChangeField" />
         </template>
     </component>
 </template>
 <script setup lang="ts">
-import { defineOptions, getCurrentInstance, ref, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch, computed } from 'vue'
+import { defineOptions, getCurrentInstance, ref, onMounted, onUnmounted, h, reactive, onBeforeUnmount, inject, provide, watch, computed, ComponentInternalInstance } from 'vue'
 import { RuleType, PropsOptionType, ApiType } from '../types'
 import { LoaderFactory, globalCache } from './loader';
 import FormItemComp from './formItem.vue';
@@ -27,14 +27,16 @@ defineOptions({
     name: beastName.BASE,
 })
 
-const fromRef = ref();
+const formRef = ref();
 const props = defineProps<CoreProps>();
 const emit = defineEmits(["update:modelValue", "changeField", "update:api", "mounted", 'unmounted'])
 
 const baseVm = inject('baseVm', null);
+const beastFormVms = inject('beastFormVms', []);
 const vm = getCurrentInstance();
 if (!baseVm) {
     provide('baseVm', vm)
+    provide('beastFormVms', beastFormVms)
 }
 
 const api = new apiFactory(vm);
@@ -55,7 +57,7 @@ if (curOption.framework) {
 }
 
 const divComp = h('div');
-const curValue = computed(() => ({ ...props.modelValue }));
+const curValue = ref({ ...props.modelValue })
 const curProps = reactive<Record<string, any>>({ ...curOption.form });
 const curComp = globalCache.config.baseConfig.form ? LoaderFactory.getComponents(globalCache.config.baseConfig.form) : null
 
@@ -71,9 +73,9 @@ watch(() => props.option, (o) => {
 
 const getFormData = (field?: string) => {
     if (field) {
-        return props.modelValue[field];
+        return curValue.value[field];
     } else {
-        return { ...props.modelValue };
+        return { ...curValue.value };
     }
 }
 
@@ -81,7 +83,7 @@ const resetFormData = (field?: string) => {
     if (field) {
         publishApi.setValue(field, null)
     } else {
-        Object.keys({ ...props.modelValue }).forEach(key => {
+        Object.keys(curValue.value).forEach(key => {
             resetFormData(key);
         })
     }
@@ -90,38 +92,41 @@ const resetFormData = (field?: string) => {
 const validate = async (field?: string) => {
     let valid = true;
     const validateName = globalCache.config.baseConfig.formEventValidate;
-    if (fromRef.value && validateName in fromRef.value) {
+    if (formRef.value && validateName in formRef.value) {
         try {
-            valid = await fromRef.value[validateName](field);;
+            if (!await formRef.value[validateName](field)) {
+                valid = false;
+            }
         } catch (error) {
             valid = false;
         }
 
         if (!field) {
-            Object.keys({ ...props.modelValue }).forEach(async key => {
-                const rf = api.getRule(key);
-                if (rf.subTree?.type?.['name'] === beastName.BASE) {
-                    if (!await rf.subTree.component.exposed.validate()) {
+            for (let i in beastFormVms) {
+                if (beastFormVms[i].uid != vm.uid && beastFormVms[i].refs?.formRef?.[validateName]) {
+                    try {
+                        if (! await beastFormVms[i].refs.formRef[validateName]()) {
+                            valid = false;
+                        }
+                    } catch (error) {
                         valid = false;
                     }
                 }
-            })
+            }
+
         }
     }
     return valid;
 }
 
 const clearFormValidate = (field?: string) => {
-    if (curComp && props.option?.isForm !== false) {
-        const clearValidateName = globalCache.config.baseConfig.formEventClearValidate;
-        if (clearValidateName && vm.subTree?.component?.exposed?.[clearValidateName]) {
-            vm.subTree?.component?.exposed?.[clearValidateName](field);
-        }
+    const clearValidateName = globalCache.config.baseConfig.formEventClearValidate;
+    if (formRef.value && clearValidateName in formRef.value) {
+        formRef.value[clearValidateName](field);
         if (!field) {
-            Object.keys({ ...props.modelValue }).forEach(key => {
-                const rf = api.getRule(key);
-                if (rf.subTree?.type?.['name'] === beastName.BASE) {
-                    rf.subTree.component.exposed.clearFormValidate()
+            beastFormVms.forEach(item => {
+                if (item.uid != vm.uid && item.refs?.formRef?.[clearValidateName]) {
+                    item.refs.formRef[clearValidateName]();
                 }
             })
         }
@@ -136,13 +141,13 @@ defineExpose({
 })
 
 const emitChangeField = (value: any, field: string) => {
-    const modelValue = { ...props.modelValue };
-    modelValue[field] = value;
-    emit('update:modelValue', modelValue)
+    curValue.value[field] = value
+    emit('update:modelValue', { ...curValue.value })
     emit("changeField", value, field)
 }
 
 onMounted(() => {
+    beastFormVms.push(vm);
     if (props.name) {
         LoaderFactory.cacheApi(props.name, publishApi);
     }
@@ -151,6 +156,10 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+    const idx = beastFormVms.findIndex(item => item.uid === vm.uid);
+    if (idx > -1) {
+        beastFormVms.splice(idx, 1);
+    }
     if (props.name) {
         LoaderFactory.removeCacheApi(props.name);
     }

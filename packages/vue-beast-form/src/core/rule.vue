@@ -68,8 +68,11 @@ const vm = getCurrentInstance();
 const publishApi = props.api.publishApi();
 const typeofComp = typeof LoaderFactory.getComponents(props.rule.type);
 
-const directives: DirectiveArguments = [];
-// 不在支持指令
+/**
+ * 不在支持指令 
+ * 指令无法动态加载只能解析全局指令因此不打算支持
+ */
+// const directives: DirectiveArguments = [];
 // props.rule.directives?.forEach(item => {
 //     if (Array.isArray(item)) {
 //         if (typeof item[0] === 'string') {
@@ -82,10 +85,9 @@ const directives: DirectiveArguments = [];
 //         }
 //     }
 // });
+// const curComp = withDirectives(h(LoaderFactory.getComponents(props.rule.type)), directives) ;
 
-const curRender = h(LoaderFactory.getComponents(props.rule.type));
-
-const curComp = directives.length ? withDirectives(curRender, directives) : curRender;
+const curComp = h(LoaderFactory.getComponents(props.rule.type));
 
 const onChangeField = (value: any, field: string) => {
     emit("changeField", value, field)
@@ -164,9 +166,10 @@ const addOn = (event: string, callback?: Function) => {
 }
 
 const addEmit = (eType: EmitType) => {
-    curProps[onToPropsName(eType.event)] = function () {
-        vm.emit(eType.alias, ...arguments, publishApi);
-    }
+    console.warn('废弃')
+    // curProps[onToPropsName(eType.event)] = function () {
+    //     vm.emit(eType.alias, ...arguments, publishApi);
+    // }
 }
 
 const delOnOrEmit = (event: string) => {
@@ -283,7 +286,6 @@ if (typeofComp === 'string') {
     }
 }
 
-// 不在支持emit
 // props.rule.emits?.forEach(item => {
 //     addEmit(item);
 // })
