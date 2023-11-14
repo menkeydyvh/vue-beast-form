@@ -1,5 +1,5 @@
 import type { ComponentInternalInstance } from 'vue'
-import type { RuleType, EmitType } from './rule'
+import type { RuleType, EmitType, RuleChlidren } from './rule'
 
 export interface ApiType {
   /**
@@ -79,19 +79,6 @@ export interface ApiType {
   */
   setDisabled(field: string, disabled: boolean): void
   /**
-  * 插入子节点
-  * @param field 
-  * @param rule 
-  * @param index 
-  */
-  pushChildren(field: string, rule: string | RuleType, index?: number, slot?: string): void
-  /**
-   * 删除子节点
-   * @param field 
-   * @param index 
-   */
-  delChildren(field: string, index?: number, slot?: string): void
-  /**
   * 检测是不是model的key
   * @param field 
   * @returns 
@@ -127,18 +114,11 @@ export interface ApiType {
   */
   addOn(field: string, event: string, callback?: Function): void
   /**
-  * 添加事件监听
-  * @param field 
-  * @param emit 
-  * @deprecated('废弃')
-  */
-  addEmit(field: string, emit: EmitType): void
-  /**
    * 删除事件或监听
    * @param field 
    * @param event 
    */
-  delOnOrEmit(field: string, event: string): void
+  delOn(field: string, event: string): void
   /**
    * 提供多语言支持方法
    * @param str 

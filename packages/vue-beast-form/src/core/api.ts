@@ -114,19 +114,6 @@ export default class apiFactory {
                     rf.exposed.setDisabled(disabled)
                 }
             },
-            pushChildren(field, rule, index, slot) {
-                const rf = self.getRule(field)
-                if (rf) {
-                    // 统一插入处理
-                    // rf.addChildren(rule, index, slot)
-                }
-            },
-            delChildren(field, index, slot) {
-                const rf = self.getRule(field)
-                if (rf) {
-                    // rf.delChildren(index, slot)
-                }
-            },
             isModelKey(field) {
                 return Object.keys(self.vm.proxy?.['modelValue'] ?? {}).includes(field)
             },
@@ -169,16 +156,10 @@ export default class apiFactory {
                     rf.exposed.addOn(event, callback)
                 }
             },
-            addEmit(field, emit) {
+            delOn(field, event) {
                 const rf = self.getRule(field)
                 if (rf) {
-                    rf.exposed.addEmit(emit)
-                }
-            },
-            delOnOrEmit(field, event) {
-                const rf = self.getRule(field)
-                if (rf) {
-                    rf.exposed.delOnOrEmit(event)
+                    rf.exposed.delOn(event)
                 }
             },
             $t(str) {

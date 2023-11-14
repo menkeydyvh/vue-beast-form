@@ -86,7 +86,6 @@ export default defineComponent({
       },
       {
         type: "div",
-        field: "divbtns",
         props: {
           style: "padding:16px 0",
         },
@@ -97,7 +96,7 @@ export default defineComponent({
             props: {
               type: "primary",
             },
-            children: ["测试emits"],
+            children: ["测试loading"],
             emits: [
               {
                 alias: "divBtnClick",
@@ -122,7 +121,7 @@ export default defineComponent({
           },
           {
             type: "a-button",
-            children: [`设置input1 input style和class`],
+            children: [`设置input2 input style和class`],
             on: {
               click: (e, api) => {
                 api.setStyle("input2", {
@@ -134,7 +133,7 @@ export default defineComponent({
           },
           {
             type: "a-button",
-            children: [`设置input1 formItem style和class`],
+            children: [`设置input2 formItem style和class`],
             on: {
               click: (e, api) => {
                 api.setFormItemStyle("input2", {
@@ -206,31 +205,21 @@ export default defineComponent({
           },
           {
             type: "a-button",
-            children: ["展示按钮添加新按钮"],
+            children: ["添加input1 onChange"],
             on: {
               click: (e, api) => {
-                api.pushChildren(
-                  "divbtns",
-                  {
-                    type: "a-button",
-                    field: "nBtn",
-                    children: ["新按钮"],
-                  },
-                  0
-                );
-                api.addOn("nBtn", "click", (e, api) => {
-                  console.log("新按钮被点击", e, api);
-                  api.delOnOrEmit("nBtn", "click");
+                api.addOn("input1", "change", (e, api) => {
+                  console.log("input->change", e, api);
                 });
               },
             },
           },
           {
             type: "a-button",
-            children: ["展示按钮清除新按钮"],
+            children: ["移除input1 onChange"],
             on: {
               click: (e, api) => {
-                api.delChildren("divbtns", 0);
+                api.delOn("input1", 'change');
               },
             },
           },

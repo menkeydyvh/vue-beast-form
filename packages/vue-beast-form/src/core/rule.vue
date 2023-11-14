@@ -2,7 +2,7 @@
     <component :is="curComp" v-bind="curProps" />
 </template>
 <script setup lang="ts">
-import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, watch, computed, VNode } from 'vue'
+import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, watch, computed, VNode, ref } from 'vue'
 import { EmitType, RuleChlidren, RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
@@ -38,25 +38,6 @@ const curProps = reactive<Record<string, any>>({});
 const vm = getCurrentInstance();
 const publishApi = props.api.publishApi();
 const typeofComp = typeof LoaderFactory.getComponents(props.rule.type);
-
-/**
- * 不在支持指令 
- * 指令无法动态加载只能解析全局指令因此不打算支持
- */
-// const directives: DirectiveArguments = [];
-// props.rule.directives?.forEach(item => {
-//     if (Array.isArray(item)) {
-//         if (typeof item[0] === 'string') {
-//             const rd = resolveDirective(item[0]);
-//             if (rd) {
-//                 directives.push([rd, ...item.slice(1)] as DirectiveArguments[0])
-//             }
-//         } else {
-//             directives.push([{ ...item[0] }, ...item.slice(1)] as DirectiveArguments[0])
-//         }
-//     }
-// });
-// const curComp = withDirectives(h(LoaderFactory.getComponents(props.rule.type)), directives) ;
 
 const onChangeField = (value: any, field: string) => {
     emit("changeField", value, field)
@@ -134,21 +115,18 @@ const addOn = (event: string, callback?: Function) => {
     }
 }
 
-const addEmit = (eType: EmitType) => {
-    console.warn('废弃')
-    // curProps[onToPropsName(eType.event)] = function () {
-    //     vm.emit(eType.alias, ...arguments, publishApi);
-    // }
-}
+// const addEmit = (eType: EmitType) => {
+// curProps[onToPropsName(eType.event)] = function () {
+//     vm.emit(eType.alias, ...arguments, publishApi);
+// }
+// }
 
-const delOnOrEmit = (event: string) => {
+const delOn = (event: string) => {
     const propsEventName = onToPropsName(event);
     if (typeof curProps[propsEventName] === 'function') {
         delete curProps[propsEventName];
     }
 }
-
-
 
 const initValue = () => {
     if (curConfig?.modelKeys?.length) {
@@ -197,6 +175,25 @@ const initValue = () => {
     }
 }
 
+/**
+ * 不在支持指令 
+ * 指令无法动态加载只能解析全局指令因此不打算支持
+ */
+// const directives: DirectiveArguments = [];
+// props.rule.directives?.forEach(item => {
+//     if (Array.isArray(item)) {
+//         if (typeof item[0] === 'string') {
+//             const rd = resolveDirective(item[0]);
+//             if (rd) {
+//                 directives.push([rd, ...item.slice(1)] as DirectiveArguments[0])
+//             }
+//         } else {
+//             directives.push([{ ...item[0] }, ...item.slice(1)] as DirectiveArguments[0])
+//         }
+//     }
+// });
+// const curComp = withDirectives(h(LoaderFactory.getComponents(props.rule.type)), directives) ;
+
 const renderRuleChlidren = (child: RuleChlidren) => {
     if (typeof child === 'string') {
         return setI18n(child)
@@ -211,37 +208,33 @@ const renderRuleChlidren = (child: RuleChlidren) => {
     }
 }
 
-const slots = computed(() => {
-    const slot: Record<string, () => string | VNode | (VNode | string)[]> = {};
-    if (props.rule.children) {
-        if (Array.isArray(props.rule.children)) {
-            const childAry = props.rule.children;
-            slot.default = () => childAry.map(child => renderRuleChlidren(child))
-        } else {
-            const childObj = props.rule.children;
-            for (let key in childObj) {
-                const child = childObj[key];
-                slot[key] = function () {
-                    if (typeof child === 'function') {
-                        const childFn = child(...arguments);
-                        if (Array.isArray(childFn)) {
-                            return childFn.map(item => renderRuleChlidren(item))
-                        } else {
-                            return renderRuleChlidren(childFn);
-                        }
+const slots = ref<Record<string, () => (VNode | string)[]>>({});
+
+if (props.rule.children) {
+    if (Array.isArray(props.rule.children)) {
+        const childAry = props.rule.children;
+        slots.value.default = () => childAry.map(child => renderRuleChlidren(child))
+    } else {
+        const childObj = props.rule.children;
+        for (let key in childObj) {
+            const child = childObj[key];
+            slots.value[key] = function () {
+                if (typeof child === 'function') {
+                    const childFn = child(...arguments);
+                    if (Array.isArray(childFn)) {
+                        return childFn.map(item => renderRuleChlidren(item))
                     } else {
-                        return renderRuleChlidren(child)
+                        return [renderRuleChlidren(childFn)];
                     }
+                } else {
+                    return [renderRuleChlidren(child)]
                 }
             }
         }
     }
-    return Object.keys(slot).length ? slot : undefined
-})
+}
 
-const curComp = h(LoaderFactory.getComponents(props.rule.type), {}, slots.value);
-
-console.log(curComp)
+const curComp = h(LoaderFactory.getComponents(props.rule.type), {}, Object.keys(slots.value).length ? slots.value : undefined);
 
 if (props.rule.field) {
     props.api.addfieldVms(props.rule.field, vm);
@@ -322,8 +315,7 @@ defineExpose({
     setProps,
     setI18n,
     addOn,
-    addEmit,
-    delOnOrEmit,
+    delOn,
     setDisabled,
 })
 
