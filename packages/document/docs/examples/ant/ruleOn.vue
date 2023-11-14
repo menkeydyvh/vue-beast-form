@@ -1,26 +1,16 @@
 <template>
-  <beast-form :rule="rule" @divClick="onDivClick" />
+  <beast-form :rule="rule" :option="{
+    // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+    framework: 'ant-design-vue',
+  }" />
 </template>
 
 <script>
 import { defineComponent, ref } from "vue";
-import vbf from "vue-beast-form";
-
-// 有emits配置需要这句话避免警告
-vbf.emits("divClick");
-
-// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
-vbf.useFramework("ant-design-vue");
-
-// 指令
-vbf.directive("test2", {
-  mounted() {
-    console.log("指令打印", "directive:test2");
-  },
-});
+import { BeastForm } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref([
       {

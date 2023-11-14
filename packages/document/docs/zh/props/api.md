@@ -11,11 +11,8 @@ const api = ref<ApiType>()
 
 
 ## field介绍
-下方api方法的参数field支持"field.subfield"形式检索，但上级field必须是唯一的
 
-:::demo 
-subField
-:::
+用来指向调用api的位置
 
 ## setValue
 
@@ -101,25 +98,6 @@ subField
 | field    | 是   | string  | rule中的filed |
 | disabled | 是   | boolean | 值            |
 
-## pushChildren
-设置children插入
-
-| 参数  | 必填 | 类型                 | 说明               |
-| ----- | ---- | -------------------- | ------------------ |
-| field | 是   | string               | rule中的filed      |
-| rule  | 是   | string&#124;RuleType | 值                 |
-| index | 否   | number               | 插入位置，默认最后 |
-| slot  | 否   | string               | 默认default        |
-
-## delChildren
-设置children移出
-
-| 参数  | 必填 | 类型   | 说明               |
-| ----- | ---- | ------ | ------------------ |
-| field | 是   | string | rule中的filed      |
-| index | 否   | number | 插入位置，默认全删 |
-| slot  | 否   | string | 默认default        |
-    
 ## getFormData
 获取表单数据
 
@@ -145,8 +123,6 @@ subField
 | callback | 是   | function             | 验证结果                     |
 | fields   | 否   | string&#124;string[] | rule中的filed,默认整表单验证 |
 
-
-
 ## clearValidate
 清空验证结果
 
@@ -163,15 +139,7 @@ subField
 | event    | 是   | string   | 事件名称      |
 | callback | 否   | function | 事件回调      |
 
-## addEmit
-添加事件监听
-
-| 参数  | 必填 | 类型     | 说明          |
-| ----- | ---- | -------- | ------------- |
-| field | 是   | string   | rule中的filed |
-| emit  | 是   | EmitType | 事件名称      |
-
-## delOnOrEmit
+## delOn
 删除事件或监听
 
 | 参数  | 必填 | 类型   | 说明          |

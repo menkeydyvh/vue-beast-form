@@ -4,26 +4,23 @@
 
 | 名称                                      | 参数                     | 说明                                                    |
 | ----------------------------------------- | ------------------------ | ------------------------------------------------------- |
-| [beastForm](#beastform)                   | -                        | 本组件                                                  |
+| [BeastForm](#beastform)                   | -                        | 本组件                                                  |
 | [components](../guide/demandLoad.md)      | {}                       | 加载组件                                                |
-| [directive](../guide/demandLoad.md)       | （string，directive）    | 加载指令                                                |
-| [emits](../props/api.md#demo)             | string&#124;string[]     | 提前设置好组件emits                                     |
 | [ruleParse](#规则的对象与字符串转换)      | string                   | 规则字符串转换成对象                                    |
 | [ruleStringify](#规则的对象与字符串转换)  | RuleType&#124;RuleType[] | 对象规则转化成字符串                                    |
 | [setBasePropsOption](#setbasepropsoption) | PropsOptionType          | 设置基础的PropsOption                                   |
 | [getApi](../props/api.md#getapi)          | string                   | 获取有配置name值的&lt;beast-form name="xxx" /&gt; 的api |
-| useFramework                              | string                   | 多框架下切换框架使用，本文档多处使用注意看示例          |
 
 
-## beastForm
+## BeastForm
 本框架组件在.vue文件中加载使用
 
 xxx.vue
 ```js
-import vbf from 'vue-beast-form'
+import { BeastForm } from 'vue-beast-form'
 
 export default {
-  components: { BeastForm: vbf.beastForm() }
+  components: { BeastForm }
 }
 ```
 
@@ -33,9 +30,9 @@ export default {
 
 main.js
 ```js
-import vbf from 'vue-beast-form'
+import {setBasePropsOption} from 'vue-beast-form'
 
-vbf.setBasePropsOption({
+setBasePropsOption({
     // 设置默认form的展示
     form: {
         layout: "vertical",
@@ -50,7 +47,7 @@ vbf.setBasePropsOption({
 提供方便json中的函数在转换字符串和对象时候的处理
 
 ```js
-import vbf from 'vue-beast-form'
+import { ruleStringify, ruleParse } from 'vue-beast-form'
 
 const ruleTemp = [
     {
@@ -64,9 +61,9 @@ const ruleTemp = [
 ]
 
 // 转换成字符串
-const ruleStr = vbf.ruleStringify(ruleTemp)
+const ruleStr = ruleStringify(ruleTemp)
 
 // 转换回对象
-const ruleObj = vbf.ruleParse(ruleStr)
+const ruleObj = ruleParse(ruleStr)
 
 ...

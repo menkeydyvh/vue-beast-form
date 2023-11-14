@@ -1,17 +1,16 @@
 <template>
-  <beast-form :rule="rule" @input3click="input3click" />
+  <beast-form :rule="rule" @input3click="input3click" :option="{
+    // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+    framework: 'ant-design-vue',
+  }" />
 </template>
 
 <script>
 import { ref } from "vue";
-import vbf from "vue-beast-form";
-
-// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
-vbf.useFramework("ant-design-vue");
-vbf.emits("input3click");
+import { BeastForm } from "vue-beast-form";
 
 export default {
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref([
       {
@@ -49,7 +48,7 @@ export default {
         children: [
           {
             type: "a-button",
-            children: ["setValue"],
+            children: ["setValue('组件1','123')"],
             on: {
               click: (e, api) => {
                 api.setValue("input", "123");
@@ -58,7 +57,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setClass"],
+            children: ["setClass('组件1','setClass-class')"],
             on: {
               click: (e, api) => {
                 api.setClass("input", "setClass-class");
@@ -67,7 +66,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setStyle"],
+            children: ["setStyle('组件1')"],
             on: {
               click: (e, api) => {
                 api.setStyle("input", {
@@ -78,7 +77,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setAttrs"],
+            children: ["setAttrs('组件1')"],
             on: {
               click: (e, api) => {
                 api.setAttrs("input", {
@@ -89,7 +88,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setProps"],
+            children: ["setProps('组件1','placeholder','')"],
             on: {
               click: (e, api) => {
                 api.setProps("input", "placeholder", "已设置新的placeholder");
@@ -98,7 +97,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setFormItemClass"],
+            children: ["setFormItemClass('组件1','setFormItemClass-class')"],
             on: {
               click: (e, api) => {
                 api.setFormItemClass("input", ["setFormItemClass-class"]);
@@ -107,7 +106,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setFormItemStyle"],
+            children: ["setFormItemStyle('组件1',border)"],
             on: {
               click: (e, api) => {
                 api.setFormItemStyle("input", {
@@ -118,7 +117,7 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setDisplay"],
+            children: ["setDisplay('组件1',false)"],
             on: {
               click: (e, api) => {
                 api.setDisplay("input", false);
@@ -127,33 +126,10 @@ export default {
           },
           {
             type: "a-button",
-            children: ["setDisabled"],
+            children: ["setDisabled('组件1',true)"],
             on: {
               click: (e, api) => {
                 api.setDisabled("input", true);
-              },
-            },
-          },
-          {
-            type: "a-button",
-            children: ["pushChildren"],
-            on: {
-              click: (e, api) => {
-                api.pushChildren("div", {
-                  type: "a-alert",
-                  props: {
-                    message: "插入成功",
-                  },
-                });
-              },
-            },
-          },
-          {
-            type: "a-button",
-            children: ["delChildren"],
-            on: {
-              click: (e, api) => {
-                api.delChildren("div");
               },
             },
           },
@@ -209,25 +185,11 @@ export default {
           },
           {
             type: "a-button",
-            children: ["addEmit"],
+            children: ["delOn"],
             on: {
               click: (e, api) => {
-                api.addEmit("input3", {
-                  event: "click",
-                  alias: "input3click",
-                });
-                alert("组件3已设置好点击监听");
-              },
-            },
-          },
-          {
-            type: "a-button",
-            children: ["delOnOrEmit"],
-            on: {
-              click: (e, api) => {
-                api.delOnOrEmit("input2", "click");
-                api.delOnOrEmit("input3", "click");
-                alert("组件2和组件3 click已移出");
+                api.delOn("input2", "click");
+                alert("组件2 click 已移出");
               },
             },
           },

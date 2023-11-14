@@ -1,5 +1,4 @@
-import { defineUserConfig } from 'vuepress'
-import { defaultTheme } from '@vuepress/theme-default'
+import { defineUserConfig, defaultTheme } from 'vuepress'
 import { navbar, sidebar } from './configs'
 import { path } from '@vuepress/utils'
 import demoContainer from '../../plugins/demo-container'

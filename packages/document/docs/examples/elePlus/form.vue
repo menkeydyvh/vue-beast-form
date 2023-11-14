@@ -4,13 +4,10 @@
 
 <script>
 import { defineComponent, ref } from "vue";
-import vbf from "vue-beast-form";
-
-// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
-vbf.useFramework("element-plus");
+import { BeastForm } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const disabled = ref(false),
       value = ref({}),
@@ -19,6 +16,8 @@ export default defineComponent({
         form: {
           labelPosition: "top",
         },
+        // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+        framework: "element-plus"
       });
 
     const selectOptions = [

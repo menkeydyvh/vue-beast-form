@@ -17,15 +17,12 @@ ant/easyForm
 | [name](./api.md#getapi)      | 开启缓存当前api         | string   | string                |
 | disabled                     | 禁用整个表单内的组件    | boolean  | Boolean               |
 
-
-
-
 ## 事件
 
-| 名称              | 说明                   | 参数                 |
-| ----------------- | ---------------------- | -------------------- |
-| changeField       | 单独字段值修改时候回调 | (string, any, ApiType) |
-| update:modelValue | v-model时使用          | {}                   |
-| update:api        | v-model:api时使用      | ApiType              |
-| mounted           | 命周期render完成       | ApiType              |
-| unmounted         | 生命周期 组件注销      | -                    |
+| 名称              | 说明                   | 参数      |
+| ----------------- | ---------------------- | --------- |
+| changeField       | 单独字段值修改时候回调 | (值,字段) |
+| update:modelValue | v-model时使用          | {}        |
+| update:api        | v-model:api时使用      | ApiType   |
+| mounted           | 命周期render完成       | -         |
+| unmounted         | 生命周期 组件注销      | -         |

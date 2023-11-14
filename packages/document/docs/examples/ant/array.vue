@@ -1,16 +1,18 @@
 <template>
-  <beast-form :rule="rule" v-model="value" :option="{ form: { layout: 'vertical' } }" />
+  <beast-form :rule="rule" v-model="value" :option="{
+    form: { layout: 'vertical' },
+    framework: 'ant-design-vue',
+  }" />
 </template>
 <script>
 import { defineComponent, ref } from "vue";
 import Group from "./components/group.vue";
-import vbf from "vue-beast-form";
+import { components, BeastForm } from "vue-beast-form";
 
-vbf.components({ Group });
-vbf.useFramework("ant-design-vue");
+components({ Group });
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref(),
       value = ref();

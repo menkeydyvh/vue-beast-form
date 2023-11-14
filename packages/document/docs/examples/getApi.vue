@@ -14,33 +14,31 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import vbf from "vue-beast-form";
-
-vbf.useFramework("ant-design-vue");
+import { BeastForm, getApi } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule1 = ref([
-        {
-          type: "a-input",
-          title: "form1的输入框",
-          field: "name",
-          props: {
-            type: "text",
+      {
+        type: "a-input",
+        title: "form1的输入框",
+        field: "name",
+        props: {
+          type: "text",
+        },
+      },
+      {
+        type: "a-button",
+        field: "btn",
+        children: ["设置form2的输入框值"],
+        on: {
+          click: (e, api) => {
+            api.getApi("form2").setValue("name", "通过getApi从form1设置form2的值");
           },
         },
-        {
-          type: "a-button",
-          field: "btn",
-          children: ["设置form2的输入框值"],
-          on: {
-            click: (e, api) => {
-              api.getApi("form2").setValue("name", "通过getApi从form1设置form2的值");
-            },
-          },
-        },
-      ]),
+      },
+    ]),
       rule2 = ref([
         {
           type: "a-input",
@@ -66,10 +64,12 @@ export default defineComponent({
         form: {
           layout: "vertical",
         },
+        // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+        framework: 'ant-design-vue',
       });
 
     const setClick = () => {
-      const form2Api = vbf.getApi("form2");
+      const form2Api = getApi("form2");
       form2Api.pushChildren("fomr2div", {
         type: "div",
         children: ["添加内容!!!"],

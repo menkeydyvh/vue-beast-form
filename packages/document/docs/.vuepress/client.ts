@@ -1,6 +1,6 @@
 import { defineClientConfig } from '@vuepress/client'
 
-import { antDesignVue, elementPlus, vant } from 'vue-beast-form/lib/config/frameworks'
+import { antDesignVue, elementPlus, vant } from 'vue-beast-form/esm/config/frameworks'
 
 import antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'

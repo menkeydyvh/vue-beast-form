@@ -21,7 +21,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import antd from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css'
-import  { antDesignVue, elementPlus, vant }  from 'vue-beast-form/lib/config/frameworks'
+import  { antDesignVue, elementPlus, vant }  from 'vue-beast-form/esm/config/frameworks'
 
 const app = createApp(App)
 

@@ -1,18 +1,19 @@
 <template>
-  <beast-form :rule="rule" />
+  <beast-form :rule="rule" :option="{
+    // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+    framework: 'ant-design-vue',
+  }" />
 </template>
 
 <script>
 import { ref } from "vue";
-import vbf from "vue-beast-form";
+import { components, BeastForm } from "vue-beast-form";
 import draggable from "vuedraggable";
 
-// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
-vbf.useFramework("ant-design-vue");
-vbf.components({ draggable });
+components({ draggable });
 
 export default {
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref([
       { type: "div", children: ["数组渲染："] },

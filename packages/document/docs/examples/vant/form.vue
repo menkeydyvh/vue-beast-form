@@ -2,22 +2,21 @@
   <beast-form v-model="value" :rule="rule" :option="option" :disabled="disabled" />
 </template>
 
-<script lang="ts">
+<script >
 import { defineComponent, ref } from "vue";
-import vbf from "vue-beast-form";
+import { BeastForm } from "vue-beast-form";
 import { Toast } from "vant";
 
-// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
-vbf.useFramework("vant");
-
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const disabled = ref(false),
       value = ref({}),
       rule = ref([]),
       option = ref({
         form: {},
+        // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+        framework: "vant"
       });
 
     const selectOptions = [

@@ -1,15 +1,16 @@
 <template>
-  <beast-form :rule="rule" :option="{ form: { layout: 'vertical' } }" />
+  <beast-form :rule="rule" :option="{
+    form: { layout: 'vertical' },
+    // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
+    framework: 'ant-design-vue',
+  }" />
 </template>
 <script>
 import { defineComponent, ref, onMounted } from "vue";
-import vbf from "vue-beast-form";
-
-// 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
-vbf.useFramework("ant-design-vue");
+import { BeastForm } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const rule = ref();
 

@@ -10,8 +10,9 @@ const option = ref<PropsOptionType>()
 
 ## 参数
 
-| 名称   | 类型        | 说明                                |
-| ------ | ----------- | ----------------------------------- |
-| form   | {key:value} | form层的props设置                   |
-| isForm | boolean     | 是否顶层渲染为form否则div，默认true |
-| isI18n | boolean     | 是否使用国际化多语言                |
+| 名称      | 类型        | 说明                                         |
+| --------- | ----------- | -------------------------------------------- |
+| form      | {key:value} | form层的props设置                            |
+| isForm    | boolean     | 是否顶层渲染为form否则div，默认true          |
+| isI18n    | boolean     | 是否使用国际化多语言                         |
+| framework | string      | 当前希望使用的框架名称，多框架支持的时候需要配置 |
