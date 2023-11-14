@@ -9,18 +9,18 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import vbf, { RuleType } from "vue-beast-form";
+import { ruleStringify, ruleParse, BeastForm, RuleType } from "vue-beast-form";
 
-vbf.useFramework("vant");
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),
       rule = ref<RuleType[]>([]),
       option = ref({
         isI18n: true,
+        framework: 'vant',
       });
 
     const testRule = [
@@ -99,12 +99,12 @@ export default defineComponent({
 
     // rule.value = testRule;
 
-    const str = vbf.ruleStringify(testRule);
+    const str = ruleStringify(testRule);
     // console.log(str);
     // console.log(vbf.ruleParse(str));
 
-    rule.value = vbf.ruleParse(str);
-    onMounted(() => {});
+    rule.value = ruleParse(str) as RuleType[];
+    onMounted(() => { });
 
     return {
       jApi,

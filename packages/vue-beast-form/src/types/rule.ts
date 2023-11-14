@@ -20,7 +20,7 @@ export type RuleType = {
     /**
      * form-item对应的标题
      */
-    title?: string | RuleType | false;
+    title?: RuleChlidren | false;
     /**
      *  v-model:key值为key [key]
      * 默认值 [modelValue]
@@ -68,7 +68,7 @@ export type RuleType = {
     /**
      * 子规则或子文本内容
      */
-    children?: Array<RuleType | string> | Record<string, RuleType | string>;
+    children?: RuleChlidren[] | Record<string, RuleChlidren | ChildrenFn>;
     /**
      * 插槽名称
      */
@@ -82,17 +82,17 @@ export type RuleType = {
      * 指令
      * @deprecated('废弃')
      */
-    directives?: Array<[Directive | string] | [Directive | string, any] | [Directive | string, any, string] | [Directive | string, any, string, Record<string, boolean>]>
+    directives?: Array<[Directive | string] | [Directive | string, any] | [Directive | string, any, string] | [Directive | string, any, string, Record<string, boolean>]>;
     /**
      * 事件会覆盖props内同名事件处理
      */
-    on?: Record<string, Function>
+    on?: Record<string, Function>;
     /**
      * 不在支持
      * 会抛出事件 
      * @deprecated('废弃')
      */
-    emits?: Array<EmitType>
+    emits?: Array<EmitType>;
 }
 
 
@@ -107,3 +107,8 @@ export interface EmitType {
     event: string;
     alias: string;
 }
+
+
+export type RuleChlidren = RuleType | string;
+
+export type ChildrenFn = (...any: any) => RuleChlidren | RuleChlidren[];

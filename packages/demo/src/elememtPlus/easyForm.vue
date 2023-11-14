@@ -22,12 +22,10 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { RuleType } from "vue-beast-form";
-
-vbf.useFramework("element-plus");
+import { BeastForm, RuleType } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const disabled = ref(false),
       value = ref({ input: "input" }),
@@ -37,6 +35,7 @@ export default defineComponent({
           labelPosition: "top",
         },
         isForm: true,
+        framework: 'element-plus',
       });
 
     const selectOptions = [

@@ -36,7 +36,7 @@ interface RuleProps {
     disabled?: boolean;
 }
 
-const { rule, api, isI18n } = defineProps<RuleProps>();
+const props = defineProps<RuleProps>();
 
 const emit = defineEmits<{
     'changeField': [value: any, field: string];
@@ -44,16 +44,16 @@ const emit = defineEmits<{
 
 const titleSlot = ref<string>();
 
-const display = ref(rule?.display ?? true);
+const display = ref(props.rule?.display ?? true);
 
 const vm = getCurrentInstance();
 
 const curConfig = {
-    field: rule.field,
+    field: props.rule.field,
 }
 
 if (curConfig.field) {
-    api.addfieldVms(`formItem-${curConfig.field}`, vm);
+    props.api.addfieldVms(`${beastName.BASEITEM}-${curConfig.field}`, vm);
 }
 
 const curProps = reactive<Record<string, any>>({});
@@ -75,8 +75,8 @@ const setDisplay = (value: boolean) => {
 }
 
 const setI18n = (str: string) => {
-    if (isI18n && globalCache.t) {
-        return globalCache.t(str) as string;
+    if (props.isI18n) {
+        return props.api.$t(str);
     }
     return str;
 }
@@ -86,13 +86,13 @@ if (globalCache.config.baseConfig.formItem) {
         curProps[globalCache.config.baseConfig.formItemPropName] = curConfig.field;
     }
 
-    if (['string', 'object'].includes(typeof rule.title)) {
+    if (['string', 'object'].includes(typeof props.rule.title)) {
         titleSlot.value = globalCache.config.baseConfig.formItemSlotTitle;
     }
 
-    const mp = mergeProps(rule.attrs, {
-        style: rule.style,
-        class: rule.class,
+    const mp = mergeProps(props.rule.attrs, {
+        style: props.rule.style,
+        class: props.rule.class,
     })
 
     for (let key in mp) {
@@ -100,7 +100,7 @@ if (globalCache.config.baseConfig.formItem) {
     }
 
     if (globalCache.config.baseConfig.formItemPropRules) {
-        curProps[globalCache.config.baseConfig.formItemPropRules] = rule.validate?.map(rv => {
+        curProps[globalCache.config.baseConfig.formItemPropRules] = props.rule.validate?.map(rv => {
             if (rv.required) {
                 curProps['required'] = true;
             }
@@ -110,7 +110,7 @@ if (globalCache.config.baseConfig.formItem) {
             }
             if (nrv.validator) {
                 nrv.validator = function () {
-                    rv.validator(...arguments, api.publishApi());
+                    rv.validator(...arguments, props.api.publishApi());
                 }
             }
             return nrv

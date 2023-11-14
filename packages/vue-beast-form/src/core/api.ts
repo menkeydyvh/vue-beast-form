@@ -1,6 +1,7 @@
 import { globalCache } from "./loader"
 import type { ComponentInternalInstance } from 'vue'
 import type { ApiType } from '../types'
+import { beastName } from "../tool";
 
 export default class apiFactory {
 
@@ -26,13 +27,13 @@ export default class apiFactory {
        * @returns 
        */
     getRule = (field: string) => {
-        return this.fieldVms[field]
+        return this.fieldVms[field];
     }
     $t = (str: string) => {
         if (globalCache.t) {
-            return globalCache.t(str)
+            return globalCache.t(str) as string;
         } else {
-            return str
+            return str;
         }
     }
     /**
@@ -90,19 +91,19 @@ export default class apiFactory {
                 }
             },
             setFormItemClass(field, value) {
-                const rf = self.getRule(`formItem-${field}`)
+                const rf = self.getRule(`${beastName.BASEITEM}-${field}`)
                 if (rf) {
                     rf.exposed.setProps('class', value)
                 }
             },
             setFormItemStyle(field, value) {
-                const rf = self.getRule(`formItem-${field}`)
+                const rf = self.getRule(`${beastName.BASEITEM}-${field}`)
                 if (rf) {
                     rf.exposed.setProps('style', value)
                 }
             },
             setDisplay(field, display) {
-                const rf = self.getRule(`formItem-${field}`)
+                const rf = self.getRule(`${beastName.BASEITEM}-${field}`)
                 if (rf) {
                     rf.exposed.setDisplay(display === true)
                 }

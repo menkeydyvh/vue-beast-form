@@ -5,15 +5,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
-import vbf, { RuleType } from "vue-beast-form";
+import { defineComponent, ref, onMounted, h } from "vue";
+import { components, BeastForm, RuleType } from "vue-beast-form";
 import draggable from "vuedraggable";
 
-vbf.useFramework("ant-design-vue");
-vbf.components({ draggable });
+components({ draggable });
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const value = ref({}),
       rule = ref<RuleType[]>([]),
@@ -21,6 +20,7 @@ export default defineComponent({
         form: {
           layout: "vertical",
         },
+        framework: 'ant-design-vue',
       });
 
     rule.value = [

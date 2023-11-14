@@ -24,13 +24,11 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import vbf, { RuleType } from "vue-beast-form";
+import { BeastForm, RuleType } from "vue-beast-form";
 import { Toast } from "vant";
 
-vbf.useFramework("vant");
-
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const disabled = ref(false),
       value = ref({}),
@@ -38,6 +36,7 @@ export default defineComponent({
       option = ref({
         form: {},
         isForm: true,
+        framework: 'vant',
       });
 
     const selectOptions = [

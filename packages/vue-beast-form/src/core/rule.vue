@@ -1,38 +1,9 @@
 <template>
-    <component :is="curComp" v-bind="curProps">
-        <template v-if="rule.children">
-            <template v-if="Array.isArray(rule.children)">
-                <template v-for="child in rule.children">
-                    <template v-if="typeof child === 'string'">
-                        {{ setI18n(child) }}
-                    </template>
-                    <template v-else>
-                        <BeastRule :rule="child" :api="api" :modelValue="modelValue?.[child.field]" :disabled="disabled"
-                            @changeField="onChangeField" />
-                    </template>
-                </template>
-            </template>
-            <template v-else>
-                <template v-for="(child, key) in rule.children">
-                    <Transition>
-                        <template #[key]>
-                            <template v-if="typeof child === 'string'">
-                                {{ setI18n(child) }}
-                            </template>
-                            <template v-else>
-                                <BeastRule :rule="child" :api="api" :modelValue="modelValue?.[child.field]"
-                                    :disabled="disabled" @changeField="onChangeField" />
-                            </template>
-                        </template>
-                    </Transition>
-                </template>
-            </template>
-        </template>
-    </component>
+    <component :is="curComp" v-bind="curProps" />
 </template>
 <script setup lang="ts">
-import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, watch } from 'vue'
-import { EmitType, RuleType } from '../types';
+import { reactive, mergeProps, h, getCurrentInstance, resolveDirective, withDirectives, Directive, DirectiveArguments, watch, computed, VNode } from 'vue'
+import { EmitType, RuleChlidren, RuleType } from '../types';
 import { LoaderFactory, globalCache } from './loader';
 import BeastRule from './rule.vue';
 import apiFactory from './api';
@@ -86,8 +57,6 @@ const typeofComp = typeof LoaderFactory.getComponents(props.rule.type);
 //     }
 // });
 // const curComp = withDirectives(h(LoaderFactory.getComponents(props.rule.type)), directives) ;
-
-const curComp = h(LoaderFactory.getComponents(props.rule.type));
 
 const onChangeField = (value: any, field: string) => {
     emit("changeField", value, field)
@@ -179,6 +148,8 @@ const delOnOrEmit = (event: string) => {
     }
 }
 
+
+
 const initValue = () => {
     if (curConfig?.modelKeys?.length) {
         let value: any;
@@ -225,6 +196,52 @@ const initValue = () => {
         }
     }
 }
+
+const renderRuleChlidren = (child: RuleChlidren) => {
+    if (typeof child === 'string') {
+        return setI18n(child)
+    } else {
+        return h(BeastRule, {
+            rule: child,
+            api: props.api,
+            modelValue: props.modelValue?.[child.field],
+            disabled: props.disabled,
+            onChangeField: onChangeField,
+        })
+    }
+}
+
+const slots = computed(() => {
+    const slot: Record<string, () => string | VNode | (VNode | string)[]> = {};
+    if (props.rule.children) {
+        if (Array.isArray(props.rule.children)) {
+            const childAry = props.rule.children;
+            slot.default = () => childAry.map(child => renderRuleChlidren(child))
+        } else {
+            const childObj = props.rule.children;
+            for (let key in childObj) {
+                const child = childObj[key];
+                slot[key] = function () {
+                    if (typeof child === 'function') {
+                        const childFn = child(...arguments);
+                        if (Array.isArray(childFn)) {
+                            return childFn.map(item => renderRuleChlidren(item))
+                        } else {
+                            return renderRuleChlidren(childFn);
+                        }
+                    } else {
+                        return renderRuleChlidren(child)
+                    }
+                }
+            }
+        }
+    }
+    return Object.keys(slot).length ? slot : undefined
+})
+
+const curComp = h(LoaderFactory.getComponents(props.rule.type), {}, slots.value);
+
+console.log(curComp)
 
 if (props.rule.field) {
     props.api.addfieldVms(props.rule.field, vm);
@@ -286,6 +303,9 @@ if (typeofComp === 'string') {
     }
 }
 
+/**
+ * 不在支持 emits
+ */
 // props.rule.emits?.forEach(item => {
 //     addEmit(item);
 // })

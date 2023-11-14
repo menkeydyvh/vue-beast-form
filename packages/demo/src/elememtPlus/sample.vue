@@ -8,12 +8,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "vue";
-import vbf, { RuleType } from "vue-beast-form";
-
-vbf.useFramework("element-plus");
+import { ruleStringify, ruleParse, BeastForm, RuleType } from "vue-beast-form";
 
 export default defineComponent({
-  components: { BeastForm: vbf.beastForm() },
+  components: { BeastForm },
   setup() {
     const jApi = ref(),
       value = ref({ name: "name" }),
@@ -23,6 +21,7 @@ export default defineComponent({
           "labelPosition": "top",
         },
         isI18n: true,
+        framework: 'element-plus',
       });
 
     const testRule = [
@@ -96,12 +95,12 @@ export default defineComponent({
 
     // rule.value = testRule;
 
-    const str = vbf.ruleStringify(testRule);
+    const str = ruleStringify(testRule);
     // console.log(str);
     // console.log(vbf.ruleParse(str));
 
-    rule.value = vbf.ruleParse(str);
-    onMounted(() => {});
+    rule.value = ruleParse(str) as RuleType[];
+    onMounted(() => { });
 
     return {
       jApi,
