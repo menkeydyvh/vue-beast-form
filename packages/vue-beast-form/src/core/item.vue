@@ -1,6 +1,6 @@
 <template>
     <template v-if="display">
-        <component v-if="curComp && rule.field" :is="curComp" v-bind="curProps">
+        <component v-if="rule.field && rule.title !== false && curComp" :is="curComp" v-bind="curProps">
             <template v-if="titleSlot" #[titleSlot]>
                 <template v-if="typeof rule.title === 'string'">
                     {{ setI18n(rule.title) }}
@@ -110,7 +110,7 @@ if (globalCache.config.baseConfig.formItem) {
             }
             if (nrv.validator) {
                 nrv.validator = function () {
-                    rv.validator(...arguments, props.api.publishApi());
+                    return rv.validator(...arguments, props.api.publishApi());
                 }
             }
             return nrv

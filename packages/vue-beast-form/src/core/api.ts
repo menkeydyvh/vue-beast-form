@@ -74,7 +74,7 @@ export default class apiFactory {
                 const rf = self.getRule(field)
                 if (rf) {
                     for (let key in attrs) {
-                        rf.exposed.setAttrs(key, attrs[key])
+                        this.setProps(field, key, attrs[key])
                     }
                 }
             },

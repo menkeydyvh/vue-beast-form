@@ -41,10 +41,6 @@ export default {
       },
       {
         type: "div",
-        field: "div",
-      },
-      {
-        type: "div",
         children: [
           {
             type: "a-button",

@@ -2,7 +2,7 @@
   <beast-form :rule="rule" :option="{
     // 如果$beastForm.base有配置且不需要切换$beastForm.frameworks无需使用这条
     framework: 'ant-design-vue',
-  }" />
+  }" @mounted="onMounted" />
 </template>
 
 <script>
@@ -24,28 +24,20 @@ export default defineComponent({
       },
       {
         type: "div",
-        children: ["div directives 控制台查看打印"],
-        directives: [["test2"]],
-      },
-      {
-        type: "div",
-        children: ["div emits click 控制台查看打印"],
-        emits: [
-          {
-            alias: "divClick",
-            event: "click",
-          },
-        ],
+        field: 'div',
+        children: ["div addOn"],
       },
     ]);
 
-    const onDivClick = (e, api) => {
-      console.log("emits click:", e, api);
-    };
+    const onMounted = (api) => {
+      api.addOn('div', 'click', () => {
+        alert('点击了')
+      })
+    }
 
     return {
       rule,
-      onDivClick,
+      onMounted,
     };
   },
 });

@@ -151,7 +151,7 @@ onMounted(() => {
     if (props.name) {
         LoaderFactory.cacheApi(props.name, publishApi);
     }
-    emit("mounted");
+    emit("mounted", publishApi);
     emit("update:api", publishApi)
 })
 

@@ -48,7 +48,6 @@ export default defineComponent({
             type: "text",
           },
         },
-        { type: "div", field: "fomr2div" },
         {
           type: "a-button",
           field: "btn",
@@ -70,10 +69,6 @@ export default defineComponent({
 
     const setClick = () => {
       const form2Api = getApi("form2");
-      form2Api.pushChildren("fomr2div", {
-        type: "div",
-        children: ["添加内容!!!"],
-      });
       console.log(form2Api, form2Api.getFormData());
     };
 
