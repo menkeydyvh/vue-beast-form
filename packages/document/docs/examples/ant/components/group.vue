@@ -29,6 +29,7 @@ interface GroupProps {
 defineOptions({
   name: "Group",
 })
+
 const props = defineProps<GroupProps>();
 const emit = defineEmits(["update:modelValue"])
 
@@ -80,4 +81,8 @@ watch(groupValue, () => {
   }
   emit('update:modelValue', result)
 }, { deep: true })
+
+defineExpose({
+  apis: groupApi.value,
+})
 </script>

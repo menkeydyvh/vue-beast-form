@@ -59,7 +59,7 @@ export default defineComponent({
       },
       {
         type: "group",
-        title: "group 对应结果  ['','']",
+        title: "group2 对应结果  ['','']",
         field: "group2",
         value: ["1", "2"],
         props: {
@@ -93,7 +93,7 @@ export default defineComponent({
         children: ["group2 设置第二个input1的值"],
         on: {
           click: (e, api) => {
-            const group2input2Api = api.getComponent("group2").proxy.fapis[1];
+            const group2input2Api = api.getComponent("group2").exposed.apis[1];
             if (group2input2Api) {
               group2input2Api.setValue("input1", `${Date.now()}`);
             } else {

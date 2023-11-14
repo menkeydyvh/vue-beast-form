@@ -196,7 +196,7 @@ const initValue = () => {
 
 const renderRuleChlidren = (child: RuleChlidren) => {
     if (typeof child === 'string') {
-        return setI18n(child)
+        return setI18n(child);
     } else {
         return h(BeastRule, {
             rule: child,
@@ -204,7 +204,7 @@ const renderRuleChlidren = (child: RuleChlidren) => {
             modelValue: props.modelValue?.[child.field],
             disabled: props.disabled,
             onChangeField: onChangeField,
-        })
+        });
     }
 }
 
@@ -212,8 +212,13 @@ const slots = ref<Record<string, () => (VNode | string)[]>>({});
 
 if (props.rule.children) {
     if (Array.isArray(props.rule.children)) {
-        const childAry = props.rule.children;
-        slots.value.default = () => childAry.map(child => renderRuleChlidren(child))
+        props.rule.children.forEach(child => {
+            let slot = 'default';
+            if (typeof child === 'object' && child.slot) {
+                slot = child.slot
+            }
+            slots.value[slot] = () => [renderRuleChlidren(child)]
+        });
     } else {
         const childObj = props.rule.children;
         for (let key in childObj) {

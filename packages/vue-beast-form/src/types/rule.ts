@@ -70,7 +70,7 @@ export type RuleType = {
      */
     children?: RuleChlidren[] | Record<string, RuleChlidren | ChildrenFn>;
     /**
-     * 插槽名称
+     * children下处理插槽名称
      */
     slot?: string;
     /**

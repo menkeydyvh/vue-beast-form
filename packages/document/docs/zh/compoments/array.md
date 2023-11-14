@@ -20,126 +20,85 @@ ant/array
   </div>
   <a-row v-for="(item, index) in groupRule">
     <a-col flex="auto">
-      <beast-form
-        v-model:api="fapis[index]"
-        v-model="value[index]"
-        :rule="item.rule"
-        :option="item.option"
-        :disabled="disabled"
-      />
+      <BeastForm v-model:api="groupApi[index]" v-model="groupValue[index]" :rule="item" :option="option"
+        :disabled="disabled" />
     </a-col>
     <a-col v-if="!disabled">
       <minus-square-outlined @click="() => onDel(index)" />
     </a-col>
   </a-row>
 </template>
-<script lang="ts">
-import { defineComponent, ref, toRefs, watch } from "vue";
-import type { PropType } from "vue";
+<script setup lang="ts">
+import { defineOptions, ref, watch } from "vue";
 import { PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons-vue";
-import vbf from "vue-beast-form";
-import { deepCopy } from "vue-beast-form/lib/tool";
-import type { RuleType, PropsOptionType, ApiType } from "vue-beast-form";
+import { deepCopy } from "vue-beast-form/esm/tool";
+import { BeastForm, RuleType, ApiType, PropsOptionType } from "vue-beast-form";
 
-interface GroupRule {
-  rule: RuleType[];
-  option: PropsOptionType;
+interface GroupProps {
+  rule: RuleType | RuleType[];
+  option?: PropsOptionType;
+  field?: string;
+  disabled?: boolean;
+  modelValue?: any[];
 }
 
-vbf.useFramework("ant-design-vue");
-
-export default defineComponent({
+defineOptions({
   name: "Group",
-  components: { BeastForm: vbf.beastForm(), PlusSquareOutlined, MinusSquareOutlined },
-  props: {
-    field: { type: String },
-    rule: { type: Array as PropType<RuleType[]>, required: true },
-    option: { type: Object as PropType<PropsOptionType> },
-    disabled: { type: Boolean },
-    modelValue: { default: null },
-  },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const { rule, option, modelValue, field } = toRefs(props),
-      groupRule = ref<GroupRule[]>([]),
-      value = ref<any[]>([]),
-      fapis = ref<ApiType[]>([]);
+})
+const props = defineProps<GroupProps>();
+const emit = defineEmits(["update:modelValue"]);
 
-    const onInit = () => {
-        // 处理 array['',''] 和 array[object,object]的初始化赋值
-        if (modelValue.value) {
-          if (field.value) {
-            modelValue.value.forEach((item: any) => {
-              let json: any = {};
-              json[field.value] = item;
-              value.value.push(json);
-            });
-          } else {
-            value.value = modelValue.value;
-          }
-        }
+const groupRule = ref<RuleType[]>([]);
+const groupValue = ref<Record<string, any>[]>([]);
+const groupApi = ref<ApiType[]>([]);
 
-        // 布局初始化
-        if (value.value && value.value.length) {
-          value.value.forEach(() => {
-            onAdd(true);
-          });
-        }
-      },
-      onAdd = (isInit?: boolean) => {
-        // 添加
-        let ruleItem = deepCopy(rule.value),
-          optionItem = null;
-        if (option.value) {
-          optionItem = deepCopy(option.value);
-        }
-        groupRule.value.push({
-          rule: ruleItem,
-          option: optionItem,
-        });
-        if (!isInit) {
-          value.value.push({});
-        }
-      },
-      onDel = (index: number) => {
-        // 删除
-        groupRule.value.splice(index, 1);
-        value.value.splice(index, 1);
-        fapis.value.splice(index, 1);
-      },
-      resultValue = () => {
-        // 处理 array[] 和 array[object]的返回结果
-        let result: Array<any> = [];
-        if (field.value) {
-          value.value.forEach((item) => {
-            result.push(item[field.value]);
-          });
-        } else {
-          result = value.value;
-        }
-        return result;
-      };
+const onAdd = (isInit?: boolean) => {
+  groupRule.value.push(deepCopy(props.rule));
+  if (!isInit) {
+    groupValue.value.push(null);
+  }
+  groupApi.value.push(null);
+}
 
-    watch(
-      value,
-      () => {
-        emit("update:modelValue", resultValue());
-      },
-      {
-        deep: true,
-      }
-    );
+const onDel = (index: number) => {
+  groupRule.value.splice(index, 1);
+  groupValue.value.splice(index, 1);
+  groupApi.value.splice(index, 1);
+}
 
-    onInit();
 
-    return {
-      fapis,
-      value,
-      groupRule,
-      onAdd,
-      onDel,
-    };
-  },
-});
+if (props.modelValue) {
+  if (props.field) {
+    props.modelValue.forEach((item: any) => {
+      groupValue.value.push({
+        [props.field]: item
+      });
+    });
+  } else {
+    groupValue.value = [...props.modelValue];
+  }
+}
+if (groupValue.value?.length) {
+  groupValue.value.forEach(() => {
+    onAdd(true);
+  });
+}
+
+watch(groupValue, () => {
+  // 处理 array[] 和 array[object]的返回结果
+  const result: any[] = [];
+  if (props.field) {
+    groupValue.value.forEach((item) => {
+      result.push(item[props.field]);
+    });
+  } else {
+    result.push(...groupValue.value);
+  }
+  emit('update:modelValue', result)
+}, { deep: true })
+
+defineExpose({
+  apis: groupApi.value,
+})
 </script>
 ```

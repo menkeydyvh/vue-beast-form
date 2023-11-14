@@ -47,9 +47,9 @@ export default class apiFactory {
                 return globalCache.cacheApi[name]
             },
             getComponent(field) {
-                const rf = self.getRule(field)
+                const rf = self.getRule(field);
                 if (rf) {
-                    return rf
+                    return rf.subTree.component
                 }
             },
             getEl(field) {

@@ -134,6 +134,7 @@ const clearFormValidate = (field?: string) => {
 }
 
 defineExpose({
+    api: publishApi,
     getFormData,
     resetFormData,
     validate,
