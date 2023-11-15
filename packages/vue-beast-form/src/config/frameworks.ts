@@ -92,7 +92,7 @@ export const vant: GlobalConfigTypeFramework = {
         },
         defaultValue: {
             "van-checkbox-group": [[]],
-            "van-number-keyboard": ['']
+            "van-number-keyboard": [''],
         },
         modelEvent: {},
         disabled: {},

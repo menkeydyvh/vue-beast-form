@@ -151,13 +151,13 @@ export default class Config {
      * @returns 
      */
     getModelValueDefaultNullValues(componentName: string, keys: string[]) {
-        const fcdv = this.defaultValue[componentName]
+        const fcdv = this.defaultValue[componentName];
         if (keys?.length) {
             return keys.map((_key, i) => {
-                if (fcdv?.[i]) {
-                    return fcdv[i]
+                if (fcdv?.[i] !== undefined) {
+                    return fcdv[i];
                 } else {
-                    return null
+                    return null;
                 }
             })
         } else {

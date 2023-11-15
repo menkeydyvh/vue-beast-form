@@ -212,13 +212,26 @@ const slots = ref<Record<string, () => (VNode | string)[]>>({});
 
 if (props.rule.children) {
     if (Array.isArray(props.rule.children)) {
+        const slotObj: Record<string, RuleChlidren[]> = {
+            default: []
+        };
         props.rule.children.forEach(child => {
-            let slot = 'default';
-            if (typeof child === 'object' && child.slot) {
-                slot = child.slot
+            if (typeof child === 'string') {
+                slotObj.default.push(child);
+            } else {
+                if (child.slot) {
+                    if (!slotObj[child.slot]) {
+                        slotObj[child.slot] = []
+                    }
+                    slotObj[child.slot].push(child);
+                } else {
+                    slotObj.default.push(child);
+                }
             }
-            slots.value[slot] = () => [renderRuleChlidren(child)]
         });
+        for (let key in slotObj) {
+            slots.value[key] = () => slotObj[key].map(item => renderRuleChlidren(item))
+        }
     } else {
         const childObj = props.rule.children;
         for (let key in childObj) {
