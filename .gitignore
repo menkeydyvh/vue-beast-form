@@ -19,11 +19,9 @@ bin-release/
 
 node_modules
 dist
-dist-ssr
-*.local
-*-lock.json
-
-lib
+esm
+umd
+bundle
 
 .temp
 .cache
