@@ -13,6 +13,7 @@ export default defineConfig([
         external: ['vue'],
         input: {
             "index": 'src/index.ts',
+            "tool": 'src/tool.ts',
             "config/frameworks": 'src/config/frameworks.ts',
         },
         output: {
