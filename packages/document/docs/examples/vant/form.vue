@@ -40,6 +40,7 @@ export default defineComponent({
       { value: "73", label: "iphone 73" },
     ];
 
+
     rule.value = [
       {
         type: "van-cell-group",
@@ -55,7 +56,7 @@ export default defineComponent({
           },
           {
             type: "van-field",
-            field: "value-date",
+            field: "value-date-input",
             props: {
               label: "日期",
               readonly: true,
@@ -142,8 +143,8 @@ export default defineComponent({
               columns: ["杭州", "宁波", "温州", "绍兴", "湖州", "嘉兴", "金华"],
             },
             on: {
-              change: (value, index, api) => {
-                Toast(`当前值: ${value}, 当前索引: ${index}`);
+              change: (v, index, api) => {
+                Toast(`当前值: ${v}, 当前索引: ${index}`);
               },
             },
           },
@@ -189,8 +190,8 @@ export default defineComponent({
         type: "van-calendar",
         field: "showCalendar",
         on: {
-          confirm: (value, api) => {
-            api.setValue("value-date", `${value.getMonth() + 1}/${value.getDate()}`);
+          confirm: (v, api) => {
+            api.setValue("value-date-input", `${v.getMonth() + 1}/${v.getDate()}`);
             api.setValue("showCalendar", false);
           },
         },
@@ -242,9 +243,9 @@ export default defineComponent({
         type: "van-number-keyboard",
         field: "value-keyboard",
         on: {
-          "update:modelValue": (value, api) => {
-            api.setValue("nameKeyNumber", value);
-            api.setValue("value-keyboard", value);
+          "update:modelValue": (v, api) => {
+            api.setValue("nameKeyNumber", v);
+            api.setValue("value-keyboard", v);
           },
           blur: (api) => {
             api.setProps("value-keyboard", "show", false);
@@ -255,9 +256,9 @@ export default defineComponent({
         type: "van-number-keyboard",
         field: "value-password",
         on: {
-          "update:modelValue": (value, api) => {
-            api.setProps("namePassword", "value", `${value}`);
-            api.setValue("value-password", value);
+          "update:modelValue": (v, api) => {
+            api.setProps("namePassword", "value", `${v}`);
+            api.setValue("value-password", v);
           },
           blur: (api) => {
             api.setProps("namePassword", "focused", false);
@@ -277,9 +278,14 @@ export default defineComponent({
             children: ["提交"],
             on: {
               click: (e, api) => {
-                api.validate((valid, data) => {
-                  console.log(valid, data);
-                });
+                if (option.value.isForm) {
+                  api.validate((valid, data) => {
+                    console.log(valid, data);
+                  });
+                } else {
+                  // 不是form的时候获取数据
+                  console.log("formData:", api.getFormData());
+                }
               },
             },
           },
