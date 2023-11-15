@@ -1,7 +1,7 @@
 {
   "name": "vue-beast-form",
   "version": "1.0.0",
-  "description": "通过vue3、一些vue3框架、自定义组件，通过vue3的渲染方式使用json配置渲染出ui，达到低代码的效果",
+  "description": "vue3的json方式组件渲染且提供表单数据处理，可搭配现有市场上的UI框架，PC和移动端均可使用",
   "main": "esm/index.js",
   "module": "esm/index.js",
   "unpkg": "umd/index.js",
@@ -52,5 +52,6 @@
     "type": "git",
     "url": "https://gitee.com/yvh/vue-beast-form.git"
   },
+  "homepage": "https://menkeydyvh.github.io/vue-beast-form/",
   "packageManager": "pnpm@8.8.0"
 }
