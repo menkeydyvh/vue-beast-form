@@ -32,12 +32,17 @@ defineOptions({
 const props = defineProps<GroupProps>();
 const emit = defineEmits(["update:modelValue"])
 
-const groupRule = ref<RuleType[]>([]);
+const groupRule = ref<RuleType[][]>([]);
 const groupValue = ref<Record<string, any>[]>([]);
 const groupApi = ref<ApiType[]>([]);
 
 const onAdd = (isInit?: boolean) => {
-  groupRule.value.push(deepCopy(props.rule));
+  const copyRule = deepCopy(props.rule);
+  if (Array.isArray(copyRule)) {
+    groupRule.value.push(copyRule);
+  } else {
+    groupRule.value.push([copyRule]);
+  }
   if (!isInit) {
     groupValue.value.push(null);
   }
@@ -73,7 +78,7 @@ watch(groupValue, () => {
   const result: any[] = [];
   if (props.field) {
     groupValue.value.forEach((item) => {
-      result.push(item[props.field]);
+      result.push(item?.[props.field]);
     });
   } else {
     result.push(...groupValue.value);

@@ -79,6 +79,21 @@ export interface ApiType {
   */
   setDisabled(field: string, disabled: boolean): void
   /**
+   * 添加子节点
+   * @param field 
+   * @param rule 
+   * @param index 
+   * @param slot 
+   */
+  pushChildren(field: string, rule: RuleChlidren, index?: number, slot?: string): void;
+  /**
+   * 删除子节点
+   * @param field 
+   * @param index 
+   * @param slot 
+   */
+  delChildren(field: string, index?: number, slot?: string): void;
+  /**
   * 检测是不是model的key
   * @param field 
   * @returns 
@@ -119,6 +134,10 @@ export interface ApiType {
    * @param event 
    */
   delOn(field: string, event: string): void
+  /**
+   * 
+   */
+  addEmit(field: string, emit: EmitType): void
   /**
    * 提供多语言支持方法
    * @param str 
