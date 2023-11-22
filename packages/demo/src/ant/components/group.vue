@@ -29,6 +29,7 @@ interface GroupProps {
 defineOptions({
   name: "Group",
 })
+
 const props = defineProps<GroupProps>();
 const emit = defineEmits(["update:modelValue"])
 
@@ -44,9 +45,8 @@ const onAdd = (isInit?: boolean) => {
     groupRule.value.push([copyRule]);
   }
   if (!isInit) {
-    groupValue.value.push(null);
+    groupValue.value.push({});
   }
-  groupApi.value.push(null);
 }
 
 const onDel = (index: number) => {
@@ -60,7 +60,7 @@ if (props.modelValue) {
   if (props.field) {
     props.modelValue.forEach((item: any) => {
       groupValue.value.push({
-        [props.field]: item
+        [props.field as string]: item
       });
     });
   } else {
@@ -78,11 +78,15 @@ watch(groupValue, () => {
   const result: any[] = [];
   if (props.field) {
     groupValue.value.forEach((item) => {
-      result.push(item?.[props.field]);
+      result.push(item?.[props.field as string]);
     });
   } else {
     result.push(...groupValue.value);
   }
   emit('update:modelValue', result)
 }, { deep: true })
+
+defineExpose({
+  apis: groupApi.value,
+})
 </script>

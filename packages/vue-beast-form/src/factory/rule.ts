@@ -6,7 +6,6 @@ import type { VNode, ComponentInternalInstance, Ref } from 'vue'
 import type { ModelValueType } from './form'
 import type { RuleType, EmitType, RuleChlidren } from '../types'
 
-
 export class RuleFactory {
 
     public vm: ComponentInternalInstance | any
@@ -247,7 +246,7 @@ export class RuleFactory {
         const slef = this;
         if (this.rule.children) {
             if (Array.isArray(this.rule.children)) {
-                this.rule.children.map(rule => {
+                this.rule.children.forEach(rule => {
                     this.addChildren(rule)
                 })
             } else {
@@ -274,8 +273,12 @@ export class RuleFactory {
         }
     }
 
-    renderRuleChildren(RuleChlidren) {
-
+    renderRuleChildren(child: RuleChlidren) {
+        if (typeof child === 'string') {
+            return this.setI18n(child);
+        } else {
+            return new RuleFactory(child, this.modelValue, this.api, this.vm, this.isI18n)
+        }
     }
 
 
@@ -581,6 +584,7 @@ export class RuleFactory {
      * @returns 
      */
     renderChildrenSolt() {
+        console.log('renderChildrenSolt')
         const result = {}
         for (let slot in this.childrenSlot) {
             const childSlot = this.childrenSlot[slot];
