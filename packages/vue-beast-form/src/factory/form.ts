@@ -6,25 +6,11 @@ import type Api from './api'
 import type { ComponentInternalInstance } from "vue"
 import type { RuleType, PropsOptionType } from '../types'
 
-export interface ModelValueType {
-    [field: string]: any
-}
-
-interface VmPropsType {
-    modelValue: {
-        [key: string]: any
-    }
-    name: string
-    rule: RuleType[]
-    disabled: boolean
-    option: PropsOptionType
-}
-
 export default class FormFactory {
 
     public vm: ComponentInternalInstance
 
-    public modelValue: ModelValueType
+    public modelValue: Record<string, any>
 
     public option: PropsOptionType
 
@@ -72,17 +58,16 @@ export default class FormFactory {
     }
 
     initModelValue() {
-        const { modelValue } = toRefs<VmPropsType>(this.vm.props as any)
-
-        this.modelValue = reactive({ ...modelValue.value as any })
+        const modelValue = this.vm.props.modelValue as Record<string, any>
+        this.modelValue = reactive({ ...modelValue })
 
         this.api.setModelValue(this.modelValue)
     }
 
     initRule() {
-        const { rule } = toRefs<VmPropsType>(this.vm.props as any)
+        const rule = this.vm.props.rule as RuleType[];
 
-        this.rules = (rule.value).filter(
+        this.rules = (rule).filter(
             item => !!item
         ).map(
             item => new RuleFactory(item, this.modelValue, this.api, this.vm, this.option.isI18n)
@@ -92,9 +77,9 @@ export default class FormFactory {
     }
 
     initDisabled() {
-        const { disabled } = toRefs<VmPropsType>(this.vm.props as any)
+        const disabled = this.vm.props.disabled as boolean;
 
-        this.disabled = disabled.value
+        this.disabled = disabled
 
         this.rules.forEach(rule => {
             rule.setDisabled(this.disabled, true)
@@ -102,14 +87,14 @@ export default class FormFactory {
     }
 
     initOption() {
-        const { option } = toRefs<VmPropsType>(this.vm.props as any),
+        const option = this.vm.props.option as PropsOptionType,
             baseVmOption = this.baseVm.props?.option as PropsOptionType,
-            formProps = { ...globalCache?.basePropsOption?.form, ...baseVmOption?.form, ...option.value?.form }
+            formProps = { ...globalCache?.basePropsOption?.form, ...baseVmOption?.form, ...option?.form }
 
-        this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option.value, form: formProps }
+        this.option = { ...globalCache.basePropsOption, ...baseVmOption, ...option, form: formProps }
     }
 
-    updateModelValue(modelValue: ModelValueType) {
+    updateModelValue(modelValue: Record<string, any>) {
         if (modelValue) {
             for (let key in modelValue) {
                 if (this.modelValue[key] !== modelValue[key]) {

@@ -16,7 +16,7 @@ export default defineComponent({
     },
     emits: ["changeField", "update:modelValue", "update:api", "mounted", 'unmounted'],
     setup(props, { emit }) {
-        const vm = getCurrentInstance() as any,
+        const vm = getCurrentInstance(),
             { modelValue, rule, option, disabled, name } = toRefs(props);
         const rf = new FormFactory(vm)
 
@@ -64,7 +64,7 @@ export default defineComponent({
         watch(rule, () => {
             rf.initModelValue();
             rf.initRule()
-            vm.ctx.$forceUpdate()
+            vm.proxy.$forceUpdate()
         }, { deep: true })
 
         watch(modelValue, () => {

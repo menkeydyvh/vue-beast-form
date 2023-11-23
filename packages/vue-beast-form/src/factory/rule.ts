@@ -3,7 +3,6 @@ import { globalCache, LoaderFactory } from './loader.js'
 import { onToPropsName, propsToOnName, deepCopy } from '../tool.js'
 import type Api from './api'
 import type { VNode, ComponentInternalInstance, Ref } from 'vue'
-import type { ModelValueType } from './form'
 import type { RuleType, EmitType, RuleChlidren } from '../types'
 
 export class RuleFactory {
@@ -20,7 +19,7 @@ export class RuleFactory {
 
     public component: VNode
 
-    public modelValue: ModelValueType
+    public modelValue: Record<string, any>
 
     /**
      * 有v-model的时候这个值会有数据
@@ -37,9 +36,7 @@ export class RuleFactory {
 
     public display: Ref<boolean>
 
-    public childrenSlot = reactive<{
-        [slot: string]: Array<RuleFactory | string> | Function
-    }>({})
+    public childrenSlot: Record<string, Array<RuleFactory | string> | Function> = ({})
 
     private _config: {
         disabled: string
@@ -256,16 +253,10 @@ export class RuleFactory {
                         if (typeof childSlot === 'function') {
                             const csr = childSlot(...arguments)
                             if (Array.isArray(csr)) {
-                                return csr.map(csrItem => {
-                                    if (typeof csrItem === 'string') {
-                                        return csrItem
-                                    } else {
-                                        return (new RuleFactory(csrItem, slef.modelValue, slef.api, slef.vm, slef.isI18n)).render()
-                                    }
-                                })
+                                return csr.map(csrItem => slef.renderRuleChildren(csrItem))
                             }
                         } else {
-                            return [childSlot]
+                            return slef.renderRuleChildren(childSlot)
                         }
                     }
                 }
@@ -277,7 +268,7 @@ export class RuleFactory {
         if (typeof child === 'string') {
             return this.setI18n(child);
         } else {
-            return new RuleFactory(child, this.modelValue, this.api, this.vm, this.isI18n)
+            return (new RuleFactory(child, this.modelValue, this.api, this.vm, this.isI18n)).render()
         }
     }
 
@@ -584,7 +575,6 @@ export class RuleFactory {
      * @returns 
      */
     renderChildrenSolt() {
-        console.log('renderChildrenSolt')
         const result = {}
         for (let slot in this.childrenSlot) {
             const childSlot = this.childrenSlot[slot];
