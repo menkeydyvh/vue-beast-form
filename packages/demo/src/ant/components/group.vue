@@ -29,19 +29,24 @@ interface GroupProps {
 defineOptions({
   name: "Group",
 })
+
 const props = defineProps<GroupProps>();
 const emit = defineEmits(["update:modelValue"])
 
-const groupRule = ref<RuleType[]>([]);
+const groupRule = ref<RuleType[][]>([]);
 const groupValue = ref<Record<string, any>[]>([]);
 const groupApi = ref<ApiType[]>([]);
 
 const onAdd = (isInit?: boolean) => {
-  groupRule.value.push(deepCopy(props.rule));
-  if (!isInit) {
-    groupValue.value.push(null);
+  const copyRule = deepCopy(props.rule);
+  if (Array.isArray(copyRule)) {
+    groupRule.value.push(copyRule);
+  } else {
+    groupRule.value.push([copyRule]);
   }
-  groupApi.value.push(null);
+  if (!isInit) {
+    groupValue.value.push({});
+  }
 }
 
 const onDel = (index: number) => {
@@ -55,7 +60,7 @@ if (props.modelValue) {
   if (props.field) {
     props.modelValue.forEach((item: any) => {
       groupValue.value.push({
-        [props.field]: item
+        [props.field as string]: item
       });
     });
   } else {
@@ -73,11 +78,15 @@ watch(groupValue, () => {
   const result: any[] = [];
   if (props.field) {
     groupValue.value.forEach((item) => {
-      result.push(item[props.field]);
+      result.push(item?.[props.field as string]);
     });
   } else {
     result.push(...groupValue.value);
   }
   emit('update:modelValue', result)
 }, { deep: true })
+
+defineExpose({
+  apis: groupApi.value,
+})
 </script>

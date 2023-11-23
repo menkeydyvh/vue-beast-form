@@ -1,16 +1,16 @@
-import { LoaderFactory } from './core/loader';
+import { LoaderFactory } from './factory/loader';
 import { ruleParse as toolRuleParse, ruleStringify as toolRuleStringify } from './tool';
 import { App, Component } from 'vue';
 import { RuleType, PropsOptionType } from './types';
-import CoreComp from './core/index.vue'
+import FactoryComp from './factory/index'
 export * from './types/index';
 
 const core = () => {
   LoaderFactory.loaderComponents({
-    [CoreComp.name]: CoreComp,
+    [FactoryComp.name]: FactoryComp,
   })
 
-  return CoreComp;
+  return FactoryComp;
 }
 
 export const BeastForm = core();

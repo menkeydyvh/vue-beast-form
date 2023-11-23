@@ -156,7 +156,7 @@ export const updateRule = (oData: any, nData: any, isMerge?: boolean) => {
  * @param data 
  * @returns 
  */
-export const deepCopy = (data: any): any => {
+export const deepCopy = <T>(data: T): T => {
     return realizeCloneDeep(data);
 }
 
@@ -165,7 +165,7 @@ export const deepCopy = (data: any): any => {
  * @param value
  * @returns 
  */
-export const newValue = (value: any): any => {
+export const newValue = <T>(value: T): T => {
     if (typeof value === 'object') {
         return deepCopy(value)
     } else {
