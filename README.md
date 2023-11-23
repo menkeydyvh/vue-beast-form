@@ -28,6 +28,8 @@ pnpm add vue-beast-form
 
 github文档地址：[这里](https://menkeydyvh.github.io/vue-beast-form/)
 
+gitee文档地址：[这里](https://yvh.gitee.io/vue-beast-form/)
+
 ### 手动运行文档
 
 ```
